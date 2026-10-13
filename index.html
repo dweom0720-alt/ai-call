@@ -240,9 +240,10 @@ details summary{cursor:pointer;color:var(--sub);font-size:13px}
 <script>
 /* ===================== 기본 데이터 ===================== */
 const MODELS = [
-  "gemini-2.5-flash-native-audio-preview-09-2025",
-  "gemini-live-2.5-flash-preview",
-  "gemini-2.0-flash-live-001"
+  "gemini-3.8-live",
+  "gemini-3.1-flash-live-preview",
+  "gemini-2.5-flash-native-audio-preview-12-2025",
+  "gemini-2.5-flash-native-audio-preview-09-2025"
 ];
 
 /* 3D 아바타: TalkingHead (MIT) — 예제 아바타는 비상업적 개인 용도 */
@@ -291,6 +292,7 @@ const $ = id => document.getElementById(id);
 let S = {};
 try { S = JSON.parse(localStorage.getItem("aicall") || "{}"); } catch(e) {}
 S = Object.assign({av3d:true, char:"emma", mode:"sail", slow:true, subs:true, video:false, key:"", model:MODELS[0], modelCustom:""}, S);
+if (!MODELS.includes(S.model)) S.model = MODELS[0];
 function saveS(){ try { localStorage.setItem("aicall", JSON.stringify(S)); } catch(e) {} }
 
 /* ===================== 아바타 SVG ===================== */
@@ -452,24 +454,45 @@ async function startCall(){
   if (S.av3d && !use3D) toast("3D 아바타를 불러오지 못해 기본 아바타로 진행합니다");
   if (ending) return;
 
-  const model = (S.modelCustom || S.model || MODELS[0]).replace(/^models\//,"");
-  ws = new WebSocket("wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=" + encodeURIComponent(key));
-  ws.onopen = () => send({setup:{
-    model: "models/" + model,
-    generationConfig: { responseModalities:["AUDIO"],
-      speechConfig: { voiceConfig: { prebuiltVoiceConfig: { voiceName: c.voice } } } },
+  // 연결 시도 순서: 선택한 모델 → 나머지 모델 → (마지막) 목소리 설정 없이
+  const first = (S.modelCustom || S.model || MODELS[0]).replace(/^models\//,"");
+  const order = [first, ...MODELS.filter(m => m !== first)];
+  attempts = order.map(m => ({model:m, voice:true})).concat([{model:order[0], voice:false}]);
+  lastErr = null;
+  connect(0, key, c);
+  loop();
+}
+
+let attempts = [], lastErr = null;
+function connect(i, key, c){
+  if (ending) return;
+  const a = attempts[i];
+  setStatus(i ? `다른 AI 모델로 다시 연결 중… (${i+1}/${attempts.length})` : "연결 중…");
+  const gen = { responseModalities:["AUDIO"] };
+  if (a.voice) gen.speechConfig = { voiceConfig: { prebuiltVoiceConfig: { voiceName: c.voice } } };
+  const sock = new WebSocket("wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=" + encodeURIComponent(key));
+  ws = sock;
+  sock.onopen = () => send({setup:{
+    model: "models/" + a.model,
+    generationConfig: gen,
     systemInstruction: { parts:[{ text: buildPrompt() }] },
     inputAudioTranscription: {},
     outputAudioTranscription: {}
   }});
-  ws.onmessage = async ev => {
+  sock.onmessage = async ev => {
     let txt = ev.data; if (typeof txt !== "string") txt = await ev.data.text();
     let msg; try { msg = JSON.parse(txt); } catch(e){ return; }
+    if (msg.setupComplete && (S.model !== a.model) && !S.modelCustom){ S.model = a.model; saveS(); }
     handle(msg);
   };
-  ws.onerror = () => {};
-  ws.onclose = e => { if (!ending) onDrop(e); };
-  loop();
+  sock.onerror = () => {};
+  sock.onclose = e => {
+    if (ending || sock !== ws) return;
+    const r = (e.reason || "").toLowerCase();
+    const fatal = r.includes("api key") || r.includes("api_key") || r.includes("quota") || r.includes("exhausted");
+    if (!ready && !fatal && i + 1 < attempts.length){ lastErr = e; return connect(i + 1, key, c); }
+    onDrop(e);
+  };
 }
 
 function handle(msg){
