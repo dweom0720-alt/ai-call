@@ -1,0 +1,324 @@
+name: Build Android App (AI 영어통화)
+
+# 이 파일 하나로 안드로이드 앱 전체를 자동으로 만들어 Releases에 올립니다.
+# 앱은 https://dweom0720-alt.github.io/ai-call/ 웹앱을 그대로 띄우고,
+# 수화기/스피커 전환과 볼륨 버튼(통화 음량)만 폰에서 직접 제어합니다.
+
+on:
+  push:
+    paths:
+      - ".github/workflows/build-apk.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "17"
+
+      - name: Create Android project
+        run: |
+          set -e
+          mkdir -p android && cd android
+          mkdir -p app/src/main/java/com/dweom/aicall app/src/main/res/mipmap-xxxhdpi app/src/main/res/values
+
+          cat > settings.gradle <<'EOF'
+          pluginManagement {
+              repositories { google(); mavenCentral(); gradlePluginPortal() }
+          }
+          dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
+              repositories { google(); mavenCentral() }
+          }
+          rootProject.name = "AiCall"
+          include ':app'
+          EOF
+
+          cat > build.gradle <<'EOF'
+          plugins { id 'com.android.application' version '8.5.2' apply false }
+          EOF
+
+          cat > gradle.properties <<'EOF'
+          org.gradle.jvmargs=-Xmx2g
+          android.useAndroidX=false
+          EOF
+
+          cat > app/build.gradle <<EOF
+          plugins { id 'com.android.application' }
+          android {
+              namespace 'com.dweom.aicall'
+              compileSdk 34
+              defaultConfig {
+                  applicationId "com.dweom.aicall"
+                  minSdk 26
+                  targetSdk 34
+                  versionCode ${GITHUB_RUN_NUMBER}
+                  versionName "1.${GITHUB_RUN_NUMBER}"
+              }
+              buildTypes { release { minifyEnabled false } }
+              compileOptions {
+                  sourceCompatibility JavaVersion.VERSION_17
+                  targetCompatibility JavaVersion.VERSION_17
+              }
+          }
+          EOF
+
+          cat > app/src/main/AndroidManifest.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+              <uses-permission android:name="android.permission.INTERNET" />
+              <uses-permission android:name="android.permission.RECORD_AUDIO" />
+              <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+              <uses-permission android:name="android.permission.CAMERA" />
+              <uses-permission android:name="android.permission.WAKE_LOCK" />
+              <uses-feature android:name="android.hardware.camera" android:required="false" />
+              <uses-feature android:name="android.hardware.microphone" android:required="true" />
+              <application
+                  android:label="@string/app_name"
+                  android:icon="@mipmap/ic_launcher"
+                  android:roundIcon="@mipmap/ic_launcher"
+                  android:theme="@android:style/Theme.Material.NoActionBar"
+                  android:hardwareAccelerated="true">
+                  <activity
+                      android:name=".MainActivity"
+                      android:exported="true"
+                      android:launchMode="singleTask"
+                      android:screenOrientation="portrait"
+                      android:configChanges="orientation|screenSize|screenLayout|keyboard|keyboardHidden|uiMode|smallestScreenSize">
+                      <intent-filter>
+                          <action android:name="android.intent.action.MAIN" />
+                          <category android:name="android.intent.category.LAUNCHER" />
+                      </intent-filter>
+                  </activity>
+              </application>
+          </manifest>
+          EOF
+
+          cat > app/src/main/res/values/strings.xml <<'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
+          <resources>
+              <string name="app_name">AI 영어통화</string>
+          </resources>
+          EOF
+
+          cat > app/src/main/java/com/dweom/aicall/MainActivity.java <<'EOF'
+          package com.dweom.aicall;
+
+          import android.Manifest;
+          import android.app.Activity;
+          import android.content.Context;
+          import android.content.Intent;
+          import android.content.pm.PackageManager;
+          import android.media.AudioDeviceInfo;
+          import android.media.AudioManager;
+          import android.net.Uri;
+          import android.os.Build;
+          import android.os.Bundle;
+          import android.os.PowerManager;
+          import android.view.WindowManager;
+          import android.webkit.JavascriptInterface;
+          import android.webkit.PermissionRequest;
+          import android.webkit.WebChromeClient;
+          import android.webkit.WebResourceRequest;
+          import android.webkit.WebSettings;
+          import android.webkit.WebView;
+          import android.webkit.WebViewClient;
+          import java.util.ArrayList;
+          import java.util.List;
+
+          public class MainActivity extends Activity {
+              static final String APP_URL = "https://dweom0720-alt.github.io/ai-call/?app=1";
+              WebView web;
+              AudioManager am;
+              PowerManager.WakeLock prox;
+              PermissionRequest pending;
+              boolean inCall = false;
+              boolean speakerOn = false;
+
+              @Override
+              protected void onCreate(Bundle state) {
+                  super.onCreate(state);
+                  getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                  getWindow().setStatusBarColor(0xFF0B1424);
+                  getWindow().setNavigationBarColor(0xFF0B1424);
+                  am = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+                  // 옆면 볼륨 버튼 = 통화 음량
+                  setVolumeControlStream(AudioManager.STREAM_VOICE_CALL);
+                  PowerManager pm = (PowerManager) getSystemService(Context.POWER_SERVICE);
+                  if (pm != null && pm.isWakeLockLevelSupported(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK)) {
+                      prox = pm.newWakeLock(PowerManager.PROXIMITY_SCREEN_OFF_WAKE_LOCK, "aicall:proximity");
+                  }
+
+                  web = new WebView(this);
+                  web.setBackgroundColor(0xFF0B1424);
+                  setContentView(web);
+                  WebSettings s = web.getSettings();
+                  s.setJavaScriptEnabled(true);
+                  s.setDomStorageEnabled(true);
+                  s.setDatabaseEnabled(true);
+                  s.setMediaPlaybackRequiresUserGesture(false);
+                  s.setCacheMode(WebSettings.LOAD_DEFAULT);
+                  WebView.setWebContentsDebuggingEnabled(true);
+                  web.addJavascriptInterface(new Bridge(), "AndroidAudio");
+
+                  web.setWebViewClient(new WebViewClient() {
+                      @Override
+                      public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
+                          Uri u = r.getUrl();
+                          String host = u.getHost();
+                          if (host != null && host.endsWith("github.io")) return false;
+                          try { startActivity(new Intent(Intent.ACTION_VIEW, u)); } catch (Exception e) { }
+                          return true;
+                      }
+                  });
+                  web.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public void onPermissionRequest(final PermissionRequest req) {
+                          runOnUiThread(() -> handlePermission(req));
+                      }
+                  });
+
+                  if (state != null) web.restoreState(state); else web.loadUrl(APP_URL);
+                  if (checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                      requestPermissions(new String[]{Manifest.permission.RECORD_AUDIO}, 1);
+                  }
+              }
+
+              void handlePermission(PermissionRequest req) {
+                  List<String> need = new ArrayList<>();
+                  for (String r : req.getResources()) {
+                      if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(r)
+                              && checkSelfPermission(Manifest.permission.RECORD_AUDIO) != PackageManager.PERMISSION_GRANTED) {
+                          need.add(Manifest.permission.RECORD_AUDIO);
+                      }
+                      if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(r)
+                              && checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
+                          need.add(Manifest.permission.CAMERA);
+                      }
+                  }
+                  if (need.isEmpty()) { req.grant(req.getResources()); return; }
+                  pending = req;
+                  requestPermissions(need.toArray(new String[0]), 2);
+              }
+
+              @Override
+              public void onRequestPermissionsResult(int code, String[] perms, int[] results) {
+                  super.onRequestPermissionsResult(code, perms, results);
+                  if (pending == null) return;
+                  List<String> ok = new ArrayList<>();
+                  for (String r : pending.getResources()) {
+                      if (PermissionRequest.RESOURCE_AUDIO_CAPTURE.equals(r)
+                              && checkSelfPermission(Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_GRANTED) ok.add(r);
+                      if (PermissionRequest.RESOURCE_VIDEO_CAPTURE.equals(r)
+                              && checkSelfPermission(Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) ok.add(r);
+                  }
+                  if (ok.isEmpty()) pending.deny(); else pending.grant(ok.toArray(new String[0]));
+                  pending = null;
+              }
+
+              // 수화기 / 스피커 전환 (이어폰·블루투스가 연결돼 있으면 수화기 대신 그쪽으로)
+              void route(boolean speaker) {
+                  speakerOn = speaker;
+                  if (inCall && am.getMode() != AudioManager.MODE_IN_COMMUNICATION) {
+                      am.setMode(AudioManager.MODE_IN_COMMUNICATION);
+                  }
+                  if (Build.VERSION.SDK_INT >= 31) {
+                      AudioDeviceInfo pick = null, headset = null;
+                      for (AudioDeviceInfo d : am.getAvailableCommunicationDevices()) {
+                          int t = d.getType();
+                          if (t == (speaker ? AudioDeviceInfo.TYPE_BUILTIN_SPEAKER : AudioDeviceInfo.TYPE_BUILTIN_EARPIECE)) pick = d;
+                          if (t == AudioDeviceInfo.TYPE_WIRED_HEADSET || t == AudioDeviceInfo.TYPE_WIRED_HEADPHONES
+                                  || t == AudioDeviceInfo.TYPE_BLUETOOTH_SCO || t == AudioDeviceInfo.TYPE_USB_HEADSET
+                                  || t == AudioDeviceInfo.TYPE_BLE_HEADSET) headset = d;
+                      }
+                      if (!speaker && headset != null) pick = headset;
+                      AudioDeviceInfo cur = am.getCommunicationDevice();
+                      if (pick != null && (cur == null || cur.getId() != pick.getId())) am.setCommunicationDevice(pick);
+                  } else {
+                      if (am.isSpeakerphoneOn() != speaker) am.setSpeakerphoneOn(speaker);
+                  }
+                  // 수화기 모드에서 귀에 대면 화면 꺼짐 (실제 통화처럼)
+                  if (prox != null) {
+                      boolean want = inCall && !speaker;
+                      if (want && !prox.isHeld()) prox.acquire();
+                      if (!want && prox.isHeld()) prox.release();
+                  }
+              }
+
+              void endCall() {
+                  inCall = false;
+                  if (Build.VERSION.SDK_INT >= 31) am.clearCommunicationDevice(); else am.setSpeakerphoneOn(false);
+                  am.setMode(AudioManager.MODE_NORMAL);
+                  if (prox != null && prox.isHeld()) prox.release();
+              }
+
+              class Bridge {
+                  @JavascriptInterface public boolean isApp() { return true; }
+                  @JavascriptInterface public void callStart(final boolean speaker) {
+                      runOnUiThread(() -> { inCall = true; am.setMode(AudioManager.MODE_IN_COMMUNICATION); route(speaker); });
+                  }
+                  @JavascriptInterface public void setSpeaker(final boolean speaker) {
+                      runOnUiThread(() -> route(speaker));
+                  }
+                  @JavascriptInterface public void callEnd() {
+                      runOnUiThread(() -> endCall());
+                  }
+              }
+
+              @Override
+              protected void onSaveInstanceState(Bundle out) {
+                  super.onSaveInstanceState(out);
+                  web.saveState(out);
+              }
+
+              @Override
+              public void onBackPressed() {
+                  if (web.canGoBack()) web.goBack(); else super.onBackPressed();
+              }
+
+              @Override
+              protected void onDestroy() {
+                  endCall();
+                  if (web != null) web.destroy();
+                  super.onDestroy();
+              }
+          }
+          EOF
+
+          # 앱 아이콘: 저장소의 icon-192.png 사용
+          cp ../icon-192.png app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+      - name: Install Gradle 8.9
+        run: |
+          wget -q https://services.gradle.org/distributions/gradle-8.9-bin.zip
+          unzip -q gradle-8.9-bin.zip -d "$HOME"
+          echo "$HOME/gradle-8.9/bin" >> "$GITHUB_PATH"
+
+      - name: Build APK
+        working-directory: android
+        run: |
+          gradle --no-daemon assembleDebug
+          cp app/build/outputs/apk/debug/app-debug.apk ../ai-call-app.apk
+
+      - name: Upload APK (artifact)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ai-call-app
+          path: ai-call-app.apk
+
+      - name: Publish to Releases (폰에서 바로 다운로드)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: app-${{ github.run_number }}
+          name: AI 영어통화 앱 (빌드 ${{ github.run_number }})
+          body: 폰에서 아래 ai-call-app.apk를 눌러 다운로드 후 설치하세요.
+          files: ai-call-app.apk
+          make_latest: true
