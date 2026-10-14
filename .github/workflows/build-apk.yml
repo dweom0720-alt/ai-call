@@ -63,7 +63,15 @@ jobs:
                   versionCode ${GITHUB_RUN_NUMBER}
                   versionName "1.${GITHUB_RUN_NUMBER}"
               }
-              buildTypes { release { minifyEnabled false } }
+              signingConfigs {
+                  release {
+                      storeFile file('release.jks')
+                      storePassword 'aicall-key'
+                      keyAlias 'aicall'
+                      keyPassword 'aicall-key'
+                  }
+              }
+              buildTypes { release { minifyEnabled false; signingConfig signingConfigs.release } }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
                   targetCompatibility JavaVersion.VERSION_17
@@ -354,6 +362,9 @@ jobs:
           }
           EOF
 
+          # 고정 서명 열쇠 (매번 같은 열쇠로 서명해야 Obtainium 업데이트가 됩니다)
+          echo "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" | base64 -d > app/release.jks
+
           # 앱 아이콘: 저장소의 icon-192.png 사용
           cp ../icon-192.png app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
 
@@ -366,8 +377,8 @@ jobs:
       - name: Build APK
         working-directory: android
         run: |
-          gradle --no-daemon assembleDebug
-          cp app/build/outputs/apk/debug/app-debug.apk ../ai-call-app.apk
+          gradle --no-daemon assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk ../ai-call-app.apk
 
       - name: Upload APK (artifact)
         uses: actions/upload-artifact@v4
@@ -378,8 +389,8 @@ jobs:
       - name: Publish to Releases (폰에서 바로 다운로드)
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: app-${{ github.run_number }}
-          name: AI 영어통화 앱 (빌드 ${{ github.run_number }})
-          body: 폰에서 아래 ai-call-app.apk를 눌러 다운로드 후 설치하세요.
+          tag_name: v1.${{ github.run_number }}
+          name: AI 영어통화 v1.${{ github.run_number }}
+          body: Obtainium에 https://github.com/dweom0720-alt/ai-call 을 등록하면 자동으로 업데이트됩니다. 직접 설치하려면 아래 ai-call-app.apk를 받으세요.
           files: ai-call-app.apk
           make_latest: true
