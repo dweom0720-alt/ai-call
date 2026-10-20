@@ -345,11 +345,14 @@ const SCENES = [
 
 // 🎲 랜덤 전용 해외 상황 (제목|설명)
 const MORE_SCENES = ["체크인 카운터|해외 공항 체크인 카운터에서 창가 좌석을 요청하고, 짐 무게가 초과됐다는 말을 듣는다. 상대는 항공사 체크인 직원.", "보안 검색대|공항 보안 검색대에서 가방 안의 보조배터리와 액체류 때문에 다시 검사를 받는다. 상대는 보안 검색 요원.", "탑승구 변경|탑승 30분 전 탑승구가 바뀌었다는 방송을 놓쳤다. 직원에게 새 탑승구와 남은 시간을 묻는다. 상대는 공항 안내 직원.", "비행기 좌석 문제|비행기에서 내 좌석에 다른 승객이 앉아 있다. 정중하게 자리를 확인한다. 상대는 승무원과 승객.", "기내식 요청|기내에서 채식 기내식을 미리 신청했는데 일반식이 나왔다. 승무원에게 요청한다. 상대는 승무원.", "기내에서 몸이 안 좋음|장거리 비행 중 두통과 메스꺼움이 있다. 승무원에게 도움을 요청한다. 상대는 승무원.", "환승 놓침|앞 비행기가 늦어 환승편을 놓쳤다. 다음 비행편과 수하물 처리를 확인한다. 상대는 환승 카운터 직원.", "세관 신고|입국 후 세관에서 가져온 선물과 음식에 대해 질문을 받는다. 상대는 세관 직원.", "공항 라운지|공항 라운지 입구에서 이용 자격을 확인받고, 샤워실 이용 방법을 묻는다. 상대는 라운지 직원.", "오버부킹 보상|비행기가 초과 예약되어 다음 편으로 가면 보상해 준다고 한다. 조건을 묻고 협상한다. 상대는 항공사 게이트 직원.", "면세점 쇼핑|공항 면세점에서 선물용 화장품을 고르고, 탑승권과 여권을 보여주며 결제한다. 상대는 면세점 직원.", "공항 환전|공항 환전소에서 원화를 달러로 바꾸며 환율과 수수료를 묻는다. 상대는 환전소 직원.", "수하물 파손|찾은 캐리어 바퀴가 부서져 있다. 파손 신고를 하고 보상 절차를 묻는다. 상대는 항공사 수하물 직원.", "옆자리 승객과 대화|장거리 비행에서 옆자리에 앉은 외국인 승객과 가볍게 인사하고 여행 이야기를 나눈다. 상대는 옆자리 승객.", "공항 셔틀버스|공항에서 시내 호텔까지 가는 셔틀버스 타는 곳, 시간, 요금을 묻는다. 상대는 공항 안내 직원.", "심야 도착|밤늦게 공항에 도착했는데 대중교통이 끊겼다. 가장 안전한 이동 방법을 묻는다. 상대는 공항 안내 직원.", "이른 체크인|아침 일찍 호텔에 도착해 이른 체크인이 가능한지, 안 되면 짐을 맡길 수 있는지 묻는다. 상대는 호텔 프런트 직원.", "늦은 체크아웃|오후 비행기라 체크아웃을 늦출 수 있는지, 추가 요금이 있는지 묻는다. 상대는 호텔 프런트 직원.", "방 교체 요청|배정받은 방이 너무 시끄럽고 담배 냄새가 난다. 다른 방으로 바꿔 달라고 한다. 상대는 호텔 프런트 직원.", "에어컨 고장|호텔 방 에어컨이 작동하지 않는다. 전화로 수리를 요청한다. 상대는 호텔 객실 관리 직원.", "룸서비스 주문|호텔 방에서 룸서비스로 저녁을 주문하고 도착 시간을 묻는다. 상대는 룸서비스 직원.", "모닝콜과 택시 예약|다음 날 새벽 비행기를 위해 모닝콜과 공항 택시를 예약한다. 상대는 호텔 프런트 직원.", "세탁 서비스|출장 중 셔츠 세탁과 다림질을 맡기고 언제 받을 수 있는지 묻는다. 상대는 호텔 하우스키핑 직원.", "요금 이의 제기|체크아웃할 때 사용하지 않은 미니바 요금이 청구됐다. 정중하게 이의를 제기한다. 상대는 호텔 프런트 직원.", "방 키 분실|호텔 방 카드키를 잃어버렸다. 신분을 확인받고 새 키를 받는다. 상대는 호텔 프런트 직원.", "호텔 헬스장 이용|호텔 헬스장과 수영장 운영 시간, 수건 대여 여부를 묻는다. 상대는 호텔 직원.", "숙소 체크인 안내|에어비앤비 호스트와 통화하며 열쇠 받는 방법과 주차 위치를 확인한다. 상대는 숙소 호스트.", "이웃 소음|숙소 옆방이 밤늦게까지 시끄럽다. 프런트에 도움을 요청한다. 상대는 호텔 야간 직원.", "물건을 두고 옴|체크아웃한 호텔에 충전기를 두고 왔다. 전화로 찾아 달라고 하고 받는 방법을 정한다. 상대는 호텔 분실물 담당 직원.", "호텔 예약 변경|호텔에 전화해 숙박 날짜를 하루 늘리고 같은 방을 쓸 수 있는지 묻는다. 상대는 호텔 예약 담당자.", "자리 기다리기|인기 식당에 예약 없이 왔다. 대기 시간과 바 자리 가능 여부를 묻는다. 상대는 식당 매니저.", "식당 전화 예약|식당에 전화해 금요일 저녁 4명 예약을 하고 창가 자리를 요청한다. 상대는 식당 예약 담당자.", "스테이크 굽기|스테이크 하우스에서 굽기 정도와 곁들일 메뉴를 고르고 와인을 추천받는다. 상대는 웨이터.", "알레르기 설명|새우 알레르기가 있다. 메뉴에 들어간 재료를 확인하고 안전한 음식을 추천받는다. 상대는 웨이터.", "계산서 나누기|외국인 동료들과 식사 후 계산서를 나눠서 내고 팁을 얼마나 줘야 하는지 묻는다. 상대는 웨이터와 동료.", "계산서 오류|계산서에 시키지 않은 음식이 들어 있다. 정중하게 수정을 요청한다. 상대는 웨이터.", "카페 주문|카페에서 디카페인 라테를 오트 우유로, 덜 달게 주문하고 이름을 알려준다. 상대는 바리스타.", "빵집에서|현지 빵집에서 추천 빵을 묻고, 포장과 데우기를 요청한다. 상대는 빵집 직원.", "푸드트럭|푸드트럭에서 메뉴를 묻고 맵기를 조절해 주문한다. 현금만 받는다고 한다. 상대는 푸드트럭 주인.", "바에서 칵테일|호텔 바에서 바텐더에게 도수가 약한 칵테일을 추천받고 대화를 나눈다. 상대는 바텐더.", "음식 포장|다 못 먹은 음식을 포장해 달라고 하고, 디저트를 추천받는다. 상대는 웨이터.", "배달 주문 전화|숙소에서 피자 가게에 전화해 배달 주문을 하고 주소를 설명한다. 상대는 피자 가게 직원.", "현지 음식 도전|현지 전통 음식점에서 처음 보는 메뉴의 맛과 먹는 방법을 묻는다. 상대는 식당 주인.", "뷔페 이용|호텔 조식 뷔페에서 운영 시간, 오믈렛 주문 방법을 묻고 테이블을 안내받는다. 상대는 호텔 식당 직원.", "와인 바 추천|와인 바에서 예산을 말하고 한국 음식과 어울리는 와인을 추천받는다. 상대는 소믈리에.", "음식이 차가움|주문한 수프가 식어서 나왔다. 다시 데워 달라고 정중하게 요청한다. 상대는 웨이터.", "지하철 표 사기|지하철역에서 교통카드를 사고 충전하는 방법, 시내 가는 노선을 묻는다. 상대는 역무원.", "기차 예매|기차역 창구에서 다음 도시로 가는 왕복 기차표를 사고 좌석을 고른다. 상대는 기차역 직원.", "기차를 잘못 탐|기차를 잘못 탄 것 같다. 차장에게 내릴 역과 다시 타는 방법을 묻는다. 상대는 기차 차장.", "버스 노선 묻기|버스 정류장에서 박물관 가는 버스 번호와 내릴 곳을 묻는다. 상대는 버스 기사.", "길 잃음|관광지 근처에서 길을 잃었다. 지나가는 사람에게 호텔 가는 길을 묻는다. 상대는 현지 주민.", "우버 기사와 대화|차량 공유 서비스 차 안에서 기사와 도시 이야기, 맛집 추천을 나눈다. 상대는 차량 공유 기사.", "택시 요금 분쟁|택시 요금이 예상보다 너무 많이 나왔다. 미터기와 경로를 정중하게 확인한다. 상대는 택시 기사.", "자전거 대여|공유 자전거 대여소에서 이용 방법과 반납 장소를 묻는다. 상대는 대여소 직원.", "주차 문제|렌터카를 세울 곳을 찾다가 주차 요금과 시간 제한을 묻는다. 상대는 주차장 관리인.", "교통 위반 딱지|렌터카에 주차 위반 딱지가 붙어 있다. 렌터카 회사에 전화해 처리 방법을 묻는다. 상대는 렌터카 고객센터 직원.", "주유소|주유소에서 기름 넣는 방법과 결제 방식을 묻는다. 상대는 주유소 직원.", "차 고장|렌터카가 고속도로에서 경고등이 켜졌다. 긴급 출동 서비스에 전화한다. 상대는 긴급 출동 상담원.", "페리 타기|섬으로 가는 페리 시간표와 왕복 요금, 차량 탑승 여부를 묻는다. 상대는 페리 매표소 직원.", "관광버스 투어|시티 투어 버스에서 정류장 위치와 다시 타는 방법을 묻는다. 상대는 투어 버스 가이드.", "옷 사이즈 묻기|옷 가게에서 한국 사이즈를 현지 사이즈로 설명하고 피팅룸을 쓴다. 상대는 옷 가게 직원.", "세금 환급|쇼핑 후 관광객 세금 환급 서류를 받는 방법과 공항 절차를 묻는다. 상대는 매장 직원.", "가격 흥정|현지 시장에서 기념품 가격을 흥정한다. 상대는 시장 상인.", "선물 고르기|가족에게 줄 선물을 고르며 예산을 말하고 추천을 받는다. 상대는 기념품 가게 직원.", "전자제품 매장|전자제품 매장에서 여행용 어댑터와 충전기를 사며 호환 여부를 묻는다. 상대는 전자제품 매장 직원.", "휴대폰 유심 구매|통신사 매장에서 여행용 유심을 사고 데이터 요금제를 고른다. 상대는 통신사 직원.", "카드 결제 거절|계산할 때 카드가 거절됐다. 다른 결제 방법을 묻고 상황을 설명한다. 상대는 계산원.", "마트 장보기|현지 마트에서 원하는 물건이 어디 있는지 묻고, 셀프 계산대 사용법을 묻는다. 상대는 마트 직원.", "안경 수리|안경다리가 부러졌다. 안경점에서 바로 고칠 수 있는지 묻는다. 상대는 안경점 직원.", "우체국 소포|우체국에서 한국으로 소포를 보내며 배송 기간과 요금을 비교한다. 상대는 우체국 직원.", "은행 환전·송금|현지 은행에서 환전하고 송금 수수료를 묻는다. 상대는 은행 창구 직원.", "미용실|현지 미용실에서 원하는 머리 스타일을 설명한다. 상대는 미용사.", "세탁소|정장을 세탁소에 맡기며 얼룩을 설명하고 찾을 날짜를 정한다. 상대는 세탁소 주인.", "헬스장 일일권|현지 헬스장에서 일일 이용권을 사고 시설을 안내받는다. 상대는 헬스장 직원.", "병원 접수|해외 병원에서 접수하며 증상과 여행자 보험 여부를 말한다. 상대는 병원 접수 직원.", "의사 진료|의사에게 언제부터 어디가 아픈지 설명하고 처방을 받는다. 상대는 의사.", "치과 응급|출장 중 갑자기 이가 아프다. 치과에 전화해 당일 진료를 요청한다. 상대는 치과 접수 직원.", "발목을 삐었음|관광 중 발목을 삐었다. 근처 사람에게 도움과 가까운 병원을 묻는다. 상대는 현지 주민.", "여권 분실|여권을 잃어버렸다. 경찰서에 신고하고 필요한 서류를 묻는다. 상대는 경찰관.", "지갑 도난|지하철에서 지갑을 도난당했다. 경찰에 신고하고 상황을 설명한다. 상대는 경찰관.", "영사관 전화|여권 재발급을 위해 한국 영사관에 전화해 절차와 준비물을 묻는다. 상대는 영사관 직원.", "약 복용법|약국에서 산 약을 하루에 몇 번, 언제 먹어야 하는지 다시 확인한다. 상대는 약사.", "길에서 사람이 쓰러짐|길에서 사람이 쓰러졌다. 주변 사람에게 구급차를 부르라고 하고 상황을 설명한다. 상대는 주변 행인과 응급 상담원.", "호텔 화재 경보|밤에 호텔 화재 경보가 울렸다. 직원에게 상황과 대피 방법을 묻는다. 상대는 호텔 직원.", "박물관 매표소|박물관에서 입장권을 사고 오디오 가이드와 추천 관람 순서를 묻는다. 상대는 박물관 직원.", "가이드 투어|현지 가이드 투어 중 궁금한 역사 이야기를 묻고 사진 찍을 장소를 추천받는다. 상대는 투어 가이드.", "공연 표 구매|뮤지컬 매표소에서 오늘 저녁 남은 좌석과 할인 여부를 묻는다. 상대는 매표소 직원.", "사진 부탁|관광지에서 다른 관광객에게 사진을 찍어 달라고 부탁하고 서로 찍어 준다. 상대는 다른 관광객.", "스포츠 경기 관람|야구장(또는 축구장)에서 옆자리 현지 팬과 응원하며 규칙과 팀 이야기를 나눈다. 상대는 현지 팬.", "스키장 장비 대여|스키장에서 장비를 빌리고 초보 강습을 신청한다. 상대는 스키장 직원.", "해변 파라솔|해변에서 파라솔과 선베드를 빌리며 요금과 시간을 묻는다. 상대는 해변 대여 직원.", "스파 예약|호텔 스파에 전화해 마사지를 예약하고 강도와 시간을 고른다. 상대는 스파 예약 담당자.", "와이너리 투어|와이너리 투어에서 와인 만드는 과정을 묻고 시음 소감을 말한다. 상대는 와이너리 가이드.", "국립공원 안내소|국립공원 안내소에서 초보자에게 맞는 등산 코스와 소요 시간을 묻는다. 상대는 공원 안내원.", "골프장 예약|해외 골프장에 전화해 티타임을 예약하고 장비 대여와 복장 규정을 묻는다. 상대는 골프장 예약 담당자.", "골프 레슨|해외 골프 연습장에서 프로에게 짧은 레슨을 받으며 스윙 문제를 설명한다. 상대는 골프 프로.", "야경 투어 예약|여행사에 들러 야경 투어 일정과 픽업 장소, 요금을 묻는다. 상대는 여행사 직원.", "놀이공원|놀이공원에서 빠른 입장권과 인기 놀이기구 대기 시간을 묻는다. 상대는 놀이공원 직원.", "해외 지사 첫 출근|해외 지사에 처음 출근해 리셉션에서 방문 목적을 말하고 담당자를 찾는다. 상대는 리셉션 직원.", "회의실 장비 문제|발표 직전 회의실 프로젝터가 연결되지 않는다. IT 담당자에게 도움을 요청한다. 상대는 IT 담당자.", "현지 동료와 점심|현지 동료와 점심을 먹으며 서로의 업무, 가족, 주말 이야기를 나눈다. 상대는 현지 동료.", "화상회의 시작 전 스몰토크|화상회의가 시작되기 전 먼저 들어온 외국인 참석자와 날씨·시차 이야기를 나눈다. 상대는 외국인 회의 참석자.", "일정 조율 전화|외국 파트너와 다음 주 미팅 시간을 시차를 고려해 조율한다. 상대는 외국 파트너 비서.", "명함 교환|비즈니스 행사에서 처음 만난 사람과 명함을 교환하고 회사를 소개한다. 상대는 행사 참석자.", "발표 후 질의응답|짧은 발표를 마친 뒤 청중의 질문을 받고 모르는 질문에 정중하게 대처한다. 상대는 발표 청중.", "출장 경비 문의|호텔 직원에게 회사 경비 처리용 영수증을 따로 발행해 달라고 한다. 상대는 호텔 회계 직원.", "공장 견학|해외 거래처 공장을 견학하며 생산 과정과 품질 관리에 대해 질문한다. 상대는 공장 안내 담당자.", "전시회 부스|해외 전시회 부스에서 제품 설명을 듣고 카탈로그와 가격을 요청한다. 상대는 전시회 부스 직원.", "거래처 공항 마중|공항에 마중 나온 거래처 담당자와 인사하고 차 안에서 일정 이야기를 나눈다. 상대는 거래처 담당자.", "송별회 건배사|해외 동료의 송별회에서 짧은 건배사를 하고 동료들과 대화한다. 상대는 해외 동료들.", "늦어서 사과 전화|교통 체증으로 미팅에 늦게 됐다. 상대에게 전화해 사과하고 도착 시간을 알린다. 상대는 미팅 상대.", "이메일 내용 확인 전화|받은 이메일 내용이 헷갈려서 담당자에게 전화해 다시 확인한다. 상대는 거래처 담당자.", "코워킹 스페이스|코워킹 스페이스에서 하루 이용권을 사고 와이파이와 회의실 예약 방법을 묻는다. 상대는 코워킹 스페이스 직원.", "저녁 초대 응대|현지 동료 집에 저녁 초대를 받았다. 인사하고 집과 음식에 대해 칭찬하며 대화한다. 상대는 현지 동료 가족.", "이웃과 인사|해외 단기 체류 숙소에서 이웃과 처음 인사하고 동네 정보를 묻는다. 상대는 이웃 주민.", "공원에서 대화|공원 벤치에서 강아지를 산책시키는 현지인과 자연스럽게 대화한다. 상대는 현지 주민.", "언어 교환 모임|언어 교환 모임에서 처음 만난 사람과 자기소개하고 취미를 이야기한다. 상대는 모임 참가자.", "결혼식 하객|해외에서 열린 지인의 결혼식에서 처음 만난 하객과 신랑·신부와의 관계를 이야기한다. 상대는 다른 하객.", "생일 파티|외국인 친구의 생일 파티에서 선물을 건네고 다른 손님들과 대화한다. 상대는 파티 손님.", "한국 소개하기|외국인이 한국 여행을 계획 중이라며 추천을 부탁한다. 장소와 음식을 소개한다. 상대는 한국 여행을 준비하는 외국인.", "날씨 스몰토크|엘리베이터에서 만난 현지인과 날씨와 주말 계획에 대해 짧게 대화한다. 상대는 현지 직장인.", "스포츠 바에서 응원|스포츠 바에서 경기를 보며 옆 사람과 응원하는 팀 이야기를 나눈다. 상대는 스포츠 바 손님.", "요리 교실|현지 요리 교실에 참여해 요리사에게 질문하고 다른 참가자와 대화한다. 상대는 요리 강사와 참가자.", "자원봉사|해외 행사에서 자원봉사를 하며 담당자에게 할 일을 확인한다. 상대는 행사 담당자.", "길에서 설문 요청|길에서 설문조사를 부탁받았다. 질문에 답하며 짧게 대화한다. 상대는 설문 조사원.", "오랜만의 외국 친구|몇 년 만에 만난 외국인 친구와 근황, 일, 가족 이야기를 나눈다. 상대는 오랜 외국인 친구.", "카드 분실 신고|해외에서 신용카드를 잃어버려 카드사 해외 고객센터에 전화해 정지를 요청한다. 상대는 카드사 상담원.", "인터넷 고장|숙소 인터넷이 안 된다. 통신사 고객센터에 전화해 문제를 설명한다. 상대는 고객센터 상담원.", "항공권 변경 전화|항공사 콜센터에 전화해 귀국 날짜를 바꾸고 변경 수수료를 묻는다. 상대는 항공사 상담원.", "투어 취소·환불|날씨 때문에 투어를 취소하고 환불 가능 여부를 묻는다. 상대는 여행사 직원.", "택배 배송 문의|온라인으로 주문한 물건이 숙소에 오지 않았다. 배송 회사에 전화해 확인한다. 상대는 배송 회사 상담원.", "렌터카 반납 연장|렌터카 회사에 전화해 반납을 하루 늦추고 추가 요금을 확인한다. 상대는 렌터카 직원.", "호텔 예약 확인 전화|출발 전 호텔에 전화해 예약 내용과 공항 픽업 서비스를 확인한다. 상대는 호텔 예약 담당자.", "병원 예약 변경|병원에 전화해 진료 예약 시간을 바꾼다. 상대는 병원 접수 직원."].map(s => { const i = s.indexOf("|"); return {t:s.slice(0,i), d:s.slice(i+1)}; });
-const ALL_SCENES = SCENES.concat(MORE_SCENES.filter(m => !SCENES.some(s => s.t === m.t)));
-function randomScene(){
+// 🎯 OPIc 롤플레이 (OPIc 단골 주제 × 질문하기/문제 해결)
+const OPIC_SCENES = ["OPIc·영화 (질문하기)|친구와 이번 주말에 영화를 보려고 한다. 친구에게 전화해서 어떤 영화를, 몇 시에, 어디서 볼지 3~4가지 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·영화 (문제 해결)|예매한 영화표를 보니 날짜를 잘못 예매했다. 영화관에 전화해 상황을 설명하고 2~3가지 해결 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 영화관 직원.", "OPIc·공연·콘서트 (질문하기)|보고 싶은 콘서트가 있다. 공연장에 전화해 표 가격, 좋은 좌석, 공연 시간, 주차에 대해 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 공연장 매표 담당자.", "OPIc·공연·콘서트 (문제 해결)|콘서트 당일 갑자기 일이 생겨 못 가게 됐다. 같이 가기로 한 친구에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·공원 (질문하기)|새로 생긴 공원에 가 보려고 한다. 공원 관리 사무소에 전화해 운영 시간, 시설, 반려견 출입, 주차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 공원 관리 직원.", "OPIc·공원 (문제 해결)|친구와 공원에서 만나기로 했는데 비가 많이 온다. 친구에게 전화해 상황을 설명하고 다른 계획 2~3가지를 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·해변 (질문하기)|친구와 해변 여행을 가려고 한다. 친구에게 해변 위치, 숙소, 가져갈 물건, 교통편을 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·해변 (문제 해결)|해변 근처 숙소에 도착했는데 예약한 바다 전망 방이 아니다. 숙소 직원에게 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 숙소 직원.", "OPIc·캠핑 (질문하기)|처음으로 캠핑을 가려고 한다. 캠핑장에 전화해 예약, 시설, 장비 대여, 요금을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 캠핑장 직원.", "OPIc·캠핑 (문제 해결)|캠핑장에 도착했는데 빌린 텐트가 찢어져 있다. 대여점에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 장비 대여점 직원.", "OPIc·카페 (질문하기)|친구가 새로 생긴 카페를 추천했다. 친구에게 카페 위치, 대표 메뉴, 분위기, 붐비는 시간을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·카페 (문제 해결)|카페에서 주문한 음료와 다른 음료가 나왔고 이미 마셔 버렸다. 직원에게 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 카페 직원.", "OPIc·쇼핑 (질문하기)|새 노트북을 사려고 한다. 전자제품 매장에 전화해 모델, 가격, 할인, 보증 기간을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 매장 직원.", "OPIc·쇼핑 (문제 해결)|온라인으로 산 옷이 사이즈가 맞지 않고 색도 다르다. 쇼핑몰 고객센터에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 쇼핑몰 상담원.", "OPIc·음악 감상 (질문하기)|음악 수업을 들어 보려고 한다. 음악 학원에 전화해 수업 종류, 시간, 비용, 악기 대여를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 음악 학원 직원.", "OPIc·음악 감상 (문제 해결)|친구에게 빌린 블루투스 스피커가 고장 났다. 친구에게 전화해 상황을 설명하고 2~3가지 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·요리 (질문하기)|요리 수업에 등록하려고 한다. 요리 학원에 전화해 수업 내용, 일정, 준비물, 가격을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 요리 학원 직원.", "OPIc·요리 (문제 해결)|친구를 저녁에 초대했는데 요리를 망쳤다. 친구에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·조깅·걷기 (질문하기)|같이 조깅할 동호회에 가입하려고 한다. 동호회 회장에게 모임 시간, 장소, 회비, 수준을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동호회 회장.", "OPIc·조깅·걷기 (문제 해결)|조깅하다 발목을 다쳐서 내일 동호회 모임에 못 나간다. 회장에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동호회 회장.", "OPIc·헬스장 (질문하기)|새로 생긴 헬스장에 등록하려고 한다. 헬스장에 전화해 회원권 가격, 운영 시간, PT, 샤워 시설을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 헬스장 직원.", "OPIc·헬스장 (문제 해결)|헬스장 회원권을 끊었는데 출장이 잡혀 한 달 동안 못 간다. 헬스장에 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 헬스장 직원.", "OPIc·수영 (질문하기)|수영 강습을 받으려고 한다. 수영장에 전화해 강습 시간, 수준별 반, 가격, 준비물을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 수영장 직원.", "OPIc·수영 (문제 해결)|수영장에 가방을 두고 왔다. 수영장에 전화해 상황을 설명하고 찾는 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 수영장 직원.", "OPIc·자전거 (질문하기)|자전거를 사려고 한다. 자전거 가게에 전화해 추천 모델, 가격, 수리 서비스, 시승 가능 여부를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 자전거 가게 주인.", "OPIc·자전거 (문제 해결)|빌린 자전거를 타다가 펑크가 났다. 대여점에 전화해 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 자전거 대여점 직원.", "OPIc·요가 (질문하기)|요가 수업을 처음 들으려고 한다. 요가원에 전화해 초보반, 시간, 가격, 준비물을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 요가원 직원.", "OPIc·요가 (문제 해결)|요가 수업을 예약했는데 회의가 늦게 끝나 갈 수 없다. 요가원에 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 요가원 직원.", "OPIc·골프 (질문하기)|골프 레슨을 받으려고 한다. 골프 연습장에 전화해 레슨 시간, 가격, 장비 대여, 주차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 골프 연습장 직원.", "OPIc·골프 (문제 해결)|주말 골프 라운딩을 예약했는데 태풍 예보가 있다. 같이 가기로 한 친구에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 골프 친구.", "OPIc·국내 여행 (질문하기)|주말에 국내 여행을 가려고 한다. 여행사에 전화해 추천 장소, 패키지 가격, 일정, 숙소를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 여행사 직원.", "OPIc·국내 여행 (문제 해결)|기차를 놓쳐 여행지에 예정보다 늦게 도착하게 됐다. 숙소에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 숙소 주인.", "OPIc·해외 여행 (질문하기)|해외여행을 계획 중이다. 여행사에 전화해 항공권, 호텔, 비자, 여행 일정을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 여행사 직원.", "OPIc·해외 여행 (문제 해결)|여행 출발 이틀 전 여권 유효기간이 부족하다는 걸 알았다. 여행사에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 여행사 직원.", "OPIc·출장 (질문하기)|다음 달 해외 출장이 있다. 동료에게 출장지의 날씨, 숙소, 교통, 식당에 대해 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동료.", "OPIc·출장 (문제 해결)|출장 가는 날 비행기가 결항됐다. 상사에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 상사.", "OPIc·집·이사 (질문하기)|이사할 집을 찾고 있다. 부동산에 전화해 집 크기, 월세, 위치, 입주 날짜를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 부동산 중개인.", "OPIc·집·이사 (문제 해결)|이사 온 집의 보일러가 고장 나서 따뜻한 물이 안 나온다. 집주인에게 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 집주인.", "OPIc·가구 (질문하기)|새 소파를 사려고 한다. 가구점에 전화해 크기, 색상, 가격, 배송 날짜를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 가구점 직원.", "OPIc·가구 (문제 해결)|배송된 가구가 부서져 있다. 가구점에 전화해 상황을 설명하고 2~3가지 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 가구점 직원.", "OPIc·은행 (질문하기)|새 계좌를 만들려고 한다. 은행에 전화해 필요한 서류, 수수료, 영업 시간, 온라인 뱅킹을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 은행 직원.", "OPIc·은행 (문제 해결)|은행 카드를 잃어버렸다. 은행에 전화해 상황을 설명하고 해결 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 은행 상담원.", "OPIc·호텔 (질문하기)|여행 중 묵을 호텔을 찾고 있다. 호텔에 전화해 방 종류, 가격, 조식, 공항 셔틀을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 호텔 예약 담당자.", "OPIc·호텔 (문제 해결)|호텔에 도착했는데 예약이 잘못되어 방이 없다고 한다. 직원에게 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 호텔 프런트 직원.", "OPIc·휴대폰 (질문하기)|새 휴대폰을 사려고 한다. 휴대폰 매장에 전화해 최신 모델, 요금제, 할인, 보상 판매를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 휴대폰 매장 직원.", "OPIc·휴대폰 (문제 해결)|새로 산 휴대폰이 자꾸 꺼진다. 매장에 전화해 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 휴대폰 매장 직원.", "OPIc·인터넷 (질문하기)|집에 인터넷을 새로 설치하려고 한다. 통신사에 전화해 속도, 요금, 설치 날짜, 약정을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 통신사 상담원.", "OPIc·인터넷 (문제 해결)|중요한 화상회의 직전에 집 인터넷이 끊겼다. 통신사에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 통신사 상담원.", "OPIc·재활용 (질문하기)|이사 온 동네의 재활용 규칙을 모른다. 관리사무소에 전화해 분리배출 요일, 장소, 방법을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 관리사무소 직원.", "OPIc·재활용 (문제 해결)|재활용 쓰레기를 잘못 버려서 관리사무소에서 연락이 왔다. 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 관리사무소 직원.", "OPIc·날씨 (질문하기)|다음 주 여행을 앞두고 날씨가 걱정된다. 여행지에 사는 친구에게 날씨, 옷차림, 우산 필요 여부를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·날씨 (문제 해결)|폭설 때문에 친구와의 약속에 갈 수 없게 됐다. 친구에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·교통 (질문하기)|새 직장까지 가는 방법을 모른다. 동료에게 버스, 지하철, 소요 시간, 교통비를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동료.", "OPIc·교통 (문제 해결)|지하철이 고장 나서 중요한 회의에 늦게 됐다. 동료에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동료.", "OPIc·명절 (질문하기)|외국인 친구가 한국 명절에 대해 궁금해한다. 반대로 친구 나라의 명절에 대해 3~4가지 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 외국인 친구.", "OPIc·명절 (문제 해결)|명절에 가족 모임 식당을 예약했는데 식당에서 예약이 안 되어 있다고 한다. 직원에게 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 식당 직원.", "OPIc·외식 (질문하기)|가족 모임을 할 식당을 찾고 있다. 식당에 전화해 예약, 룸, 메뉴, 주차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 식당 직원.", "OPIc·외식 (문제 해결)|식당 예약 날짜에 갑자기 일이 생겼다. 식당에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 식당 직원.", "OPIc·건강·병원 (질문하기)|건강검진을 받으려고 한다. 병원에 전화해 검사 종류, 예약, 준비 사항, 비용을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 병원 직원.", "OPIc·건강·병원 (문제 해결)|병원 예약 시간에 늦을 것 같다. 병원에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 병원 접수 직원.", "OPIc·약속 (질문하기)|친구와 오랜만에 만나기로 했다. 친구에게 전화해 만날 날짜, 장소, 무엇을 할지 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·약속 (문제 해결)|친구와의 약속을 깜빡 잊었다. 친구에게 전화해 사과하고 상황을 설명한 뒤 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·패션 (질문하기)|중요한 행사에 입을 옷을 사려고 한다. 옷 가게에 전화해 스타일, 사이즈, 가격, 수선을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 옷 가게 직원.", "OPIc·패션 (문제 해결)|드라이클리닝 맡긴 정장에 얼룩이 그대로 있다. 세탁소에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 세탁소 주인.", "OPIc·도서관 (질문하기)|동네 도서관을 이용하려고 한다. 도서관에 전화해 회원 가입, 대출 권수, 운영 시간, 열람실을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 도서관 사서.", "OPIc·도서관 (문제 해결)|빌린 책을 잃어버렸다. 도서관에 전화해 상황을 설명하고 해결 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 도서관 사서.", "OPIc·렌터카 (질문하기)|여행 중 차를 빌리려고 한다. 렌터카 회사에 전화해 차종, 요금, 보험 포함 여부, 반납 장소를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 렌터카 직원.", "OPIc·렌터카 (문제 해결)|렌터카를 반납하러 가는데 차에 흠집이 생겼다. 렌터카 회사에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 렌터카 직원.", "OPIc·가족·친구 모임 (질문하기)|친구 생일 파티를 준비하려고 한다. 다른 친구에게 날짜, 장소, 선물, 예산을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·가족·친구 모임 (문제 해결)|생일 파티 장소로 예약한 곳이 갑자기 문을 닫았다. 친구들에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·미용실 (질문하기)|머리를 하러 미용실에 가려고 한다. 미용실에 전화해 예약, 가격, 디자이너, 소요 시간을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 미용실 직원.", "OPIc·미용실 (문제 해결)|미용실에서 원하지 않은 스타일로 머리가 잘렸다. 미용사에게 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 미용사.", "OPIc·TV·드라마 (질문하기)|친구가 재미있는 드라마를 추천했다. 친구에게 줄거리, 배우, 볼 수 있는 곳, 회차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·TV·드라마 (문제 해결)|친구에게 빌린 DVD를 망가뜨렸다. 친구에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구."].map(s => { const i = s.indexOf("|"); return {t:s.slice(0,i), d:s.slice(i+1)}; });
+const ALL_SCENES = SCENES.concat(MORE_SCENES.filter(m => !SCENES.some(s => s.t === m.t)), OPIC_SCENES);
+function randomScene(kind){
   const recent = S.recentScenes || [];
-  let pool = ALL_SCENES.filter(s => !recent.includes(s.t));
-  if (!pool.length) pool = ALL_SCENES;
+  const base = kind === "o" ? OPIC_SCENES : ALL_SCENES;
+  let pool = base.filter(s => !recent.includes(s.t));
+  if (!pool.length) pool = base;
   const s = pool[Math.floor(Math.random() * pool.length)];
   S.recentScenes = [s.t].concat(recent.filter(x => x !== s.t)).slice(0, 40);
   return s;
@@ -390,7 +393,7 @@ function renderSetup(){
     `<button class="opt ${S.mode===k?"sel":""}" data-mode="${k}"><b>${m.label}</b><small>${m.desc}</small></button>`).join("");
   $("bizBox").style.display = S.mode === "biz" ? "block" : "none";
   $("scene").value = S.scene || "";
-  $("sceneChips").innerHTML = `<button class="chip rnd" data-scene="r">🎲 랜덤 (${ALL_SCENES.length}가지)</button>` + SCENES.map((s,i) => `<button class="chip" data-scene="${i}">${s.t}</button>`).join("");
+  $("sceneChips").innerHTML = `<button class="chip rnd" data-scene="r">🎲 전체 랜덤 (${ALL_SCENES.length}가지)</button><button class="chip rnd" data-scene="o">🎯 OPIc 롤플레이 랜덤 (${OPIC_SCENES.length}가지)</button>` + SCENES.map((s,i) => `<button class="chip" data-scene="${i}">${s.t}</button>`).join("");
   document.querySelectorAll("#speedSeg button").forEach(b => b.classList.toggle("sel", b.dataset.speed === S.speed));
   $("speedHint").textContent = SPEED[S.speed].hint;
   $("optSubs").checked = S.subs;
@@ -403,8 +406,9 @@ document.addEventListener("click", e => {
   const md = e.target.closest("[data-mode]"); if (md){ S.mode = md.dataset.mode; saveS(); renderSetup(); }
   const sp = e.target.closest("[data-speed]"); if (sp){ S.speed = sp.dataset.speed; saveS(); renderSetup(); }
   const sc = e.target.closest("[data-scene]");
-  if (sc){ const s = sc.dataset.scene === "r" ? randomScene() : SCENES[+sc.dataset.scene]; S.scene = s.d; saveS(); $("scene").value = S.scene;
-    if (sc.dataset.scene === "r") toast(`🎲 ${s.t}`); }
+  if (sc){ const k = sc.dataset.scene, rnd = k === "r" || k === "o";
+    const s = rnd ? randomScene(k) : SCENES[+k]; S.scene = s.d; saveS(); $("scene").value = S.scene;
+    if (rnd) toast(`${k === "o" ? "🎯" : "🎲"} ${s.t}`); }
 });
 $("scene").addEventListener("input", () => { S.scene = $("scene").value; saveS(); });
 $("optSubs").addEventListener("change", () => { S.subs = $("optSubs").checked; saveS(); });
@@ -445,7 +449,9 @@ When the user makes a mistake, naturally repeat the correct version in your repl
     mode = topic.en ? `This is a role-play of a real situation abroad. The user described the situation in Korean:
 """${topic.en}"""
 Play the most natural counterpart in this situation (e.g. hotel clerk, waiter, airline staff, local colleague). Choose a fitting name and role; you may ignore your default name. Stay in role and make it realistic, including small problems, questions and natural small talk. Start the scene yourself right away in English (do not explain the setup in Korean).
-If the user is stuck or speaks Korean, give one short natural English way to say it, then continue in role.` :
+If the user is stuck or speaks Korean, give one short natural English way to say it, then continue in role.${topic.en.includes("OPIc") ? `
+This is an OPIc-style role-play. Let the USER lead: if it is a "질문하기" (asking questions) situation, answer the user's questions naturally and briefly and let them ask 3-4 questions; if it is a "문제 해결" (problem) situation, let the user explain the problem and suggest 2-3 alternatives, react to each, and accept one.
+When the role-play is finished (or after about 6-8 exchanges), step out of the role and say: "Okay, thank you. Now, have you ever had a similar experience? Tell me about it in detail." Then ask 1-2 follow-up questions about that experience (when, where, what happened, how it ended, how you felt).` : ""}` :
     `Do a role-play of a common situation abroad (hotel check-in, ordering at a restaurant, asking for directions, etc.). Pick one, briefly tell the user the situation, and start the scene right away.`;
   }
   const relaxed = S.speed === "relaxed" ? `
@@ -903,7 +909,23 @@ ${convo}
 
 Return ONLY JSON in this shape (explanations in Korean; English must be natural, EASY spoken English):
 {
- "level": "${S.mode === "sail" ? "estimated level IL/IM1/IM2/IM3/IH/AL, or empty if too little speech" : ""}",
+ "opic": {
+   "grade": "one of NL, NM, NH, IL, IM1, IM2, IM3, IH, AL",
+   "range": "likely range, e.g. IM2~IM3",
+   "confidence": "낮음 | 보통 | 높음",
+   "reason_ko": "왜 이 등급인지 2-3문장 (실제 발화 예를 들어)",
+   "criteria": [
+     {"key":"task", "name_ko":"과제 수행", "score":1-5, "comment_ko":"질문 의도에 맞게 답했는지, 롤플레이 과제를 해냈는지"},
+     {"key":"text", "name_ko":"문장 구성(단어→문장→문단)", "score":1-5, "comment_ko":"단어 나열 / 짧은 문장 / 이어진 문장 / 문단 수준인지"},
+     {"key":"tense", "name_ko":"시제·묘사·서술", "score":1-5, "comment_ko":"과거 경험 서술, 현재 묘사, 비교를 시제에 맞게 하는지"},
+     {"key":"grammar", "name_ko":"문법 정확도", "score":1-5, "comment_ko":""},
+     {"key":"vocab", "name_ko":"어휘 다양성", "score":1-5, "comment_ko":""},
+     {"key":"fluency", "name_ko":"유창성(속도·멈춤)", "score":1-5, "comment_ko":""},
+     {"key":"pron", "name_ko":"발음·전달력", "score":1-5, "comment_ko":""}
+   ],
+   "to_next_ko": ["다음 한 단계 등급으로 올라가려면 할 일 1", "할 일 2", "할 일 3"],
+   "to_ih_ko": "IH까지 가려면 가장 중요한 한 가지 (이미 IH 이상이면 AL 기준으로)"
+ },
  "summary_ko": "2-3 sentence overall feedback",
  "strengths_ko": ["strength 1", "strength 2"],
  "next_tip_ko": "다음 통화에서 집중할 한 가지",
@@ -914,7 +936,14 @@ Return ONLY JSON in this shape (explanations in Korean; English must be natural,
 ${audio ? `An AUDIO recording of only the USER's voice is attached (pauses removed). Evaluate pronunciation and fluency for a Korean speaker (r/l, f/p, v/b, th, z/j, word stress, intonation, final consonants, fillers) and add:
  "pronunciation": {"score": 1-10, "fluency_ko": "속도·멈춤·리듬", "summary_ko": "총평", "issues": [ {"word": "word or phrase", "problem_ko": "what sounded wrong", "tip_ko": "how to fix (mouth/tongue/stress)"} ]}
 issues = up to 6, only problems you actually hear.
-` : ""}Rules: corrections = up to 8 most useful, skip trivial ones and already-natural sentences. memorize = 3 to 6 items.`;
+` : ""}OPIc grading guide (judge ONLY the USER's speech, as if this call were an OPIc test):
+- NL/NM/NH: isolated words or memorized phrases; NH can make a few short sentences but breaks down often.
+- IL: simple short sentences on familiar topics, frequent long pauses and errors.
+- IM1: creates sentences on familiar topics but answers are short and repetitive. IM2: mostly sentence-level, some connected sentences, basic errors common. IM3: connected sentences consistently, starts to build short paragraphs, can describe and narrate somewhat.
+- IH: paragraph-level answers most of the time, narrates past experiences and describes/compares with fairly correct tenses, handles role-play problems, but sometimes breaks down.
+- AL: consistent paragraph-level speech in all time frames, handles complications smoothly, errors rarely affect meaning.
+If the user spoke very little, grade conservatively and set confidence to 낮음.
+Rules: corrections = up to 8 most useful, skip trivial ones and already-natural sentences. memorize = 3 to 6 items.`;
   try {
     let r;
     try { r = await askText(prompt, audio || null); }
@@ -927,12 +956,49 @@ issues = up to 6, only problems you actually hear.
     $("coachRetry").onclick = () => runCoaching(tr, secs, audio || "");
   }
 }
+const GRADES = ["NL","NM","NH","IL","IM1","IM2","IM3","IH","AL"];
+const GRADE_DESC = {
+  NL:"단어 몇 개만 말할 수 있는 단계", NM:"외운 표현·단어 위주로 말하는 단계", NH:"짧은 문장을 가끔 만들지만 자주 막히는 단계",
+  IL:"익숙한 주제에 대해 간단한 문장으로 말하는 단계", IM1:"문장은 만들지만 답이 짧고 반복적인 단계",
+  IM2:"대부분 문장 단위로 말하고, 가끔 문장을 이어가는 단계", IM3:"문장을 자연스럽게 이어 짧은 문단을 만들기 시작하는 단계",
+  IH:"대부분 문단 단위로 경험을 서술하고 비교·묘사할 수 있는 단계", AL:"모든 시제에서 문단 단위로 막힘없이 말하는 단계"
+};
+function gradeIdx(g){ return GRADES.indexOf(String(g || "").toUpperCase().replace(/\s/g, "")); }
+function opicHTML(o){
+  if (!o || gradeIdx(o.grade) < 0) return "";
+  const gi = gradeIdx(o.grade), ih = GRADES.indexOf("IH"), g = GRADES[gi];
+  const gap = ih - gi;
+  const steps = GRADES.map((x,i) => `<div style="flex:1;text-align:center">
+      <div style="height:10px;border-radius:3px;background:${i === gi ? "var(--gold)" : i < gi ? "rgba(212,174,90,.45)" : "rgba(255,255,255,.12)"}"></div>
+      <div style="font-size:10.5px;margin-top:4px;color:${i === gi ? "var(--gold)" : x === "IH" ? "#f5e6c4" : "var(--sub)"};font-weight:${i === gi ? 700 : 400}">${x === "IH" ? "IH★" : x}</div></div>`).join("");
+  const crit = (o.criteria || []).filter(c => c && c.name_ko).map(c => {
+    const s = Math.max(0, Math.min(5, Number(c.score) || 0));
+    return `<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>${esc(c.name_ko)}</span><span style="color:var(--gold)">${"●".repeat(s)}${"○".repeat(5 - s)}</span></div>
+      ${c.comment_ko ? `<div class="why" style="margin-top:3px">${esc(c.comment_ko)}</div>` : ""}</div>`;
+  }).join("");
+  return `<div class="card" style="border-color:var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:34px;font-weight:800;color:var(--gold);line-height:1">${g}</div>
+      <div style="flex:1"><div style="font-size:13px;color:var(--sub)">이번 통화가 OPIc 시험이었다면</div>
+        <div style="font-size:14.5px;margin-top:2px">${esc(GRADE_DESC[g] || "")}</div></div>
+    </div>
+    <div style="display:flex;gap:3px;margin-top:14px">${steps}</div>
+    <div class="why" style="margin-top:10px">예상 범위 <b style="color:var(--text)">${esc(o.range || g)}</b> · 판단 신뢰도 <b style="color:var(--text)">${esc(o.confidence || "-")}</b>${gap > 0 ? ` · 목표 IH까지 <b style="color:#f5e6c4">${gap}단계</b>` : gap === 0 ? ` · <b style="color:#a9f0cd">목표 IH 달성 수준!</b>` : ` · <b style="color:#a9f0cd">목표 IH 초과</b>`}</div>
+    ${o.reason_ko ? `<div class="why" style="color:var(--text);margin-top:8px">${esc(o.reason_ko)}</div>` : ""}
+  </div>
+  ${crit ? `<div class="card"><div style="font-size:13.5px;color:var(--gold);font-weight:600">세부 평가 (5점 만점)</div>${crit}</div>` : ""}
+  ${(o.to_next_ko || []).length || o.to_ih_ko ? `<div class="card"><div style="font-size:13.5px;color:var(--gold);font-weight:600">${gi < GRADES.length - 1 ? `다음 등급(${GRADES[gi + 1]})으로 가려면` : "더 올라가려면"}</div>
+    ${(o.to_next_ko || []).map(x => `<div class="why" style="color:var(--text)">• ${esc(x)}</div>`).join("")}
+    ${o.to_ih_ko ? `<div class="why" style="color:#f5e6c4;margin-top:8px">🎯 ${gap > 0 ? "IH까지 핵심" : "다음 목표 핵심"}: ${esc(o.to_ih_ko)}</div>` : ""}</div>` : ""}
+  <div class="hint" style="margin:-2px 0 6px">※ AI가 대화 내용과 녹음으로 추정한 등급이며, 실제 시험 결과와 다를 수 있어요. 대화가 짧으면 정확도가 떨어집니다.</div>`;
+}
 function renderCoach(r){
   const cs = (r.corrections || []).filter(x => x && x.better);
   const p = r.pronunciation && typeof r.pronunciation === "object" ? r.pronunciation : null;
   const pis = p ? (p.issues || []).filter(x => x && x.word) : [];
   const ma = r.model_answer && r.model_answer.answer ? r.model_answer : null;
-  let h = `<p style="margin:0 0 10px;line-height:1.6">${r.level ? `<span class="sc">${esc(r.level)}</span>` : ""}${esc(r.summary_ko || "")}</p>`;
+  let h = `<div class="h3" style="margin-top:0">OPIc 예상 등급</div>` + opicHTML(r.opic) +
+    `<div class="h3">총평</div><p style="margin:0 0 10px;line-height:1.6">${esc(r.summary_ko || "")}</p>`;
   if ((r.strengths_ko || []).length) h += `<p class="muted" style="margin:0 0 6px">👍 ${r.strengths_ko.map(esc).join(" · ")}</p>`;
   if (r.next_tip_ko) h += `<p class="muted" style="margin:0 0 6px;color:#f5e6c4">🎯 다음엔: ${esc(r.next_tip_ko)}</p>`;
   if (p){
@@ -974,7 +1040,7 @@ function loadHist(){ try { return JSON.parse(localStorage.getItem("aicall_hist")
 function saveHist(r, secs){
   const h = loadHist();
   h.unshift({at:Date.now(), char:S.char, mode:S.mode, topic:topic ? topic.ko : "", secs,
-    level:r.level || "", pron:r.pronunciation && r.pronunciation.score != null ? Number(r.pronunciation.score) : null,
+    level:(r.opic && gradeIdx(r.opic.grade) >= 0 ? GRADES[gradeIdx(r.opic.grade)] : (r.level || "")), pron:r.pronunciation && r.pronunciation.score != null ? Number(r.pronunciation.score) : null,
     summary:r.summary_ko || "", tip:r.next_tip_ko || "", corr:(r.corrections || []).filter(x => x && x.better).slice(0, 8).map(x => ({you:x.you, better:x.better}))});
   try { localStorage.setItem("aicall_hist", JSON.stringify(h.slice(0, 60))); } catch(e){}
 }
@@ -982,9 +1048,12 @@ function openHist(){
   const h = loadHist();
   show("hist");
   $("hMeta").textContent = h.length ? `통화 ${h.length}회 · 총 ${Math.round(h.reduce((a,x) => a + (x.secs || 0), 0) / 60)}분 연습` : "아직 기록이 없어요. 통화를 마치면 자동으로 쌓입니다.";
+  const gs = h.filter(x => gradeIdx(x.level) >= 0).slice(0, 12).reverse();
+  const gradeTrend = gs.length >= 2 ? `<div class="sec"><h2>OPIc 예상 등급 추이 (최근 ${gs.length}회)</h2><div class="trend">${gs.map(x => `<i style="height:${(gradeIdx(x.level)+1)/9*100}%" title="${x.level}"></i>`).join("")}</div>
+     <div class="hint">왼쪽이 예전, 오른쪽이 최근 · 최근 ${gs[gs.length-1].level} (목표 IH)</div></div>` : "";
   const ps = h.filter(x => x.pron != null).slice(0, 12).reverse();
-  $("hTrend").innerHTML = ps.length >= 2 ? `<div class="sec"><h2>발음 점수 추이 (최근 ${ps.length}회)</h2><div class="trend">${ps.map(x => `<i style="height:${Math.max(6, x.pron*10)}%" title="${x.pron}"></i>`).join("")}</div>
-     <div class="hint">왼쪽이 예전, 오른쪽이 최근 · 최근 ${ps[ps.length-1].pron}/10</div></div>` : "";
+  $("hTrend").innerHTML = gradeTrend + (ps.length >= 2 ? `<div class="sec"><h2>발음 점수 추이 (최근 ${ps.length}회)</h2><div class="trend">${ps.map(x => `<i style="height:${Math.max(6, x.pron*10)}%" title="${x.pron}"></i>`).join("")}</div>
+     <div class="hint">왼쪽이 예전, 오른쪽이 최근 · 최근 ${ps[ps.length-1].pron}/10</div></div>` : "");
   $("hList").innerHTML = h.map((x,i) => {
     const d = new Date(x.at), c = CHARS[x.char] || {name:"?"};
     return `<div class="sec hi" data-hi="${i}"><div class="t"><b>${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} · ${MODES[x.mode] ? MODES[x.mode].label : ""}</b>
