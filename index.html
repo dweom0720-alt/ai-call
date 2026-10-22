@@ -1,741 +1,1135 @@
-# 인맥노트 앱 자동 빌드
-# 이 파일 하나에 앱 소스 전체가 들어 있습니다(아래 base64 덩어리).
-# GitHub가 이 파일을 보고 APK를 만들어 'Releases'에 올려 줍니다.
-# 앱에는 인터넷 권한이 없어 통화기록·연락처가 폰 밖으로 나가지 않습니다.
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1424">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="AI 영어통화">
+<title>AI 영어통화</title>
+<style>
+:root{
+  --navy:#0b1424; --navy2:#13213a; --card:#18284a; --line:#2a3d63;
+  --gold:#d4ae5a; --text:#eef2f8; --sub:#9fb0cc; --red:#e5484d; --green:#3ccf8e;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--navy);color:var(--text);
+  font-family:-apple-system,"Apple SD Gothic Neo","Noto Sans KR","Malgun Gothic",sans-serif}
+button{font:inherit;cursor:pointer}
+.screen{display:none;min-height:100%}
+.screen.on{display:flex}
+.wrap{width:100%;max-width:560px}
+h1{font-size:22px;margin:8px 0 4px}
+h1 span{color:var(--gold)}
+.lead{color:var(--sub);font-size:14px;margin:0 0 18px}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}
+.sec h2{font-size:14px;color:var(--gold);margin:0 0 12px;font-weight:600}
+.muted{color:var(--sub);font-size:13.5px;line-height:1.6}
+.hint{font-size:12.5px;color:var(--sub);margin-top:8px;line-height:1.5}
+.hint a{color:var(--gold)}
 
-name: 인맥노트 앱 만들기
+/* ---------- 설정 ---------- */
+#setup,#done,#study,#hist{flex-direction:column;align-items:center;padding:22px 16px 40px}
+.partners{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+@media(min-width:520px){.partners{grid-template-columns:repeat(4,1fr)}}
+.pc{background:var(--navy2);border:1.5px solid var(--line);border-radius:14px;padding:12px 8px;color:var(--text);
+  display:flex;flex-direction:column;align-items:center;gap:5px;text-align:center}
+.pc.sel{border-color:var(--gold);background:#1f2f52;box-shadow:0 0 0 2px rgba(212,174,90,.18)}
+.pc b{font-size:15px}
+.pc small{color:var(--sub);font-size:11.5px;line-height:1.35}
+.face{width:52px;height:52px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:700;color:#fff;position:relative}
+.face i{position:absolute;right:-4px;bottom:-4px;font-style:normal;font-size:16px}
+.gender{font-size:11px;padding:1px 7px;border-radius:8px;background:rgba(255,255,255,.08)}
+.gender.f{color:#f5b8c8}.gender.m{color:#a9cbff}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.opt{background:var(--navy2);border:1.5px solid var(--line);border-radius:12px;padding:12px 6px;color:var(--text);
+  text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px}
+.opt b{font-size:13.5px;word-break:keep-all}
+.opt small{color:var(--sub);font-size:11.5px;line-height:1.35;word-break:keep-all}
+.opt.sel{border-color:var(--gold);background:#1f2f52}
+.seg{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.seg button{padding:10px 4px;border-radius:10px;border:1.5px solid var(--line);background:var(--navy2);color:var(--text);font-size:13.5px;line-height:1.3}
+.seg button small{display:block;color:var(--sub);font-size:11.5px}
+.seg button.sel{border-color:var(--gold);background:#1f2f52}
+.seg button.sel small{color:var(--gold)}
+textarea,input[type=password]{width:100%;padding:12px;border-radius:10px;border:1px solid var(--line);
+  background:var(--navy2);color:var(--text);font:inherit;font-size:15px}
+textarea{min-height:84px;resize:vertical;font-size:14.5px}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.chip{padding:7px 10px;border-radius:16px;border:1px solid var(--line);background:var(--navy2);color:var(--sub);font-size:12.5px}
+.chip.rnd{border-color:var(--gold);color:var(--gold)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:6px 0}
+.row label{font-size:14px}
+.row label small{display:block;color:var(--sub);font-size:12px;margin-top:2px}
+.sw{position:relative;width:46px;height:26px;flex:none}
+.sw input{opacity:0;width:0;height:0}
+.sw span{position:absolute;inset:0;background:#33476d;border-radius:20px;transition:.2s}
+.sw span:before{content:"";position:absolute;width:20px;height:20px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
+.sw input:checked+span{background:var(--gold)}
+.sw input:checked+span:before{transform:translateX(20px)}
+.start{width:100%;padding:16px;border:0;border-radius:14px;background:var(--gold);color:#1a1405;
+  font-size:17px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+.linkbtn{background:transparent;border:1px solid var(--line);color:var(--text);border-radius:12px;padding:12px;width:100%;margin-top:10px;font-weight:600}
+.two{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn2{padding:13px;border-radius:12px;border:1px solid var(--line);background:var(--navy2);color:var(--text);font-weight:600}
 
-on:
-  push:
-  workflow_dispatch:
+/* ---------- 통화 ---------- */
+#call{flex-direction:column;position:fixed;inset:0;background:radial-gradient(120% 70% at 50% 18%,#1c3157 0%,#0b1424 70%)}
+.top{padding:calc(env(safe-area-inset-top) + 14px) 16px 0;text-align:center}
+.top .nm{font-size:20px;font-weight:700}
+.top .meta{color:var(--sub);font-size:13px;margin-top:3px}
+.mini{margin-left:6px;background:rgba(255,255,255,.12);border:0;color:#fff;border-radius:10px;font-size:11px;padding:2px 8px}
+#diag{display:none;margin:8px auto 0;max-width:340px;text-align:left;background:rgba(0,0,0,.55);border-radius:10px;padding:8px 10px;font-size:12px;line-height:1.6;font-family:ui-monospace,monospace}
+.hero{display:flex;justify-content:center;padding:14px 0 6px;transition:all .3s}
+.bigface{width:84px;height:84px;font-size:34px;transition:all .3s;box-shadow:0 0 0 0 rgba(212,174,90,0)}
+#call.nosubs .hero{flex:1;align-items:center}
+#call.nosubs .bigface{width:150px;height:150px;font-size:60px}
+.bigface.talk{animation:pulse 1.1s infinite}
+.bigface.listen{box-shadow:0 0 0 5px rgba(60,207,142,.35)}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(212,174,90,.55)}70%{box-shadow:0 0 0 22px rgba(212,174,90,0)}100%{box-shadow:0 0 0 0 rgba(212,174,90,0)}}
+.topic{display:inline-block;margin-top:6px;font-size:12.5px;color:var(--gold);background:rgba(212,174,90,.12);border-radius:10px;padding:3px 10px}
+#subs{flex:1;overflow-y:auto;padding:6px 18px 10px;display:flex;flex-direction:column;gap:12px;scroll-behavior:smooth}
+#call.nosubs #subs{display:none}
+#subs p{margin:0;line-height:1.42;word-break:break-word}
+#subs p.ai{font-size:26px;font-weight:500;color:#fff}
+#subs p.me{font-size:20px;color:#f5e6c4;text-align:right}
+#subs p.old{opacity:.38;font-size:17px;font-weight:400}
+#subs .ph{color:var(--sub);font-size:15px;text-align:center;margin-top:20px}
+.status{text-align:center;font-size:13px;color:var(--sub);min-height:18px;margin:4px 0}
+.status i{display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--green);margin-right:6px}
+.micbar{margin:0 auto 4px;width:120px;height:4px;border-radius:3px;background:rgba(255,255,255,.12);overflow:hidden}
+.micbar i{display:block;height:100%;width:0;background:var(--green)}
+#soundPanel{display:none;padding:6px 16px 0;max-width:360px;margin:0 auto;width:100%}
+.volrow{display:flex;align-items:center;gap:10px;margin-top:8px}
+.volrow input{flex:1;accent-color:#d4ae5a}
+.ctrl{display:flex;justify-content:center;gap:14px;padding:12px 16px calc(env(safe-area-inset-bottom) + 20px)}
+.cb{width:62px;height:62px;border-radius:50%;border:0;background:rgba(255,255,255,.12);color:#fff;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;font-size:10.5px;gap:2px}
+.cb svg{width:24px;height:24px}
+.cb.off{background:#fff;color:#0b1424}
+.cb.end{background:var(--red);width:70px;height:70px}
+.cb.end svg{width:30px;height:30px}
+.err{position:absolute;inset:0;background:rgba(5,10,20,.92);display:none;align-items:center;justify-content:center;padding:24px;z-index:5}
+.err.on{display:flex}
+.err .box{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:20px;max-width:420px}
+.err h3{margin:0 0 8px;color:var(--gold)}
+.err p{margin:0 0 14px;font-size:14px;line-height:1.55;white-space:pre-line}
+.err code{display:block;font-size:11px;color:var(--sub);word-break:break-all;margin-bottom:14px}
+.toast{position:fixed;left:50%;top:12px;transform:translateX(-50%);background:rgba(0,0,0,.75);padding:8px 14px;border-radius:20px;font-size:13px;display:none;z-index:9;max-width:90%}
+.toast.on{display:block}
 
-permissions:
-  contents: write
+/* ---------- 코칭 ---------- */
+.card{background:var(--navy2);border:1px solid var(--line);border-radius:12px;padding:12px;margin-bottom:10px}
+.you{color:#e7a3a3;text-decoration:line-through;text-decoration-color:rgba(231,163,163,.5);font-size:14px}
+.better{color:#bfeccf;font-size:16px;font-weight:600;margin-top:6px;display:flex;gap:8px;align-items:flex-start}
+.why{color:var(--sub);font-size:13px;margin-top:6px;line-height:1.55}
+.acts{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.ab{border:1px solid var(--line);background:transparent;color:var(--text);border-radius:16px;padding:6px 11px;font-size:12.5px}
+.ab.rec{border-color:var(--red);color:#ffb3b5;animation:blink 1s infinite}
+@keyframes blink{50%{opacity:.55}}
+.pr{margin-top:8px;font-size:13px;line-height:1.55;background:rgba(255,255,255,.04);border-radius:10px;padding:8px 10px;display:none}
+.pr.on{display:block}
+.sc{display:inline-block;background:var(--gold);color:#1a1405;font-weight:700;border-radius:8px;padding:1px 8px;margin-right:6px}
+.h3{font-size:14px;color:var(--gold);margin:16px 0 10px;font-weight:600}
+.bar{height:6px;border-radius:4px;background:rgba(255,255,255,.12);overflow:hidden}
+.bar i{display:block;height:100%;background:var(--gold)}
+.spin{display:inline-block;width:14px;height:14px;border:2px solid var(--line);border-top-color:var(--gold);border-radius:50%;animation:sp 1s linear infinite;vertical-align:-2px;margin-right:6px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.memo{padding:10px 0;border-top:1px solid var(--line)}
+.memo:first-of-type{border-top:0}
+.memo .en{font-weight:600;font-size:15.5px}
+.memo .ko{color:var(--sub);font-size:13px;margin-top:3px}
+.log p{margin:0 0 8px;font-size:14px;line-height:1.5}
+.log b{color:var(--gold);margin-right:6px}
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: 앱 소스 풀기
-        run: |
-          mkdir app-src
-          base64 -d > app-src/src.tgz <<'B64'
-          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
-          +NM9yp5ndtVc+s69HV/a8+Tbwo+8/EP376o8esenPn3Hweubn722+ancz97Y+j+fbX/7+/5xYs9/
-          HTqdvP3QpuZN33vjl6t+8JUvHv50yV1fba15SdunX/r5B0du/oev3tXy7zfc+k7XP3ykvP3ur2QH
-          uneeGvmn1y+5/bnF99/x/qN/VXZDaHpZ0a+f/syfL73j5v/7hV07XhOZVp6IDb26tvNQ5czi4890
-          9q0MLh6/ISytfOvByY89caw49IP3V73iEx/et7cqPDk+2rDmmtG6xs4Hfrvme49+5I4dK/+up732
-          2X9N/mXtkn/6z9e9ZNPKex95Olix9649NT85fej15776gZWPnRoo2Tn5ps/fEn/6mR/t3fulD/8s
-          fO+te//20Gt/sfyvq9Z98Y6HnzzX8ufx441rPho9++5ld4ZfGVnccenMprKyX4ycetz7y3U//dyf
-          v8b/6lsP7r3np1LT2HHlDSs+s/pY8lsHHm06+38C97/3/a9+8OYHNp7aeNuZ//xq8cueWr6p69fr
-          Pvq+o8dv2rDo2b8c/p+Xu55svPDtoeJ/3PPos7/6/tqWDa0927bc9dFDW37zoLKu8Y6PfP7mzM2/
-          vk559ivehg+/4/lrz9QduH71d/8nVXfj1u/3l33o3//uuif+9q3PzfzHW66frqxdvX/b9q+8656T
-          n0l87KGvTT635JZLJx/6zE9zH97wtmdGs6/++SO73lz0k7a/GX7P2h/cXfTmPvnZH5386b6jrx9U
-          3vfW/lVfrb3z0Q+d6d3/+Z0ved17n65q+kblg+1Vgbd+oergrw+8c8Mvmq772TM5+Sfv3/X8q6/7
-          7NuXndnVPrN96DuB/RfHZ1//kzX717+j/aJ08tBNv5w42L8hs37J+Qu/XJ752V0fWrNFftNLh24Z
-          /PrBT2xf+vAH+1/6dz/+0KbNN400HRm4fe0/7Xhr83eHPfJLetfu9920w3XjyCvXJ1adX/+76764
-          /e7dynPLvvirZxqmXvPUl2t/sU39i4vf6M4NHg+uco+/ZGJV2ZOP/Gb/2GHpiev/o+gh14d+1XnL
-          x2ff/qWTs82+7TcNX3rvv/3jN/7rM8qZ2Ts3HfnEjo6iQ4ffWD9x9v99LfTott8tunZn0fW1W2+s
-          mv5UW5nnvnPjf/XjH11z84+eeMMPHx185o2rv1L92yJP7/X3NB7+j80fSUr3f332fW9+2ZMHiv/i
-          jl+n3vbBf049eGx6/5aDt7/8o79V/r6kc+L5qnf91YO/TLzz7/e9vvP+d16a+cXWa3Z/69a3PX1j
-          +f+cenRl6exbfvO5oQ92rfrB6q+97vGSf3vpd9a8sWHrf5fc9v3OZ3/36J3Pf3x3xw9H3zr5jY+c
-          +O5bxo/+/cBdb/7AsrXHy4Z7P/nANXs+d+37Bt956Wu3v3zJ9775pX1Dx73PvvbE9q2rr7/mz9oe
-          fvXZr9z3w8996U3PvdHf/K3b2p+s3PWZLb893PStz0+/5hdbPJGNh8eeG7jh/p//PFPsmh7/0XM9
-          2U8cX9f/q53vfSq25l8831r3im2ban7187/b/64S75u/+pqOiSM/+Vpd5+t+ddtnZzBW/LPbfGX+
-          5YsWXft6/85rX+vfufjXE9des/iaa172Vx+6L/q7X5X8xH/9S15+0+4Nu391/eLFr/yzRf7ywCv8
-          L3/JtRuve8nrrrmlNfBa/6vhx5LXvawFsQrJhBwL/IX/z+HRta97BTFMlsAy2S+98Xp0Efr9lf6S
-          QCBQefubXh30Vwb8FYEAfTDvlncudrGDXPxnaNsXv3oRer7kmp2LFy/62r2Pfe+Bf/uNsuHMS38Y
-          ffLzT5ePf/1Ht5dVtf/45uLV//jod0686aMXT65p2jHzheduS/1mT2hb4Pe/3fOyn7Y+9Mk3X/vS
-          mk+993e7Xzu+etea1518w5a3e97Z/H8/s/jlm4//xw/bHu94w8WPvvTj/5Z69RvPNiWevra4tmjv
-          7b/8dPP/+fInGkqefMtDj3ef+7cP3tOz9idf3FD6nVcF3nbwK+eLH45cu/ivF39jy+HkpqLr7nvm
-          NT1Fn/vib/e/q+LU0x+s6Sn7wH0fOKB8/uVLj96yoVi94drbNn27/ZnEU995w+nvb4qkbvz6WPjP
-          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
-          0lGesgmRsQbUJ3BgNunUxkw0AwtWy0/182qpwpNpW8ZZjui2pUmv54Y2M+SD/G0OkM++QWjZ6X66
-          es78cLfKmP+L+b8g/5e1c0P5mP/7sfN/lWqztHr5qXnADvxfmnB7Cv+Xz6QHYv7vh8v/ZQZ07B/e
-          jeL+MgPhzB951h0b1YGRstOpASdLtvBskI/KEkYJ2CiywxvZVF/eyJN/jTzs+uRr/q05O5/KORlr
-          iNwJMIn2ICkU0DMK2VTayhqDlF3Az5yVX+/LWMijZay80WfDS4YN8mM41UeevvVdsRPx/h/v/7H+
-          J97/vf2/XKqVnVqfU7lcrJX6LmVy/c9k/fem/8+l8/H5b0z/Y/r/HdH/+Pw3pv8e/SeC4KazVSGi
-          QP1komAn+S87OCDT/4yN9D+W/56D/PcKGVLjklsHDOgx07bSpoHRUkqVtTFzq7naN2S+QkQTp+jU
-          mqVLbl+pUK08hbTIZLgVz43Xk9G44mHM/BkCpcC8W1kzDa5BBlDa8CzysRXmOt0vVfpMTM/i/T/e
-          /yP3/+xwPmNbuVxuOJeL9b8/yv2fxtnuf9brvyv5L5e1BwczYP+VSQ/G8t+Ph/5ng/Tfjun/c6H/
-          eZ3/x/BQeiAm/z9m+o8seOOZmH91lP/swYD+L5NNx/Lf90n+q3NsUiaN4fxAtIAxkwpqZ5ghz2k6
-          d0D+EjLFKy3e/2P574ci/+UHhuLzvx/1/t9oXt50n9P+nxvMK/JfLpOL9b/f6/0f5wfb/5frTqWx
-          uVVwK03TqDl18jlm/sw3xyUp+5fX3bJrzTlNt15yAFBwbb1pzVfHC4DxMeHUmWIYyy413TIr2rcr
-          qhSr2zMN8VVnAJ3rdD+k7iazjxxpnvEqRzXNTSiVVrz78sYrpTIilCxBA0mZgI/VTXZf9z1VKk9X
-          QGtdDDbmNF2CMRsVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EVX/EV
-          X/EVX/EVX/EVX7rr/wPi0TSBACADAA==
-          B64
-          tar xzf app-src/src.tgz -C app-src
-          rm app-src/src.tgz
+/* ---------- 암기장 / 기록 ---------- */
+.fc{background:var(--card);border:1px solid var(--line);border-radius:18px;min-height:210px;padding:22px;display:flex;flex-direction:column;justify-content:center;text-align:center;gap:14px}
+.fc .q{font-size:18px;line-height:1.5}
+.fc .a{font-size:20px;font-weight:700;color:#bfeccf;line-height:1.45}
+.fc .hx{color:var(--sub);font-size:12.5px}
+.rate{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.rate .no{border-color:#7a3a3d;color:#ffb3b5}
+.rate .yes{border-color:#2f6b52;color:#a9f0cd}
+.hi{cursor:pointer}
+.hi .t{display:flex;justify-content:space-between;gap:8px;font-size:14px}
+.hi .d{color:var(--sub);font-size:12.5px;margin-top:3px}
+.hi .x{display:none;margin-top:10px}
+.hi.open .x{display:block}
+.trend{display:flex;gap:4px;align-items:flex-end;height:48px;margin-top:6px}
+.trend i{flex:1;background:var(--gold);border-radius:3px 3px 0 0;min-height:3px;opacity:.85}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
 
-      - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: '17'
+<!-- ================= 설정 ================= -->
+<section id="setup" class="screen on">
+ <div class="wrap">
+  <h1>AI <span>영어통화</span></h1>
+  <p class="lead">외국인과 전화하듯 영어로 말하고, 끝나면 코칭을 받으세요.</p>
 
-      - uses: gradle/actions/setup-gradle@v4
-        with:
-          gradle-version: '8.9'
+  <div class="sec"><h2>1. 통화 상대 (목소리)</h2><div class="partners" id="partners"></div></div>
 
-      - name: APK 만들기
-        working-directory: app-src
-        run: gradle assembleDebug --no-daemon
+  <div class="sec"><h2>2. 대화 모드</h2>
+   <div class="grid3" id="modes"></div>
+   <div id="bizBox" style="display:none;margin-top:14px">
+    <div class="muted" style="margin-bottom:8px">상황을 한국어로 적으면 AI가 그 상황의 상대역이 됩니다. 아래 예시를 눌러도 돼요.</div>
+    <textarea id="scene" placeholder="예) 뉴욕 호텔에 도착했는데 예약이 안 되어 있다고 한다. 프런트 직원과 해결해야 한다."></textarea>
+    <div class="chips" id="sceneChips"></div>
+   </div>
+  </div>
 
-      - name: 파일 이름 정리
-        run: cp app-src/app/build/outputs/apk/debug/app-debug.apk InmaekNote.apk
+  <div class="sec"><h2>3. 대화 속도</h2>
+   <div class="muted" style="margin-bottom:10px">내가 말을 멈춘 뒤, AI가 대답을 시작하기까지 기다리는 시간입니다.</div>
+   <div class="seg" id="speedSeg">
+    <button data-speed="fast">빠르게<small>0.4초 후</small></button>
+    <button data-speed="normal">보통<small>1.2초 후</small></button>
+    <button data-speed="relaxed">여유<small>3초 후</small></button>
+   </div>
+   <div class="hint" id="speedHint"></div>
+   <div class="row" style="margin-top:8px"><label>통화 중 큰 자막<small>통화 중에도 켜고 끌 수 있어요</small></label>
+    <label class="sw"><input type="checkbox" id="optSubs"><span></span></label></div>
+  </div>
 
-      - name: Releases에 올리기
-        uses: softprops/action-gh-release@v2
-        with:
-          tag_name: v1.0.${{ github.run_number }}
-          name: 인맥노트 ${{ github.run_number }}번째 빌드
-          body: 아래 Assets에서 InmaekNote.apk를 눌러 폰에 내려받아 설치하세요.
-          files: InmaekNote.apk
-          make_latest: true
+  <div class="sec"><h2>4. Gemini API 키</h2>
+   <input type="password" id="key" placeholder="AIza로 시작하는 키" autocomplete="off">
+   <div class="hint">키는 이 기기에만 저장됩니다. 발급: <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">aistudio.google.com/apikey</a></div>
+  </div>
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: InmaekNote-apk
-          path: InmaekNote.apk
+  <button class="start" id="startBtn">
+   <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6.6 10.8a15.1 15.1 0 0 0 6.6 6.6l2.2-2.2a1 1 0 0 1 1-.25 11.4 11.4 0 0 0 3.6.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1L6.6 10.8z"/></svg>
+   통화 시작
+  </button>
+  <div class="two" style="margin-top:10px">
+   <button class="btn2" id="notebookBtn">📒 암기장 <span id="nbCount"></span></button>
+   <button class="btn2" id="histBtn">📊 코칭 기록</button>
+  </div>
+  <button class="linkbtn" id="installBtn" style="display:none;border-color:var(--gold);color:var(--gold)">📲 홈 화면에 앱으로 설치</button>
+ </div>
+</section>
+
+<!-- ================= 통화 ================= -->
+<section id="call" class="screen">
+ <div class="top">
+  <div class="nm" id="cName">Emma</div>
+  <div class="meta"><span id="cMode"></span> · <span id="cTime">00:00</span> <span id="cLat" style="color:var(--gold)"></span><button class="mini" id="diagBtn">진단</button></div>
+  <div class="topic" id="cTopic" style="display:none"></div>
+  <div id="diag"></div>
+ </div>
+ <div class="hero"><div class="face bigface" id="bigFace">E</div></div>
+ <div id="subs"></div>
+ <div class="status" id="status">연결 중…</div>
+ <div class="micbar"><i id="micBar"></i></div>
+ <div id="soundPanel">
+  <div class="seg" id="outSeg" style="grid-template-columns:1fr 1fr"><button data-out="ear">📞 수화기<small>나만 듣기</small></button><button data-out="spk">🔊 스피커<small>크게 듣기</small></button></div>
+  <div class="volrow" id="volRow"><span style="font-size:13px">음량</span><input type="range" id="volSlider" min="0" max="250" step="10"><span id="volTxt" style="width:44px;font-size:13px;color:var(--gold)">130%</span></div>
+  <div class="hint" id="soundHint" style="text-align:center"></div>
+ </div>
+ <div class="ctrl">
+  <button class="cb" id="micBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z"/></svg>마이크</button>
+  <button class="cb" id="soundBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3A4.5 4.5 0 0 0 14 8v8a4.5 4.5 0 0 0 2.5-4zM14 3.2v2.1a7 7 0 0 1 0 13.4v2.1a9 9 0 0 0 0-17.6z"/></svg>소리</button>
+  <button class="cb end" id="endBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 9c-1.6 0-3.15.25-4.6.72v3.1c0 .39-.23.74-.56.9-.98.49-1.87 1.12-2.66 1.85a1 1 0 0 1-1.41-.02L.29 13.08a1 1 0 0 1 0-1.41C3.34 8.78 7.46 7 12 7s8.66 1.78 11.71 4.67a1 1 0 0 1 0 1.41l-2.48 2.48a1 1 0 0 1-1.41.02c-.79-.73-1.68-1.36-2.66-1.85a1 1 0 0 1-.56-.9v-3.1C15.15 9.25 13.6 9 12 9z"/></svg></button>
+  <button class="cb" id="subBtn"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM4 12h4v2H4v-2zm10 6H4v-2h10v2zm6 0h-4v-2h4v2zm0-4H10v-2h10v2z"/></svg>자막</button>
+ </div>
+ <div class="err" id="err"><div class="box">
+  <h3 id="errT">연결 오류</h3><p id="errM"></p><code id="errC"></code>
+  <button class="start" id="errBack">처음으로</button>
+ </div></div>
+</section>
+
+<!-- ================= 통화 종료 / 코칭 ================= -->
+<section id="done" class="screen">
+ <div class="wrap">
+  <h1>통화 <span>코칭</span></h1>
+  <p class="lead" id="dMeta"></p>
+  <div class="sec"><h2>영어 코칭</h2><div id="coach"></div></div>
+  <div class="sec"><h2>📒 꼭 외울 표현</h2><div id="memoList" class="muted">코칭이 끝나면 여기에 나옵니다.</div></div>
+  <details class="sec"><summary style="color:var(--gold);font-size:14px;font-weight:600">대화 기록 보기</summary><div class="log" id="dLog" style="margin-top:12px"></div></details>
+  <div class="two"><button class="btn2" id="againBtn">다시 통화</button><button class="btn2" id="homeBtn">처음으로</button></div>
+  <button class="linkbtn" id="notebookBtn2">📒 암기장에서 복습하기</button>
+ </div>
+</section>
+
+<!-- ================= 암기장 ================= -->
+<section id="study" class="screen">
+ <div class="wrap">
+  <h1>내 <span>암기장</span></h1>
+  <p class="lead" id="stMeta"></p>
+  <div class="seg" id="stFilter" style="margin-bottom:14px"><button data-f="due">오늘 복습</button><button data-f="all">전체</button><button data-f="done">외움</button></div>
+  <div id="stBody"></div>
+  <button class="linkbtn" id="stBack">처음으로</button>
+ </div>
+</section>
+
+<!-- ================= 코칭 기록 ================= -->
+<section id="hist" class="screen">
+ <div class="wrap">
+  <h1>코칭 <span>기록</span></h1>
+  <p class="lead" id="hMeta"></p>
+  <div id="hTrend"></div>
+  <div id="hList"></div>
+  <button class="linkbtn" id="hBack">처음으로</button>
+ </div>
+</section>
+
+<script>
+/* ===================== 기본 데이터 ===================== */
+const MODELS = ["gemini-3.8-live", "gemini-3.1-flash-live-preview",
+  "gemini-2.5-flash-native-audio-preview-12-2025", "gemini-2.5-flash-native-audio-preview-09-2025"];
+const TEXT_MODELS = ["gemini-3.8-flash", "gemini-3.6-flash", "gemini-3.5-flash-lite", "gemini-3-flash-preview", "gemini-2.5-flash"];
+
+// 통화 상대 = 목소리 (Gemini 기본 음성)
+const CHARS = {
+  emma:    {name:"Emma",    g:"f", flag:"🇺🇸", country:"미국",       from:"San Francisco, USA", voice:"Aoede",  tone:"부드럽고 산뜻한", color:"#c8708f"},
+  grace:   {name:"Grace",   g:"f", flag:"🇺🇸", country:"한국계 미국", from:"Los Angeles, USA (Korean-American)", voice:"Kore", tone:"또렷하고 차분한", color:"#8a6fd1"},
+  sophie:  {name:"Sophie",  g:"f", flag:"🇬🇧", country:"영국",       from:"London, UK",        voice:"Leda",   tone:"젊고 밝은",     color:"#d08a4f"},
+  olivia:  {name:"Olivia",  g:"f", flag:"🇦🇺", country:"호주",       from:"Sydney, Australia",  voice:"Zephyr", tone:"활기찬",        color:"#3fa58f"},
+  james:   {name:"James",   g:"m", flag:"🇬🇧", country:"영국",       from:"Manchester, UK",     voice:"Puck",   tone:"경쾌한",        color:"#4c7fd1"},
+  michael: {name:"Michael", g:"m", flag:"🇺🇸", country:"미국",       from:"Chicago, USA",       voice:"Charon", tone:"차분하고 믿음직한", color:"#3d5a8a"},
+  daniel:  {name:"Daniel",  g:"m", flag:"🇨🇦", country:"캐나다",     from:"Toronto, Canada",    voice:"Orus",   tone:"묵직하고 단단한", color:"#7a6a52"},
+  ryan:    {name:"Ryan",    g:"m", flag:"🇦🇺", country:"호주",       from:"Melbourne, Australia", voice:"Fenrir", tone:"에너지 넘치는", color:"#b0573f"}
+};
+
+// SAIL(OPIc형) 출제 주제 — 통화마다 무작위
+const SAIL_TOPICS = [
+  {ko:"사는 집과 동네", en:"your home and neighborhood (describe it, your favorite room, changes over time)"},
+  {ko:"주말 보내는 법", en:"how you usually spend your weekends"},
+  {ko:"여행", en:"travel (a memorable trip, how you plan trips, domestic vs overseas travel)"},
+  {ko:"운동·건강", en:"exercise and staying healthy (your routine, a sport you enjoy)"},
+  {ko:"골프", en:"golf (how you started, a memorable round, golf culture)"},
+  {ko:"음식·요리", en:"food and restaurants (favorite food, a recent meal out, cooking at home)"},
+  {ko:"음악·영화", en:"music or movies you enjoy and how your taste has changed"},
+  {ko:"회사와 업무", en:"your company and daily work (a typical workday, your team, challenges)"},
+  {ko:"회의·협업", en:"meetings and teamwork at work (a recent meeting, how you solve disagreements)"},
+  {ko:"기술·스마트폰", en:"technology and smartphones (apps you use, how technology changed your life)"},
+  {ko:"쇼핑", en:"shopping (where you shop, online vs offline, a recent purchase)"},
+  {ko:"가족·친구", en:"family and friends (spending time together, a special occasion)"},
+  {ko:"명절·기념일", en:"holidays and special days in Korea (what you do, how it has changed)"},
+  {ko:"교통·출퇴근", en:"transportation and commuting (your commute, a problem you had)"},
+  {ko:"날씨·계절", en:"weather and seasons (favorite season, weather in Korea)"},
+  {ko:"공원·산책", en:"parks and walking (a place you like to go, what you do there)"},
+  {ko:"카페·커피", en:"cafes and coffee culture"},
+  {ko:"독서·공부", en:"reading or studying something new (a book, learning English)"},
+  {ko:"건강 관리·병원", en:"visiting a doctor or staying healthy (a past experience)"},
+  {ko:"환경·사회 이슈", en:"a social issue such as the environment or aging society (your opinion)"},
+  {ko:"자기계발", en:"self-development and goals (what you want to achieve this year)"},
+  {ko:"호텔·숙소", en:"hotels and places you stayed during trips"},
+  {ko:"반려동물·취미", en:"hobbies or pets (how you started, why you enjoy it)"},
+  {ko:"한국 소개", en:"introducing Korea to a foreigner (places to visit, food to try)"}
+];
+const DAILY_TOPICS = ["what you did last weekend","plans for the coming weekend","favorite food","a recent trip","coffee and cafes","the weather today","a movie or show you watched","sports and exercise","work this week","a funny thing that happened recently"];
+
+// 해외에서 겪을 수 있는 상황 예시
+const SCENES = [
+  {t:"호텔 예약 오류", d:"해외 호텔에 도착했는데 프런트에서 내 예약이 없다고 한다. 예약 확인 메일이 있다. 직원과 대화해서 방을 받아야 한다. 상대는 호텔 프런트 직원."},
+  {t:"레스토랑 주문", d:"해외 레스토랑에서 저녁을 주문한다. 메뉴 추천을 받고, 맵지 않게·견과류 빼달라고 요청한다. 상대는 웨이터."},
+  {t:"음식이 잘못 나옴", d:"레스토랑에서 주문한 것과 다른 음식이 나왔고 너무 늦게 나왔다. 정중하게 항의하고 해결을 요청한다. 상대는 매니저."},
+  {t:"수하물 분실", d:"해외 공항에 도착했는데 내 캐리어가 나오지 않았다. 분실 신고를 하고 언제, 어디로 받을 수 있는지 확인한다. 상대는 항공사 수하물 담당 직원."},
+  {t:"항공편 결항", d:"공항에서 내 비행기가 결항됐다. 오늘 안에 갈 수 있는 대체편과 호텔·식사 지원을 요청한다. 상대는 항공사 카운터 직원."},
+  {t:"택시·길 묻기", d:"해외에서 택시를 타고 호텔까지 간다. 주소를 설명하고, 소요 시간과 요금을 묻고, 카드 결제가 되는지 확인한다. 상대는 택시 기사."},
+  {t:"약국에서 증상 설명", d:"출장 중 감기 기운과 두통이 있어 약국에 갔다. 증상을 설명하고 약을 추천받는다. 상대는 약사."},
+  {t:"렌터카 빌리기", d:"해외 공항 렌터카 카운터에서 차를 빌린다. 예약을 확인하고, 차량 크기·반납 장소·연료 규정을 묻는다. 상대는 렌터카 직원."},
+  {t:"쇼핑 환불·교환", d:"해외 매장에서 산 옷이 사이즈가 맞지 않는다. 영수증을 보여주고 교환이나 환불을 요청한다. 상대는 매장 직원."},
+  {t:"외국인과 골프", d:"해외 골프장에서 처음 만난 외국인 두 명과 한 조로 라운딩한다. 인사, 스몰토크, 샷 칭찬, 다음 홀 이야기를 나눈다. 상대는 현지 골퍼."},
+  {t:"출장 중 비즈니스 디너", d:"해외 출장에서 현지 거래처 사람과 저녁 식사를 한다. 스몰토크로 시작해 서로의 나라, 음식, 취미 이야기를 나눈다. 상대는 현지 거래처 담당자."},
+  {t:"컨퍼런스 네트워킹", d:"해외 컨퍼런스 커피 브레이크에서 처음 만난 사람과 인사하고 명함을 교환한다. 하는 일과 컨퍼런스 소감을 이야기한다. 상대는 다른 나라 참석자."},
+  {t:"호텔 컨시어지 추천", d:"호텔 컨시어지에게 근처 맛집과 반나절 관광 코스를 추천받고 예약을 부탁한다. 상대는 컨시어지 직원."},
+  {t:"에어비앤비 문제 해결", d:"에어비앤비 숙소에 도착했는데 온수가 나오지 않고 와이파이가 안 된다. 호스트에게 전화해 해결을 요청한다. 상대는 숙소 호스트."},
+  {t:"입국 심사", d:"해외 공항 입국 심사대에서 방문 목적, 체류 기간, 숙소를 질문받는다. 상대는 입국 심사관."}
+];
+
+// 🎲 랜덤 전용 해외 상황 (제목|설명)
+const MORE_SCENES = ["체크인 카운터|해외 공항 체크인 카운터에서 창가 좌석을 요청하고, 짐 무게가 초과됐다는 말을 듣는다. 상대는 항공사 체크인 직원.", "보안 검색대|공항 보안 검색대에서 가방 안의 보조배터리와 액체류 때문에 다시 검사를 받는다. 상대는 보안 검색 요원.", "탑승구 변경|탑승 30분 전 탑승구가 바뀌었다는 방송을 놓쳤다. 직원에게 새 탑승구와 남은 시간을 묻는다. 상대는 공항 안내 직원.", "비행기 좌석 문제|비행기에서 내 좌석에 다른 승객이 앉아 있다. 정중하게 자리를 확인한다. 상대는 승무원과 승객.", "기내식 요청|기내에서 채식 기내식을 미리 신청했는데 일반식이 나왔다. 승무원에게 요청한다. 상대는 승무원.", "기내에서 몸이 안 좋음|장거리 비행 중 두통과 메스꺼움이 있다. 승무원에게 도움을 요청한다. 상대는 승무원.", "환승 놓침|앞 비행기가 늦어 환승편을 놓쳤다. 다음 비행편과 수하물 처리를 확인한다. 상대는 환승 카운터 직원.", "세관 신고|입국 후 세관에서 가져온 선물과 음식에 대해 질문을 받는다. 상대는 세관 직원.", "공항 라운지|공항 라운지 입구에서 이용 자격을 확인받고, 샤워실 이용 방법을 묻는다. 상대는 라운지 직원.", "오버부킹 보상|비행기가 초과 예약되어 다음 편으로 가면 보상해 준다고 한다. 조건을 묻고 협상한다. 상대는 항공사 게이트 직원.", "면세점 쇼핑|공항 면세점에서 선물용 화장품을 고르고, 탑승권과 여권을 보여주며 결제한다. 상대는 면세점 직원.", "공항 환전|공항 환전소에서 원화를 달러로 바꾸며 환율과 수수료를 묻는다. 상대는 환전소 직원.", "수하물 파손|찾은 캐리어 바퀴가 부서져 있다. 파손 신고를 하고 보상 절차를 묻는다. 상대는 항공사 수하물 직원.", "옆자리 승객과 대화|장거리 비행에서 옆자리에 앉은 외국인 승객과 가볍게 인사하고 여행 이야기를 나눈다. 상대는 옆자리 승객.", "공항 셔틀버스|공항에서 시내 호텔까지 가는 셔틀버스 타는 곳, 시간, 요금을 묻는다. 상대는 공항 안내 직원.", "심야 도착|밤늦게 공항에 도착했는데 대중교통이 끊겼다. 가장 안전한 이동 방법을 묻는다. 상대는 공항 안내 직원.", "이른 체크인|아침 일찍 호텔에 도착해 이른 체크인이 가능한지, 안 되면 짐을 맡길 수 있는지 묻는다. 상대는 호텔 프런트 직원.", "늦은 체크아웃|오후 비행기라 체크아웃을 늦출 수 있는지, 추가 요금이 있는지 묻는다. 상대는 호텔 프런트 직원.", "방 교체 요청|배정받은 방이 너무 시끄럽고 담배 냄새가 난다. 다른 방으로 바꿔 달라고 한다. 상대는 호텔 프런트 직원.", "에어컨 고장|호텔 방 에어컨이 작동하지 않는다. 전화로 수리를 요청한다. 상대는 호텔 객실 관리 직원.", "룸서비스 주문|호텔 방에서 룸서비스로 저녁을 주문하고 도착 시간을 묻는다. 상대는 룸서비스 직원.", "모닝콜과 택시 예약|다음 날 새벽 비행기를 위해 모닝콜과 공항 택시를 예약한다. 상대는 호텔 프런트 직원.", "세탁 서비스|출장 중 셔츠 세탁과 다림질을 맡기고 언제 받을 수 있는지 묻는다. 상대는 호텔 하우스키핑 직원.", "요금 이의 제기|체크아웃할 때 사용하지 않은 미니바 요금이 청구됐다. 정중하게 이의를 제기한다. 상대는 호텔 프런트 직원.", "방 키 분실|호텔 방 카드키를 잃어버렸다. 신분을 확인받고 새 키를 받는다. 상대는 호텔 프런트 직원.", "호텔 헬스장 이용|호텔 헬스장과 수영장 운영 시간, 수건 대여 여부를 묻는다. 상대는 호텔 직원.", "숙소 체크인 안내|에어비앤비 호스트와 통화하며 열쇠 받는 방법과 주차 위치를 확인한다. 상대는 숙소 호스트.", "이웃 소음|숙소 옆방이 밤늦게까지 시끄럽다. 프런트에 도움을 요청한다. 상대는 호텔 야간 직원.", "물건을 두고 옴|체크아웃한 호텔에 충전기를 두고 왔다. 전화로 찾아 달라고 하고 받는 방법을 정한다. 상대는 호텔 분실물 담당 직원.", "호텔 예약 변경|호텔에 전화해 숙박 날짜를 하루 늘리고 같은 방을 쓸 수 있는지 묻는다. 상대는 호텔 예약 담당자.", "자리 기다리기|인기 식당에 예약 없이 왔다. 대기 시간과 바 자리 가능 여부를 묻는다. 상대는 식당 매니저.", "식당 전화 예약|식당에 전화해 금요일 저녁 4명 예약을 하고 창가 자리를 요청한다. 상대는 식당 예약 담당자.", "스테이크 굽기|스테이크 하우스에서 굽기 정도와 곁들일 메뉴를 고르고 와인을 추천받는다. 상대는 웨이터.", "알레르기 설명|새우 알레르기가 있다. 메뉴에 들어간 재료를 확인하고 안전한 음식을 추천받는다. 상대는 웨이터.", "계산서 나누기|외국인 동료들과 식사 후 계산서를 나눠서 내고 팁을 얼마나 줘야 하는지 묻는다. 상대는 웨이터와 동료.", "계산서 오류|계산서에 시키지 않은 음식이 들어 있다. 정중하게 수정을 요청한다. 상대는 웨이터.", "카페 주문|카페에서 디카페인 라테를 오트 우유로, 덜 달게 주문하고 이름을 알려준다. 상대는 바리스타.", "빵집에서|현지 빵집에서 추천 빵을 묻고, 포장과 데우기를 요청한다. 상대는 빵집 직원.", "푸드트럭|푸드트럭에서 메뉴를 묻고 맵기를 조절해 주문한다. 현금만 받는다고 한다. 상대는 푸드트럭 주인.", "바에서 칵테일|호텔 바에서 바텐더에게 도수가 약한 칵테일을 추천받고 대화를 나눈다. 상대는 바텐더.", "음식 포장|다 못 먹은 음식을 포장해 달라고 하고, 디저트를 추천받는다. 상대는 웨이터.", "배달 주문 전화|숙소에서 피자 가게에 전화해 배달 주문을 하고 주소를 설명한다. 상대는 피자 가게 직원.", "현지 음식 도전|현지 전통 음식점에서 처음 보는 메뉴의 맛과 먹는 방법을 묻는다. 상대는 식당 주인.", "뷔페 이용|호텔 조식 뷔페에서 운영 시간, 오믈렛 주문 방법을 묻고 테이블을 안내받는다. 상대는 호텔 식당 직원.", "와인 바 추천|와인 바에서 예산을 말하고 한국 음식과 어울리는 와인을 추천받는다. 상대는 소믈리에.", "음식이 차가움|주문한 수프가 식어서 나왔다. 다시 데워 달라고 정중하게 요청한다. 상대는 웨이터.", "지하철 표 사기|지하철역에서 교통카드를 사고 충전하는 방법, 시내 가는 노선을 묻는다. 상대는 역무원.", "기차 예매|기차역 창구에서 다음 도시로 가는 왕복 기차표를 사고 좌석을 고른다. 상대는 기차역 직원.", "기차를 잘못 탐|기차를 잘못 탄 것 같다. 차장에게 내릴 역과 다시 타는 방법을 묻는다. 상대는 기차 차장.", "버스 노선 묻기|버스 정류장에서 박물관 가는 버스 번호와 내릴 곳을 묻는다. 상대는 버스 기사.", "길 잃음|관광지 근처에서 길을 잃었다. 지나가는 사람에게 호텔 가는 길을 묻는다. 상대는 현지 주민.", "우버 기사와 대화|차량 공유 서비스 차 안에서 기사와 도시 이야기, 맛집 추천을 나눈다. 상대는 차량 공유 기사.", "택시 요금 분쟁|택시 요금이 예상보다 너무 많이 나왔다. 미터기와 경로를 정중하게 확인한다. 상대는 택시 기사.", "자전거 대여|공유 자전거 대여소에서 이용 방법과 반납 장소를 묻는다. 상대는 대여소 직원.", "주차 문제|렌터카를 세울 곳을 찾다가 주차 요금과 시간 제한을 묻는다. 상대는 주차장 관리인.", "교통 위반 딱지|렌터카에 주차 위반 딱지가 붙어 있다. 렌터카 회사에 전화해 처리 방법을 묻는다. 상대는 렌터카 고객센터 직원.", "주유소|주유소에서 기름 넣는 방법과 결제 방식을 묻는다. 상대는 주유소 직원.", "차 고장|렌터카가 고속도로에서 경고등이 켜졌다. 긴급 출동 서비스에 전화한다. 상대는 긴급 출동 상담원.", "페리 타기|섬으로 가는 페리 시간표와 왕복 요금, 차량 탑승 여부를 묻는다. 상대는 페리 매표소 직원.", "관광버스 투어|시티 투어 버스에서 정류장 위치와 다시 타는 방법을 묻는다. 상대는 투어 버스 가이드.", "옷 사이즈 묻기|옷 가게에서 한국 사이즈를 현지 사이즈로 설명하고 피팅룸을 쓴다. 상대는 옷 가게 직원.", "세금 환급|쇼핑 후 관광객 세금 환급 서류를 받는 방법과 공항 절차를 묻는다. 상대는 매장 직원.", "가격 흥정|현지 시장에서 기념품 가격을 흥정한다. 상대는 시장 상인.", "선물 고르기|가족에게 줄 선물을 고르며 예산을 말하고 추천을 받는다. 상대는 기념품 가게 직원.", "전자제품 매장|전자제품 매장에서 여행용 어댑터와 충전기를 사며 호환 여부를 묻는다. 상대는 전자제품 매장 직원.", "휴대폰 유심 구매|통신사 매장에서 여행용 유심을 사고 데이터 요금제를 고른다. 상대는 통신사 직원.", "카드 결제 거절|계산할 때 카드가 거절됐다. 다른 결제 방법을 묻고 상황을 설명한다. 상대는 계산원.", "마트 장보기|현지 마트에서 원하는 물건이 어디 있는지 묻고, 셀프 계산대 사용법을 묻는다. 상대는 마트 직원.", "안경 수리|안경다리가 부러졌다. 안경점에서 바로 고칠 수 있는지 묻는다. 상대는 안경점 직원.", "우체국 소포|우체국에서 한국으로 소포를 보내며 배송 기간과 요금을 비교한다. 상대는 우체국 직원.", "은행 환전·송금|현지 은행에서 환전하고 송금 수수료를 묻는다. 상대는 은행 창구 직원.", "미용실|현지 미용실에서 원하는 머리 스타일을 설명한다. 상대는 미용사.", "세탁소|정장을 세탁소에 맡기며 얼룩을 설명하고 찾을 날짜를 정한다. 상대는 세탁소 주인.", "헬스장 일일권|현지 헬스장에서 일일 이용권을 사고 시설을 안내받는다. 상대는 헬스장 직원.", "병원 접수|해외 병원에서 접수하며 증상과 여행자 보험 여부를 말한다. 상대는 병원 접수 직원.", "의사 진료|의사에게 언제부터 어디가 아픈지 설명하고 처방을 받는다. 상대는 의사.", "치과 응급|출장 중 갑자기 이가 아프다. 치과에 전화해 당일 진료를 요청한다. 상대는 치과 접수 직원.", "발목을 삐었음|관광 중 발목을 삐었다. 근처 사람에게 도움과 가까운 병원을 묻는다. 상대는 현지 주민.", "여권 분실|여권을 잃어버렸다. 경찰서에 신고하고 필요한 서류를 묻는다. 상대는 경찰관.", "지갑 도난|지하철에서 지갑을 도난당했다. 경찰에 신고하고 상황을 설명한다. 상대는 경찰관.", "영사관 전화|여권 재발급을 위해 한국 영사관에 전화해 절차와 준비물을 묻는다. 상대는 영사관 직원.", "약 복용법|약국에서 산 약을 하루에 몇 번, 언제 먹어야 하는지 다시 확인한다. 상대는 약사.", "길에서 사람이 쓰러짐|길에서 사람이 쓰러졌다. 주변 사람에게 구급차를 부르라고 하고 상황을 설명한다. 상대는 주변 행인과 응급 상담원.", "호텔 화재 경보|밤에 호텔 화재 경보가 울렸다. 직원에게 상황과 대피 방법을 묻는다. 상대는 호텔 직원.", "박물관 매표소|박물관에서 입장권을 사고 오디오 가이드와 추천 관람 순서를 묻는다. 상대는 박물관 직원.", "가이드 투어|현지 가이드 투어 중 궁금한 역사 이야기를 묻고 사진 찍을 장소를 추천받는다. 상대는 투어 가이드.", "공연 표 구매|뮤지컬 매표소에서 오늘 저녁 남은 좌석과 할인 여부를 묻는다. 상대는 매표소 직원.", "사진 부탁|관광지에서 다른 관광객에게 사진을 찍어 달라고 부탁하고 서로 찍어 준다. 상대는 다른 관광객.", "스포츠 경기 관람|야구장(또는 축구장)에서 옆자리 현지 팬과 응원하며 규칙과 팀 이야기를 나눈다. 상대는 현지 팬.", "스키장 장비 대여|스키장에서 장비를 빌리고 초보 강습을 신청한다. 상대는 스키장 직원.", "해변 파라솔|해변에서 파라솔과 선베드를 빌리며 요금과 시간을 묻는다. 상대는 해변 대여 직원.", "스파 예약|호텔 스파에 전화해 마사지를 예약하고 강도와 시간을 고른다. 상대는 스파 예약 담당자.", "와이너리 투어|와이너리 투어에서 와인 만드는 과정을 묻고 시음 소감을 말한다. 상대는 와이너리 가이드.", "국립공원 안내소|국립공원 안내소에서 초보자에게 맞는 등산 코스와 소요 시간을 묻는다. 상대는 공원 안내원.", "골프장 예약|해외 골프장에 전화해 티타임을 예약하고 장비 대여와 복장 규정을 묻는다. 상대는 골프장 예약 담당자.", "골프 레슨|해외 골프 연습장에서 프로에게 짧은 레슨을 받으며 스윙 문제를 설명한다. 상대는 골프 프로.", "야경 투어 예약|여행사에 들러 야경 투어 일정과 픽업 장소, 요금을 묻는다. 상대는 여행사 직원.", "놀이공원|놀이공원에서 빠른 입장권과 인기 놀이기구 대기 시간을 묻는다. 상대는 놀이공원 직원.", "해외 지사 첫 출근|해외 지사에 처음 출근해 리셉션에서 방문 목적을 말하고 담당자를 찾는다. 상대는 리셉션 직원.", "회의실 장비 문제|발표 직전 회의실 프로젝터가 연결되지 않는다. IT 담당자에게 도움을 요청한다. 상대는 IT 담당자.", "현지 동료와 점심|현지 동료와 점심을 먹으며 서로의 업무, 가족, 주말 이야기를 나눈다. 상대는 현지 동료.", "화상회의 시작 전 스몰토크|화상회의가 시작되기 전 먼저 들어온 외국인 참석자와 날씨·시차 이야기를 나눈다. 상대는 외국인 회의 참석자.", "일정 조율 전화|외국 파트너와 다음 주 미팅 시간을 시차를 고려해 조율한다. 상대는 외국 파트너 비서.", "명함 교환|비즈니스 행사에서 처음 만난 사람과 명함을 교환하고 회사를 소개한다. 상대는 행사 참석자.", "발표 후 질의응답|짧은 발표를 마친 뒤 청중의 질문을 받고 모르는 질문에 정중하게 대처한다. 상대는 발표 청중.", "출장 경비 문의|호텔 직원에게 회사 경비 처리용 영수증을 따로 발행해 달라고 한다. 상대는 호텔 회계 직원.", "공장 견학|해외 거래처 공장을 견학하며 생산 과정과 품질 관리에 대해 질문한다. 상대는 공장 안내 담당자.", "전시회 부스|해외 전시회 부스에서 제품 설명을 듣고 카탈로그와 가격을 요청한다. 상대는 전시회 부스 직원.", "거래처 공항 마중|공항에 마중 나온 거래처 담당자와 인사하고 차 안에서 일정 이야기를 나눈다. 상대는 거래처 담당자.", "송별회 건배사|해외 동료의 송별회에서 짧은 건배사를 하고 동료들과 대화한다. 상대는 해외 동료들.", "늦어서 사과 전화|교통 체증으로 미팅에 늦게 됐다. 상대에게 전화해 사과하고 도착 시간을 알린다. 상대는 미팅 상대.", "이메일 내용 확인 전화|받은 이메일 내용이 헷갈려서 담당자에게 전화해 다시 확인한다. 상대는 거래처 담당자.", "코워킹 스페이스|코워킹 스페이스에서 하루 이용권을 사고 와이파이와 회의실 예약 방법을 묻는다. 상대는 코워킹 스페이스 직원.", "저녁 초대 응대|현지 동료 집에 저녁 초대를 받았다. 인사하고 집과 음식에 대해 칭찬하며 대화한다. 상대는 현지 동료 가족.", "이웃과 인사|해외 단기 체류 숙소에서 이웃과 처음 인사하고 동네 정보를 묻는다. 상대는 이웃 주민.", "공원에서 대화|공원 벤치에서 강아지를 산책시키는 현지인과 자연스럽게 대화한다. 상대는 현지 주민.", "언어 교환 모임|언어 교환 모임에서 처음 만난 사람과 자기소개하고 취미를 이야기한다. 상대는 모임 참가자.", "결혼식 하객|해외에서 열린 지인의 결혼식에서 처음 만난 하객과 신랑·신부와의 관계를 이야기한다. 상대는 다른 하객.", "생일 파티|외국인 친구의 생일 파티에서 선물을 건네고 다른 손님들과 대화한다. 상대는 파티 손님.", "한국 소개하기|외국인이 한국 여행을 계획 중이라며 추천을 부탁한다. 장소와 음식을 소개한다. 상대는 한국 여행을 준비하는 외국인.", "날씨 스몰토크|엘리베이터에서 만난 현지인과 날씨와 주말 계획에 대해 짧게 대화한다. 상대는 현지 직장인.", "스포츠 바에서 응원|스포츠 바에서 경기를 보며 옆 사람과 응원하는 팀 이야기를 나눈다. 상대는 스포츠 바 손님.", "요리 교실|현지 요리 교실에 참여해 요리사에게 질문하고 다른 참가자와 대화한다. 상대는 요리 강사와 참가자.", "자원봉사|해외 행사에서 자원봉사를 하며 담당자에게 할 일을 확인한다. 상대는 행사 담당자.", "길에서 설문 요청|길에서 설문조사를 부탁받았다. 질문에 답하며 짧게 대화한다. 상대는 설문 조사원.", "오랜만의 외국 친구|몇 년 만에 만난 외국인 친구와 근황, 일, 가족 이야기를 나눈다. 상대는 오랜 외국인 친구.", "카드 분실 신고|해외에서 신용카드를 잃어버려 카드사 해외 고객센터에 전화해 정지를 요청한다. 상대는 카드사 상담원.", "인터넷 고장|숙소 인터넷이 안 된다. 통신사 고객센터에 전화해 문제를 설명한다. 상대는 고객센터 상담원.", "항공권 변경 전화|항공사 콜센터에 전화해 귀국 날짜를 바꾸고 변경 수수료를 묻는다. 상대는 항공사 상담원.", "투어 취소·환불|날씨 때문에 투어를 취소하고 환불 가능 여부를 묻는다. 상대는 여행사 직원.", "택배 배송 문의|온라인으로 주문한 물건이 숙소에 오지 않았다. 배송 회사에 전화해 확인한다. 상대는 배송 회사 상담원.", "렌터카 반납 연장|렌터카 회사에 전화해 반납을 하루 늦추고 추가 요금을 확인한다. 상대는 렌터카 직원.", "호텔 예약 확인 전화|출발 전 호텔에 전화해 예약 내용과 공항 픽업 서비스를 확인한다. 상대는 호텔 예약 담당자.", "병원 예약 변경|병원에 전화해 진료 예약 시간을 바꾼다. 상대는 병원 접수 직원."].map(s => { const i = s.indexOf("|"); return {t:s.slice(0,i), d:s.slice(i+1)}; });
+// 🎯 OPIc 롤플레이 (OPIc 단골 주제 × 질문하기/문제 해결)
+const OPIC_SCENES = ["OPIc·영화 (질문하기)|친구와 이번 주말에 영화를 보려고 한다. 친구에게 전화해서 어떤 영화를, 몇 시에, 어디서 볼지 3~4가지 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·영화 (문제 해결)|예매한 영화표를 보니 날짜를 잘못 예매했다. 영화관에 전화해 상황을 설명하고 2~3가지 해결 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 영화관 직원.", "OPIc·공연·콘서트 (질문하기)|보고 싶은 콘서트가 있다. 공연장에 전화해 표 가격, 좋은 좌석, 공연 시간, 주차에 대해 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 공연장 매표 담당자.", "OPIc·공연·콘서트 (문제 해결)|콘서트 당일 갑자기 일이 생겨 못 가게 됐다. 같이 가기로 한 친구에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·공원 (질문하기)|새로 생긴 공원에 가 보려고 한다. 공원 관리 사무소에 전화해 운영 시간, 시설, 반려견 출입, 주차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 공원 관리 직원.", "OPIc·공원 (문제 해결)|친구와 공원에서 만나기로 했는데 비가 많이 온다. 친구에게 전화해 상황을 설명하고 다른 계획 2~3가지를 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·해변 (질문하기)|친구와 해변 여행을 가려고 한다. 친구에게 해변 위치, 숙소, 가져갈 물건, 교통편을 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·해변 (문제 해결)|해변 근처 숙소에 도착했는데 예약한 바다 전망 방이 아니다. 숙소 직원에게 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 숙소 직원.", "OPIc·캠핑 (질문하기)|처음으로 캠핑을 가려고 한다. 캠핑장에 전화해 예약, 시설, 장비 대여, 요금을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 캠핑장 직원.", "OPIc·캠핑 (문제 해결)|캠핑장에 도착했는데 빌린 텐트가 찢어져 있다. 대여점에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 장비 대여점 직원.", "OPIc·카페 (질문하기)|친구가 새로 생긴 카페를 추천했다. 친구에게 카페 위치, 대표 메뉴, 분위기, 붐비는 시간을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·카페 (문제 해결)|카페에서 주문한 음료와 다른 음료가 나왔고 이미 마셔 버렸다. 직원에게 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 카페 직원.", "OPIc·쇼핑 (질문하기)|새 노트북을 사려고 한다. 전자제품 매장에 전화해 모델, 가격, 할인, 보증 기간을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 매장 직원.", "OPIc·쇼핑 (문제 해결)|온라인으로 산 옷이 사이즈가 맞지 않고 색도 다르다. 쇼핑몰 고객센터에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 쇼핑몰 상담원.", "OPIc·음악 감상 (질문하기)|음악 수업을 들어 보려고 한다. 음악 학원에 전화해 수업 종류, 시간, 비용, 악기 대여를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 음악 학원 직원.", "OPIc·음악 감상 (문제 해결)|친구에게 빌린 블루투스 스피커가 고장 났다. 친구에게 전화해 상황을 설명하고 2~3가지 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·요리 (질문하기)|요리 수업에 등록하려고 한다. 요리 학원에 전화해 수업 내용, 일정, 준비물, 가격을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 요리 학원 직원.", "OPIc·요리 (문제 해결)|친구를 저녁에 초대했는데 요리를 망쳤다. 친구에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·조깅·걷기 (질문하기)|같이 조깅할 동호회에 가입하려고 한다. 동호회 회장에게 모임 시간, 장소, 회비, 수준을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동호회 회장.", "OPIc·조깅·걷기 (문제 해결)|조깅하다 발목을 다쳐서 내일 동호회 모임에 못 나간다. 회장에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동호회 회장.", "OPIc·헬스장 (질문하기)|새로 생긴 헬스장에 등록하려고 한다. 헬스장에 전화해 회원권 가격, 운영 시간, PT, 샤워 시설을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 헬스장 직원.", "OPIc·헬스장 (문제 해결)|헬스장 회원권을 끊었는데 출장이 잡혀 한 달 동안 못 간다. 헬스장에 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 헬스장 직원.", "OPIc·수영 (질문하기)|수영 강습을 받으려고 한다. 수영장에 전화해 강습 시간, 수준별 반, 가격, 준비물을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 수영장 직원.", "OPIc·수영 (문제 해결)|수영장에 가방을 두고 왔다. 수영장에 전화해 상황을 설명하고 찾는 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 수영장 직원.", "OPIc·자전거 (질문하기)|자전거를 사려고 한다. 자전거 가게에 전화해 추천 모델, 가격, 수리 서비스, 시승 가능 여부를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 자전거 가게 주인.", "OPIc·자전거 (문제 해결)|빌린 자전거를 타다가 펑크가 났다. 대여점에 전화해 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 자전거 대여점 직원.", "OPIc·요가 (질문하기)|요가 수업을 처음 들으려고 한다. 요가원에 전화해 초보반, 시간, 가격, 준비물을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 요가원 직원.", "OPIc·요가 (문제 해결)|요가 수업을 예약했는데 회의가 늦게 끝나 갈 수 없다. 요가원에 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 요가원 직원.", "OPIc·골프 (질문하기)|골프 레슨을 받으려고 한다. 골프 연습장에 전화해 레슨 시간, 가격, 장비 대여, 주차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 골프 연습장 직원.", "OPIc·골프 (문제 해결)|주말 골프 라운딩을 예약했는데 태풍 예보가 있다. 같이 가기로 한 친구에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 골프 친구.", "OPIc·국내 여행 (질문하기)|주말에 국내 여행을 가려고 한다. 여행사에 전화해 추천 장소, 패키지 가격, 일정, 숙소를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 여행사 직원.", "OPIc·국내 여행 (문제 해결)|기차를 놓쳐 여행지에 예정보다 늦게 도착하게 됐다. 숙소에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 숙소 주인.", "OPIc·해외 여행 (질문하기)|해외여행을 계획 중이다. 여행사에 전화해 항공권, 호텔, 비자, 여행 일정을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 여행사 직원.", "OPIc·해외 여행 (문제 해결)|여행 출발 이틀 전 여권 유효기간이 부족하다는 걸 알았다. 여행사에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 여행사 직원.", "OPIc·출장 (질문하기)|다음 달 해외 출장이 있다. 동료에게 출장지의 날씨, 숙소, 교통, 식당에 대해 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동료.", "OPIc·출장 (문제 해결)|출장 가는 날 비행기가 결항됐다. 상사에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 상사.", "OPIc·집·이사 (질문하기)|이사할 집을 찾고 있다. 부동산에 전화해 집 크기, 월세, 위치, 입주 날짜를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 부동산 중개인.", "OPIc·집·이사 (문제 해결)|이사 온 집의 보일러가 고장 나서 따뜻한 물이 안 나온다. 집주인에게 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 집주인.", "OPIc·가구 (질문하기)|새 소파를 사려고 한다. 가구점에 전화해 크기, 색상, 가격, 배송 날짜를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 가구점 직원.", "OPIc·가구 (문제 해결)|배송된 가구가 부서져 있다. 가구점에 전화해 상황을 설명하고 2~3가지 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 가구점 직원.", "OPIc·은행 (질문하기)|새 계좌를 만들려고 한다. 은행에 전화해 필요한 서류, 수수료, 영업 시간, 온라인 뱅킹을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 은행 직원.", "OPIc·은행 (문제 해결)|은행 카드를 잃어버렸다. 은행에 전화해 상황을 설명하고 해결 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 은행 상담원.", "OPIc·호텔 (질문하기)|여행 중 묵을 호텔을 찾고 있다. 호텔에 전화해 방 종류, 가격, 조식, 공항 셔틀을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 호텔 예약 담당자.", "OPIc·호텔 (문제 해결)|호텔에 도착했는데 예약이 잘못되어 방이 없다고 한다. 직원에게 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 호텔 프런트 직원.", "OPIc·휴대폰 (질문하기)|새 휴대폰을 사려고 한다. 휴대폰 매장에 전화해 최신 모델, 요금제, 할인, 보상 판매를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 휴대폰 매장 직원.", "OPIc·휴대폰 (문제 해결)|새로 산 휴대폰이 자꾸 꺼진다. 매장에 전화해 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 휴대폰 매장 직원.", "OPIc·인터넷 (질문하기)|집에 인터넷을 새로 설치하려고 한다. 통신사에 전화해 속도, 요금, 설치 날짜, 약정을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 통신사 상담원.", "OPIc·인터넷 (문제 해결)|중요한 화상회의 직전에 집 인터넷이 끊겼다. 통신사에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 통신사 상담원.", "OPIc·재활용 (질문하기)|이사 온 동네의 재활용 규칙을 모른다. 관리사무소에 전화해 분리배출 요일, 장소, 방법을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 관리사무소 직원.", "OPIc·재활용 (문제 해결)|재활용 쓰레기를 잘못 버려서 관리사무소에서 연락이 왔다. 상황을 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 관리사무소 직원.", "OPIc·날씨 (질문하기)|다음 주 여행을 앞두고 날씨가 걱정된다. 여행지에 사는 친구에게 날씨, 옷차림, 우산 필요 여부를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·날씨 (문제 해결)|폭설 때문에 친구와의 약속에 갈 수 없게 됐다. 친구에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·교통 (질문하기)|새 직장까지 가는 방법을 모른다. 동료에게 버스, 지하철, 소요 시간, 교통비를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동료.", "OPIc·교통 (문제 해결)|지하철이 고장 나서 중요한 회의에 늦게 됐다. 동료에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 동료.", "OPIc·명절 (질문하기)|외국인 친구가 한국 명절에 대해 궁금해한다. 반대로 친구 나라의 명절에 대해 3~4가지 질문한다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 외국인 친구.", "OPIc·명절 (문제 해결)|명절에 가족 모임 식당을 예약했는데 식당에서 예약이 안 되어 있다고 한다. 직원에게 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 식당 직원.", "OPIc·외식 (질문하기)|가족 모임을 할 식당을 찾고 있다. 식당에 전화해 예약, 룸, 메뉴, 주차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 식당 직원.", "OPIc·외식 (문제 해결)|식당 예약 날짜에 갑자기 일이 생겼다. 식당에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 식당 직원.", "OPIc·건강·병원 (질문하기)|건강검진을 받으려고 한다. 병원에 전화해 검사 종류, 예약, 준비 사항, 비용을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 병원 직원.", "OPIc·건강·병원 (문제 해결)|병원 예약 시간에 늦을 것 같다. 병원에 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 병원 접수 직원.", "OPIc·약속 (질문하기)|친구와 오랜만에 만나기로 했다. 친구에게 전화해 만날 날짜, 장소, 무엇을 할지 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·약속 (문제 해결)|친구와의 약속을 깜빡 잊었다. 친구에게 전화해 사과하고 상황을 설명한 뒤 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·패션 (질문하기)|중요한 행사에 입을 옷을 사려고 한다. 옷 가게에 전화해 스타일, 사이즈, 가격, 수선을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 옷 가게 직원.", "OPIc·패션 (문제 해결)|드라이클리닝 맡긴 정장에 얼룩이 그대로 있다. 세탁소에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 세탁소 주인.", "OPIc·도서관 (질문하기)|동네 도서관을 이용하려고 한다. 도서관에 전화해 회원 가입, 대출 권수, 운영 시간, 열람실을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 도서관 사서.", "OPIc·도서관 (문제 해결)|빌린 책을 잃어버렸다. 도서관에 전화해 상황을 설명하고 해결 방법을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 도서관 사서.", "OPIc·렌터카 (질문하기)|여행 중 차를 빌리려고 한다. 렌터카 회사에 전화해 차종, 요금, 보험 포함 여부, 반납 장소를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 렌터카 직원.", "OPIc·렌터카 (문제 해결)|렌터카를 반납하러 가는데 차에 흠집이 생겼다. 렌터카 회사에 전화해 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 렌터카 직원.", "OPIc·가족·친구 모임 (질문하기)|친구 생일 파티를 준비하려고 한다. 다른 친구에게 날짜, 장소, 선물, 예산을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·가족·친구 모임 (문제 해결)|생일 파티 장소로 예약한 곳이 갑자기 문을 닫았다. 친구들에게 전화해 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·미용실 (질문하기)|머리를 하러 미용실에 가려고 한다. 미용실에 전화해 예약, 가격, 디자이너, 소요 시간을 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 미용실 직원.", "OPIc·미용실 (문제 해결)|미용실에서 원하지 않은 스타일로 머리가 잘렸다. 미용사에게 설명하고 해결책을 제안한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 미용사.", "OPIc·TV·드라마 (질문하기)|친구가 재미있는 드라마를 추천했다. 친구에게 줄거리, 배우, 볼 수 있는 곳, 회차를 묻는다. (OPIc 롤플레이: 내가 질문을 주도하고, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구.", "OPIc·TV·드라마 (문제 해결)|친구에게 빌린 DVD를 망가뜨렸다. 친구에게 전화해 상황을 설명하고 대안을 제시한다. (OPIc 롤플레이: 내가 문제를 설명하고 대안을 제시하며, 끝나면 상대가 비슷한 경험을 물어본다) 상대는 친구."].map(s => { const i = s.indexOf("|"); return {t:s.slice(0,i), d:s.slice(i+1)}; });
+const ALL_SCENES = SCENES.concat(MORE_SCENES.filter(m => !SCENES.some(s => s.t === m.t)), OPIC_SCENES);
+function randomScene(kind){
+  const recent = S.recentScenes || [];
+  const base = kind === "o" ? OPIC_SCENES : ALL_SCENES;
+  let pool = base.filter(s => !recent.includes(s.t));
+  if (!pool.length) pool = base;
+  const s = pool[Math.floor(Math.random() * pool.length)];
+  S.recentScenes = [s.t].concat(recent.filter(x => x !== s.t)).slice(0, 40);
+  return s;
+}
+
+const MODES = {
+  sail:  {label:"SAIL 모의평가", desc:"매번 다른 주제로 시험 연습"},
+  daily: {label:"일상 대화", desc:"친구처럼 자유 대화"},
+  biz:   {label:"상황극", desc:"해외 상황·비즈니스"}
+};
+const SPEED = {
+  fast:    {ms:400,  hint:"말을 멈추면 바로 대답해요. 실제 통화처럼 빠른 템포입니다."},
+  normal:  {ms:1200, hint:"말 사이에 잠깐 생각해도 기다려 줘요."},
+  relaxed: {ms:3000, hint:"더듬거리거나 생각하느라 멈춰도 끊지 않고, 말을 멈춘 지 3초가 지나야 대답해요."}
+};
+
+/* ===================== 저장된 설정 ===================== */
+const $ = id => document.getElementById(id);
+let S = {};
+try { S = JSON.parse(localStorage.getItem("aicall") || "{}"); } catch(e) {}
+S = Object.assign({speed:"normal", scene:"", char:"emma", mode:"sail", subs:true, key:"", model:MODELS[0], out:"ear", vol:130, recent:[]}, S);
+if (!CHARS[S.char]) S.char = "emma";
+if (!MODES[S.mode]) S.mode = "sail";
+if (!SPEED[S.speed]) S.speed = "normal";
+if (!MODELS.includes(S.model)) S.model = MODELS[0];
+function saveS(){ try { localStorage.setItem("aicall", JSON.stringify(S)); } catch(e) {} }
+function esc(s){ return String(s == null ? "" : s).replace(/[&<>"]/g, m => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m])); }
+function show(id){ document.querySelectorAll(".screen").forEach(s => s.classList.toggle("on", s.id === id)); window.scrollTo(0,0); }
+function toast(t){ const el = $("toast"); el.textContent = t; el.classList.add("on"); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove("on"), 3500); }
+function faceHTML(c, cls){ return `<div class="face ${cls||""}" style="background:${c.color}">${c.name[0]}<i>${c.flag}</i></div>`; }
+
+/* ===================== 설정 화면 ===================== */
+function renderSetup(){
+  $("partners").innerHTML = Object.entries(CHARS).map(([k,c]) =>
+    `<button class="pc ${S.char===k?"sel":""}" data-char="${k}">${faceHTML(c)}<b>${c.name}</b>
+      <span class="gender ${c.g}">${c.g==="f"?"여성":"남성"} · ${c.country}</span><small>${c.tone} 목소리</small></button>`).join("");
+  $("modes").innerHTML = Object.entries(MODES).map(([k,m]) =>
+    `<button class="opt ${S.mode===k?"sel":""}" data-mode="${k}"><b>${m.label}</b><small>${m.desc}</small></button>`).join("");
+  $("bizBox").style.display = S.mode === "biz" ? "block" : "none";
+  $("scene").value = S.scene || "";
+  $("sceneChips").innerHTML = `<button class="chip rnd" data-scene="r">🎲 전체 랜덤 (${ALL_SCENES.length}가지)</button><button class="chip rnd" data-scene="o">🎯 OPIc 롤플레이 랜덤 (${OPIC_SCENES.length}가지)</button>` + SCENES.map((s,i) => `<button class="chip" data-scene="${i}">${s.t}</button>`).join("");
+  document.querySelectorAll("#speedSeg button").forEach(b => b.classList.toggle("sel", b.dataset.speed === S.speed));
+  $("speedHint").textContent = SPEED[S.speed].hint;
+  $("optSubs").checked = S.subs;
+  $("key").value = S.key || "";
+  const due = loadNB().filter(isDue).length;
+  $("nbCount").textContent = due ? `(복습 ${due})` : "";
+}
+document.addEventListener("click", e => {
+  const ch = e.target.closest("[data-char]"); if (ch){ S.char = ch.dataset.char; saveS(); renderSetup(); }
+  const md = e.target.closest("[data-mode]"); if (md){ S.mode = md.dataset.mode; saveS(); renderSetup(); }
+  const sp = e.target.closest("[data-speed]"); if (sp){ S.speed = sp.dataset.speed; saveS(); renderSetup(); }
+  const sc = e.target.closest("[data-scene]");
+  if (sc){ const k = sc.dataset.scene, rnd = k === "r" || k === "o";
+    const s = rnd ? randomScene(k) : SCENES[+k]; S.scene = s.d; saveS(); $("scene").value = S.scene;
+    if (rnd) toast(`${k === "o" ? "🎯" : "🎲"} ${s.t}`); }
+});
+$("scene").addEventListener("input", () => { S.scene = $("scene").value; saveS(); });
+$("optSubs").addEventListener("change", () => { S.subs = $("optSubs").checked; saveS(); });
+
+/* ===================== 주제 고르기 + 프롬프트 ===================== */
+let topic = null;   // {ko, en}
+function pickTopic(){
+  if (S.mode === "sail"){
+    const pool = SAIL_TOPICS.filter(t => !(S.recent || []).includes(t.ko));
+    const t = (pool.length ? pool : SAIL_TOPICS)[Math.floor(Math.random() * (pool.length || SAIL_TOPICS.length))];
+    S.recent = [t.ko].concat((S.recent || []).filter(x => x !== t.ko)).slice(0, 8); saveS();
+    const others = SAIL_TOPICS.filter(x => x !== t);
+    const second = others[Math.floor(Math.random() * others.length)];
+    return {ko:t.ko, en:t.en, second:second.en};
+  }
+  if (S.mode === "daily"){ const t = DAILY_TOPICS[Math.floor(Math.random()*DAILY_TOPICS.length)]; return {ko:"", en:t}; }
+  const sc = (S.scene || "").trim();
+  return {ko: sc ? (ALL_SCENES.find(x => x.d === sc) || {t:"직접 입력한 상황"}).t : "", en: sc};
+}
+function buildPrompt(){
+  const c = CHARS[S.char];
+  const base = `You are ${c.name}, a friendly native English speaker from ${c.from}, talking with the user on a phone call.
+The user is a Korean professional whose English is around beginner-to-intermediate. They are preparing for Samsung's English speaking test (SAIL, similar to OPIc) and aim for IH level.`;
+  let mode;
+  if (S.mode === "sail"){
+    mode = `You are a warm, professional examiner giving a SAIL/OPIc-style speaking interview.
+TODAY'S MAIN TOPIC: ${topic.en}.
+- Do NOT ask the user to introduce themselves. Skip self-introduction completely.
+- Right after a one-sentence greeting, ask your first question about today's main topic.
+- Ask questions the way SAIL/OPIc does, in this kind of order on the same topic: describe it -> a typical routine or habit -> a specific past experience ("Tell me about a time...") -> how it has changed / compare past and present -> your opinion. Add natural follow-up questions based on the answer.
+- After about 5 questions, move to a second topic: ${topic.second}. Optionally finish with one short role-play (explain the situation clearly first).
+- Ask exactly ONE question at a time, then wait. Do not correct mistakes during the interview; react briefly ("I see.", "Thank you.").
+- If the user says "finish" or "that's all", close the interview and give short spoken feedback: an estimated level (IL, IM1, IM2, IM3, IH, AL), one strength, and two expressions to improve.`;
+  } else if (S.mode === "daily"){
+    mode = `Have a relaxed, friendly chat like a friend. Start by talking about: ${topic.en}. Share a little about yourself too (you live in ${c.from}).
+When the user makes a mistake, naturally repeat the correct version in your reply (recast) without stopping the conversation. About every 4 turns, briefly point out ONE useful correction.`;
+  } else {
+    mode = topic.en ? `This is a role-play of a real situation abroad. The user described the situation in Korean:
+"""${topic.en}"""
+Play the most natural counterpart in this situation (e.g. hotel clerk, waiter, airline staff, local colleague). Choose a fitting name and role; you may ignore your default name. Stay in role and make it realistic, including small problems, questions and natural small talk. Start the scene yourself right away in English (do not explain the setup in Korean).
+If the user is stuck or speaks Korean, give one short natural English way to say it, then continue in role.${topic.en.includes("OPIc") ? `
+This is an OPIc-style role-play. Let the USER lead: if it is a "질문하기" (asking questions) situation, answer the user's questions naturally and briefly and let them ask 3-4 questions; if it is a "문제 해결" (problem) situation, let the user explain the problem and suggest 2-3 alternatives, react to each, and accept one.
+When the role-play is finished (or after about 6-8 exchanges), step out of the role and say: "Okay, thank you. Now, have you ever had a similar experience? Tell me about it in detail." Then ask 1-2 follow-up questions about that experience (when, where, what happened, how it ended, how you felt).` : ""}` :
+    `Do a role-play of a common situation abroad (hotel check-in, ordering at a restaurant, asking for directions, etc.). Pick one, briefly tell the user the situation, and start the scene right away.`;
+  }
+  const relaxed = S.speed === "relaxed" ? `
+- The user may speak slowly, hesitate, or pause to think in the middle of a sentence. Be very patient. Never jump in during their pauses; wait until they have clearly finished.` : "";
+  return `${base}
+${mode}
+Rules for every mode:
+- Use EASY English: simple everyday words (about CEFR A2-B1 level), short and clear sentences, no idioms or difficult words. If you must use a harder word, explain it simply.
+- Speak at a natural, clear pace. Keep each turn short: 1 to 3 sentences.
+- Ask one question at a time and wait for the answer.
+- If the user speaks Korean, says "help", or seems stuck, give a simple English way to say what they mean (you may add a very short Korean hint), then continue in English.
+- This is a phone call: no emojis, no lists, just natural speech.
+Natural turn-taking:
+- Start with a short natural reaction ("Oh nice!", "I see.", "Really?").
+- If the user starts talking while you are speaking, stop and listen, then respond to what they said.
+- If you both start talking at the same time, yield politely ("Oh, sorry, go ahead!").${relaxed}`;
+}
+
+/* ===================== 안드로이드 앱 연동 ===================== */
+const APP = (window.AndroidAudio && typeof window.AndroidAudio.setSpeaker === "function") ? window.AndroidAudio : null;
+const NATIVE = !!(APP && typeof APP.pcm === "function");   // 앱이 AI 목소리를 '통화 소리'로 재생
+let appTimer = 0;
+function outMode(){ return S.out === "spk" ? "spk" : "ear"; }
+function appRoute(){ if (APP) try { APP.setSpeaker(outMode() === "spk"); } catch(e){} }
+
+/* ===================== 오디오 ===================== */
+let ws, inCtx, outCtx, analyser, masterGain, limiter, micStream, workletNode, wakeLock;
+let ready=false, ending=false, muted=false, subsOn=true;
+let nextTime=0, sources=new Set(), transcript=[], t0=0, timerId=0, rafId=0;
+function volVal(){ const v = Number(S.vol); return isFinite(v) ? v : 130; }
+function applyVol(gainOverride){
+  const v = volVal() / 100, g = gainOverride == null ? 1 : gainOverride;
+  if (masterGain && outCtx) masterGain.gain.setTargetAtTime(NATIVE ? 0 : v * g, outCtx.currentTime, 0.03);
+  if (NATIVE) try { APP.setGain(Math.min(1, g)); } catch(e){}
+  $("volSlider").value = volVal(); $("volTxt").textContent = volVal() + "%";
+}
+function setupOut(){
+  const AC = window.AudioContext || window.webkitAudioContext;
+  if (!outCtx){
+    outCtx = new AC({sampleRate:24000});
+    analyser = outCtx.createAnalyser(); analyser.fftSize = 512;
+    masterGain = outCtx.createGain();
+    limiter = outCtx.createDynamicsCompressor();
+    limiter.threshold.value = -6; limiter.knee.value = 6; limiter.ratio.value = 12; limiter.attack.value = 0.003; limiter.release.value = 0.15;
+    analyser.connect(masterGain); masterGain.connect(limiter); limiter.connect(outCtx.destination);
+  }
+  outCtx.resume().catch(()=>{});
+  applyVol();
+}
+const WORKLET = `
+class Rec extends AudioWorkletProcessor{
+  constructor(){super();this.r=sampleRate/16000;this.a=0;this.s=0;this.n=0;this.o=new Int16Array(800);this.i=0;this.pk=0;}
+  process(inp){const ch=inp[0]&&inp[0][0];if(!ch)return true;
+    for(let k=0;k<ch.length;k++){const x=ch[k];this.s+=x;this.n++;const ax=x<0?-x:x;if(ax>this.pk)this.pk=ax;this.a+=1;
+      if(this.a>=this.r){this.a-=this.r;let v=this.s/this.n;this.s=0;this.n=0;v=v>1?1:v<-1?-1:v;
+        this.o[this.i++]=v<0?v*0x8000:v*0x7fff;
+        if(this.i>=this.o.length){const b=this.o.slice(0);this.port.postMessage({pcm:b.buffer,pk:this.pk},[b.buffer]);this.i=0;this.pk=0;}}}
+    return true;}}
+registerProcessor('rec',Rec);`;
+const WORKLET_URL = URL.createObjectURL(new Blob([WORKLET], {type:"application/javascript"}));
+function b64FromBuf(buf){
+  const u = new Uint8Array(buf); let s = "";
+  for (let i=0;i<u.length;i+=0x8000) s += String.fromCharCode.apply(null, u.subarray(i,i+0x8000));
+  return btoa(s);
+}
+function wavFrom(chunks, n){
+  const buf = new ArrayBuffer(44 + n * 2), v = new DataView(buf);
+  const w = (o, s) => { for (let i=0;i<s.length;i++) v.setUint8(o+i, s.charCodeAt(i)); };
+  w(0,"RIFF"); v.setUint32(4, 36 + n*2, true); w(8,"WAVE"); w(12,"fmt "); v.setUint32(16,16,true); v.setUint16(20,1,true); v.setUint16(22,1,true);
+  v.setUint32(24,16000,true); v.setUint32(28,32000,true); v.setUint16(32,2,true); v.setUint16(34,16,true); w(36,"data"); v.setUint32(40, n*2, true);
+  let o = 44; for (const c of chunks){ new Int16Array(buf, o, c.length).set(c); o += c.length * 2; }
+  return b64FromBuf(buf);
+}
+function send(o){ if (ws && ws.readyState === 1) ws.send(JSON.stringify(o)); }
+function setStatus(t, dot){ $("status").innerHTML = (dot ? "<i></i>" : "") + t; }
+
+/* ===================== 통화 시작 ===================== */
+let attempts = [], connectedModel = "";
+async function startCall(){
+  const key = $("key").value.trim();
+  if (!key){ alert("Gemini API 키를 먼저 입력해 주세요."); $("key").focus(); return; }
+  if (S.mode === "biz") S.scene = $("scene").value;
+  S.key = key; saveS();
+  const c = CHARS[S.char];
+  topic = pickTopic();
+  ready=false; ending=false; muted=false; subsOn=S.subs; transcript=[]; nextTime=0; sources.clear(); t0 = 0;
+  Object.assign(D, {sent:0, recvAudio:0, interrupts:0, turns:0, last:"", model:"", micPk:0, events:[]}); $("diag").style.display = "none";
+  lats = []; lastVoiceEnd = 0; voiceOn = false; aiTurnOpen = false; recChunks = []; recSamples = 0; recHang = 0; $("cLat").textContent = "";
+
+  $("cName").textContent = c.name; $("cMode").textContent = MODES[S.mode].label; $("cTime").textContent = "00:00";
+  const bf = $("bigFace"); bf.textContent = c.name[0]; bf.style.background = c.color; bf.className = "face bigface";
+  $("cTopic").style.display = topic.ko ? "inline-block" : "none"; $("cTopic").textContent = (S.mode === "sail" ? "주제: " : "상황: ") + topic.ko;
+  renderSubs(); setSubs(subsOn);
+  $("micBtn").classList.remove("off"); $("soundPanel").style.display = "none"; $("soundBtn").classList.remove("off");
+  $("err").classList.remove("on");
+  show("call"); setStatus("연결 중…");
+  setupOut();
+  setSoundUI();
+
+  try {
+    if (APP) try { APP.callStart(outMode() === "spk"); } catch(e){}
+    micStream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}});
+    appRoute();
+    clearInterval(appTimer); if (APP) appTimer = setInterval(appRoute, 1500);
+  } catch(e){ return fail("마이크 권한 필요", "마이크 사용을 '허용'으로 바꾼 뒤 다시 시도해 주세요.", e.message); }
+
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext;
+    inCtx = new AC();
+    await inCtx.audioWorklet.addModule(WORKLET_URL);
+    const src = inCtx.createMediaStreamSource(micStream);
+    workletNode = new AudioWorkletNode(inCtx, "rec");
+    const mute0 = inCtx.createGain(); mute0.gain.value = 0;
+    src.connect(workletNode); workletNode.connect(mute0); mute0.connect(inCtx.destination);
+    workletNode.port.onmessage = e => {
+      if (!ready || muted) return;
+      bargeIn(e.data.pk);
+      trackVoice(e.data.pk, e.data.pcm);
+      D.sent++; D.micPk = Math.max(D.micPk * 0.8, e.data.pk); $("micBar").style.width = Math.min(100, e.data.pk * 250) + "%";
+      send({realtimeInput:{audio:{data:b64FromBuf(e.data.pcm), mimeType:"audio/pcm;rate=16000"}}});
+    };
+    await inCtx.resume();
+  } catch(e){ return fail("오디오 오류", "오디오를 시작하지 못했습니다. 앱을 다시 실행해 주세요.", e.message); }
+
+  try { wakeLock = await navigator.wakeLock.request("screen"); } catch(e) {}
+  if (ending) return;
+
+  const first = S.model || MODELS[0];
+  const order = [first, ...MODELS.filter(m => m !== first)];
+  attempts = order.map(m => ({model:m, voice:true, vad:true})).concat([{model:order[0], voice:true, vad:false}, {model:order[0], voice:false, vad:false}]);
+  connect(0, key, c);
+  loop();
+}
+
+function connect(i, key, c){
+  if (ending) return;
+  const a = attempts[i];
+  setStatus(i ? `다시 연결 중… (${i+1}/${attempts.length})` : "연결 중…");
+  const gen = { responseModalities:["AUDIO"] };
+  if (a.voice) gen.speechConfig = { voiceConfig: { prebuiltVoiceConfig: { voiceName: c.voice } } };
+  const sock = new WebSocket("wss://generativelanguage.googleapis.com/ws/google.ai.generativelanguage.v1beta.GenerativeService.BidiGenerateContent?key=" + encodeURIComponent(key));
+  ws = sock;
+  sock.onopen = () => send({setup:{
+    model: "models/" + a.model,
+    generationConfig: gen,
+    systemInstruction: { parts:[{ text: buildPrompt() }] },
+    inputAudioTranscription: {},
+    outputAudioTranscription: {},
+    ...(a.vad ? { realtimeInputConfig: {
+      automaticActivityDetection: {
+        startOfSpeechSensitivity: "START_SENSITIVITY_LOW",
+        endOfSpeechSensitivity: S.speed === "fast" ? "END_SENSITIVITY_HIGH" : "END_SENSITIVITY_LOW",
+        prefixPaddingMs: 120,
+        silenceDurationMs: SPEED[S.speed].ms
+      },
+      activityHandling: "START_OF_ACTIVITY_INTERRUPTS"
+    }} : {})
+  }});
+  sock.onmessage = async ev => {
+    let txt = ev.data; if (typeof txt !== "string") txt = await ev.data.text();
+    let msg; try { msg = JSON.parse(txt); } catch(e){ return; }
+    if (msg.setupComplete){ connectedModel = a.model; if (S.model !== a.model){ S.model = a.model; saveS(); } }
+    handle(msg);
+  };
+  sock.onerror = () => {};
+  sock.onclose = e => {
+    if (ending || sock !== ws) return;
+    const r = (e.reason || "").toLowerCase();
+    const fatal = r.includes("api key") || r.includes("api_key") || r.includes("quota") || r.includes("exhausted");
+    dlog(`${a.model} 종료 ${e.code} ${(e.reason||"").slice(0,60)}`);
+    if (!ready && !fatal && i + 1 < attempts.length) return connect(i + 1, key, c);
+    onDrop(e);
+  };
+}
+
+/* ---------- 진단 ---------- */
+const D = {sent:0, recvAudio:0, interrupts:0, turns:0, last:"", model:"", micPk:0, events:[]};
+function dlog(t){ D.events.push(new Date().toTimeString().slice(0,8) + " " + t); if (D.events.length > 6) D.events.shift(); }
+function renderDiag(){
+  $("diag").innerHTML = [
+    `모델: ${esc(D.model || "연결 전")} · 목소리: ${esc(CHARS[S.char].voice)}`,
+    `출력: ${NATIVE ? "앱 통화소리" : APP ? "앱(구버전)" : "브라우저"} · ${outMode() === "ear" ? "수화기" : "스피커"}`,
+    `대기시간 설정: ${SPEED[S.speed].ms/1000}초`,
+    `마이크 전송: ${D.sent} · 크기 ${(D.micPk*100).toFixed(0)}`,
+    `AI 음성 수신: ${D.recvAudio} · 끊김 ${D.interrupts} · 대답 ${D.turns}`,
+    `마지막 메시지: ${esc(D.last)}`
+  ].concat(D.events.map(esc)).join("<br>");
+}
+setInterval(() => { if ($("diag").style.display !== "none") renderDiag(); }, 500);
+$("diagBtn").onclick = () => { const d = $("diag"); d.style.display = d.style.display === "none" ? "block" : "none"; renderDiag(); };
+let noAudioTimer = 0;
+
+function handle(msg){
+  D.last = Object.keys(msg).join(",") + (msg.serverContent ? ":" + Object.keys(msg.serverContent).join(",") : "");
+  if (msg.setupComplete){
+    ready = true; t0 = Date.now();
+    clearInterval(timerId); timerId = setInterval(tick, 1000);
+    setStatus("통화 중", true);
+    D.model = connectedModel; dlog("연결 성공: " + connectedModel);
+    clearTimeout(noAudioTimer);
+    noAudioTimer = setTimeout(() => { if (!D.recvAudio && !ending){ $("diag").style.display = "block"; renderDiag(); toast("AI 음성이 오지 않아요. 진단 정보를 확인해 주세요"); } }, 9000);
+    const kick = S.mode === "sail"
+      ? `(The call has just connected. Greet me in ONE short sentence and immediately ask your first question about today's topic: ${topic.en}. Do not ask me to introduce myself.)`
+      : S.mode === "daily" ? `(The call has just connected. Greet me warmly in one sentence and start chatting about: ${topic.en}.)`
+      : `(The call has just connected. Start the role-play right now as the counterpart, in English.)`;
+    send({clientContent:{turns:[{role:"user", parts:[{text:kick}]}], turnComplete:true}});
+    return;
+  }
+  const sc = msg.serverContent;
+  if (sc){
+    if (sc.interrupted){ stopPlayback(); D.interrupts++; aiTurnOpen = false; }
+    if (sc.turnComplete){ D.turns++; aiTurnOpen = false; }
+    if (sc.modelTurn && sc.modelTurn.parts) for (const p of sc.modelTurn.parts){
+      if (p.inlineData && p.inlineData.data){ D.recvAudio++; play(p.inlineData.data); }
+    }
+    if (sc.inputTranscription && sc.inputTranscription.text) addT("me", sc.inputTranscription.text);
+    if (sc.outputTranscription && sc.outputTranscription.text) addT("ai", sc.outputTranscription.text);
+  }
+  if (msg.goAway) setStatus("곧 통화 시간이 끝나요 (약 15분 제한)", true);
+}
+
+/* ---------- 재생 ---------- */
+function play(b64){
+  markAIStart();
+  if (NATIVE) try { APP.pcm(b64); } catch(e){}
+  // 브라우저 쪽 재생: 앱에서는 소리 0 (말하는 중 상태 판단용)
+  const bin = atob(b64), n = bin.length >> 1;
+  const f = new Float32Array(n);
+  for (let i=0;i<n;i++){ let v = bin.charCodeAt(2*i) | (bin.charCodeAt(2*i+1) << 8); if (v >= 0x8000) v -= 0x10000; f[i] = v / 32768; }
+  const buf = outCtx.createBuffer(1, n, 24000); buf.copyToChannel(f, 0);
+  const s = outCtx.createBufferSource(); s.buffer = buf; s.connect(analyser);
+  const at = Math.max(outCtx.currentTime + 0.04, nextTime);
+  s.start(at); nextTime = at + buf.duration;
+  sources.add(s); s.onended = () => sources.delete(s);
+}
+function stopPlayback(){
+  if (NATIVE) try { APP.flush(); } catch(e){}
+  if (ducked){ ducked = false; applyVol(); }
+  sources.forEach(s => { try { s.stop(); } catch(e){} }); sources.clear();
+  nextTime = outCtx ? outCtx.currentTime : 0;
+}
+function aiTalking(){ return sources.size > 0; }
+
+/* ---------- 끼어들기: 내가 말하면 AI 목소리를 즉시 줄임 ---------- */
+let loudRun = 0, quietRun = 0, ducked = false;
+function bargeIn(pk){
+  if (pk > 0.22){ loudRun++; quietRun = 0; } else { quietRun++; loudRun = 0; }
+  if (!ducked && aiTalking() && loudRun >= 3){ ducked = true; applyVol(0.18); }
+  if (ducked && (quietRun >= 14 || !aiTalking())){ ducked = false; applyVol(); }
+}
+
+/* ---------- 응답 시간 + 발음 평가용 녹음 ---------- */
+let lats = [], lastVoiceEnd = 0, voiceOn = false, aiTurnOpen = false, quietN = 0;
+let recChunks = [], recSamples = 0, recHang = 0;
+const REC_MAX = 16000 * 90;
+function trackVoice(pk, buf){
+  if (pk > 0.06){ voiceOn = true; quietN = 0; }
+  else if (voiceOn && ++quietN >= 2){ voiceOn = false; lastVoiceEnd = performance.now() - 100; }
+  if (recSamples < REC_MAX && (!aiTalking() || ducked)){
+    if (pk > 0.04) recHang = 8;
+    if (recHang > 0){ recHang--; const a = new Int16Array(buf.slice(0)); recChunks.push(a); recSamples += a.length; }
+  }
+}
+function markAIStart(){
+  if (aiTurnOpen) return;
+  aiTurnOpen = true;
+  if (lastVoiceEnd && !voiceOn){
+    const ms = performance.now() - lastVoiceEnd;
+    if (ms > 0 && ms < 9000){ lats.push(ms); $("cLat").textContent = `· 응답 ${(ms/1000).toFixed(1)}초`; }
+    lastVoiceEnd = 0;
+  }
+}
+
+function loop(){
+  rafId = requestAnimationFrame(loop);
+  const talking = aiTalking();
+  const bf = $("bigFace");
+  bf.classList.toggle("talk", talking);
+  bf.classList.toggle("listen", !talking && ready && !muted);
+  if (ready && !ending) setStatus(muted ? "마이크 꺼짐" : talking ? `${CHARS[S.char].name} 말하는 중…` : "듣고 있어요", !muted);
+}
+
+/* ---------- 자막 ---------- */
+function addT(who, text){
+  const last = transcript[transcript.length-1];
+  if (last && last.who === who) last.text += text; else transcript.push({who, text});
+  renderSubs();
+}
+function renderSubs(){
+  const box = $("subs");
+  if (!transcript.length){ box.innerHTML = `<div class="ph">상대가 말하면 여기에 크게 자막이 나와요</div>`; return; }
+  const items = transcript.slice(-5);
+  box.innerHTML = items.map((t,i) => `<p class="${t.who}${i < items.length - 2 ? " old" : ""}">${esc(t.text.trim())}</p>`).join("");
+  box.scrollTop = box.scrollHeight;
+}
+function setSubs(on){ subsOn = on; $("call").classList.toggle("nosubs", !on); $("subBtn").classList.toggle("off", !on); if (on) renderSubs(); }
+
+/* ---------- 버튼 ---------- */
+function tick(){
+  const s = Math.floor((Date.now()-t0)/1000);
+  $("cTime").textContent = String(Math.floor(s/60)).padStart(2,"0") + ":" + String(s%60).padStart(2,"0");
+}
+function setSoundUI(){
+  $("outSeg").style.display = APP ? "grid" : "none";
+  $("volRow").style.display = NATIVE ? "none" : "flex";
+  $("soundHint").textContent = NATIVE ? "음량은 휴대폰 옆면 볼륨 버튼으로 조절하세요" : APP ? "" : "브라우저에서는 음량만 조절할 수 있어요";
+  document.querySelectorAll("#outSeg button").forEach(b => b.classList.toggle("sel", b.dataset.out === outMode()));
+  applyVol(ducked ? 0.18 : null);
+}
+$("micBtn").onclick = () => { muted = !muted; $("micBtn").classList.toggle("off", muted); if (muted) send({realtimeInput:{audioStreamEnd:true}}); };
+$("soundBtn").onclick = () => { const p = $("soundPanel"), on = p.style.display === "none"; p.style.display = on ? "block" : "none"; $("soundBtn").classList.toggle("off", on); setSoundUI(); };
+document.addEventListener("click", e => { const b = e.target.closest("#outSeg [data-out]"); if (b){ S.out = b.dataset.out; saveS(); appRoute(); setSoundUI(); } });
+$("volSlider").oninput = e => { S.vol = +e.target.value; saveS(); applyVol(); };
+$("subBtn").onclick = () => setSubs(!subsOn);
+$("endBtn").onclick = () => endCall();
+$("errBack").onclick = () => { cleanup(); renderSetup(); show("setup"); };
+$("againBtn").onclick = startCall;
+$("homeBtn").onclick = () => { renderSetup(); show("setup"); };
+$("startBtn").onclick = startCall;
+$("notebookBtn").onclick = openStudy; $("notebookBtn2").onclick = openStudy;
+$("stBack").onclick = () => { renderSetup(); show("setup"); };
+$("histBtn").onclick = openHist; $("hBack").onclick = () => { renderSetup(); show("setup"); };
+
+/* ===================== 종료 / 오류 ===================== */
+function cleanup(){
+  clearInterval(appTimer); if (APP) try { APP.callEnd(); } catch(e){}
+  clearTimeout(noAudioTimer);
+  ending = true; ready = false;
+  try { ws && ws.close(); } catch(e){}
+  clearInterval(timerId); cancelAnimationFrame(rafId);
+  if (micStream) micStream.getTracks().forEach(t => t.stop());
+  try { inCtx && inCtx.close(); } catch(e){}
+  stopPlayback();
+  try { wakeLock && wakeLock.release(); } catch(e){}
+}
+function endCall(){
+  const secs = t0 ? Math.floor((Date.now()-t0)/1000) : 0;
+  cleanup();
+  const c = CHARS[S.char];
+  let meta = `${c.name} · ${MODES[S.mode].label}${topic && topic.ko ? " · " + topic.ko : ""} · ${Math.floor(secs/60)}분 ${secs%60}초`;
+  if (lats.length){ const s = lats.slice().sort((a,b)=>a-b); meta += ` · 평균 응답 ${(s[Math.floor(s.length/2)]/1000).toFixed(1)}초`; }
+  $("dMeta").textContent = meta;
+  $("dLog").innerHTML = transcript.length
+    ? transcript.map(t => `<p><b>${t.who === "ai" ? c.name : "나"}</b>${esc(t.text.trim())}</p>`).join("")
+    : `<p class="muted">기록된 대화가 없습니다.</p>`;
+  show("done");
+  runCoaching(transcript.slice(), secs);
+}
+function fail(title, msg, code){
+  $("errT").textContent = title; $("errM").textContent = msg; $("errC").textContent = code || "";
+  $("err").classList.add("on"); setStatus("");
+}
+function onDrop(e){
+  dlog(`연결 종료 code ${e.code} ${e.reason || ""}`);
+  const r = (e.reason || "").toLowerCase();
+  if (ready && t0 && Date.now() - t0 > 12*60*1000) return endCall();
+  let m;
+  if (r.includes("api key") || r.includes("api_key")) m = "API 키가 올바르지 않습니다.\n처음 화면에서 키를 다시 붙여넣어 주세요.";
+  else if (r.includes("quota") || r.includes("exhausted") || r.includes("rate")) m = "오늘 무료 사용 한도를 다 썼거나 잠시 사용량이 많습니다.\n잠시 후 또는 내일 다시 시도해 주세요. (요금은 청구되지 않습니다)";
+  else if (ready && transcript.length) { toast("통화가 끊겨서 종료했어요"); return endCall(); }
+  else if (ready) m = "통화가 끊겼습니다. 다시 시도해 주세요.";
+  else m = "AI 서버에 연결하지 못했습니다.\n인터넷 연결과 API 키를 확인해 주세요.";
+  fail("연결 종료", m, `code ${e.code}${e.reason ? " · " + e.reason : ""}`);
+}
+
+/* ===================== Gemini 텍스트 호출 ===================== */
+async function askText(prompt, audioB64){
+  let lastE;
+  const order = S.textModel ? [S.textModel, ...TEXT_MODELS.filter(m => m !== S.textModel)] : TEXT_MODELS;
+  for (const m of order){
+    try {
+      const parts = [{text:prompt}]; if (audioB64) parts.push({inlineData:{mimeType:"audio/wav", data:audioB64}});
+      const r = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${m}:generateContent?key=${encodeURIComponent(S.key)}`, {
+        method:"POST", headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({contents:[{role:"user", parts}], generationConfig:{responseMimeType:"application/json", temperature:0.3}})
+      });
+      const j = await r.json();
+      if (!r.ok){ lastE = (j.error && j.error.message) || r.status; if (r.status === 400 && /api key/i.test(String(lastE))) break; continue; }
+      const txt = (j.candidates?.[0]?.content?.parts || []).map(p => p.text || "").join("");
+      S.textModel = m; saveS();
+      return JSON.parse(txt.replace(/^```json\s*|```$/g, ""));
+    } catch(e){ lastE = e.message; }
+  }
+  throw new Error(lastE || "응답 없음");
+}
+function speak(t){ try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(t); u.lang = "en-US"; u.rate = 0.9; speechSynthesis.speak(u); } catch(e){} }
+
+/* ===================== 따라 말하기 (발음 연습) ===================== */
+const PR = {on:false, ctx:null, stream:null, chunks:[], n:0, btn:null, timer:0};
+async function practice(btn, out, target){
+  if (PR.on){ if (PR.btn === btn) return finishPractice(); else await stopRec(); }
+  try {
+    PR.stream = await navigator.mediaDevices.getUserMedia({audio:{echoCancellation:true, noiseSuppression:true, autoGainControl:true}});
+    const AC = window.AudioContext || window.webkitAudioContext;
+    PR.ctx = new AC(); await PR.ctx.audioWorklet.addModule(WORKLET_URL);
+    const node = new AudioWorkletNode(PR.ctx, "rec"), mute = PR.ctx.createGain(); mute.gain.value = 0;
+    PR.ctx.createMediaStreamSource(PR.stream).connect(node); node.connect(mute); mute.connect(PR.ctx.destination);
+    PR.chunks = []; PR.n = 0;
+    node.port.onmessage = e => { const a = new Int16Array(e.data.pcm); PR.chunks.push(a); PR.n += a.length; };
+    await PR.ctx.resume();
+  } catch(e){ toast("마이크를 쓸 수 없어요: " + e.message); return; }
+  PR.on = true; PR.btn = btn; PR.out = out; PR.target = target; PR.label = btn.textContent;
+  btn.textContent = "⏹ 다 말했으면 누르세요"; btn.classList.add("rec");
+  out.className = "pr on"; out.innerHTML = `<span class="muted">🎙 듣고 있어요… 문장을 소리 내어 말해 보세요</span>`;
+  clearTimeout(PR.timer); PR.timer = setTimeout(() => { if (PR.on && PR.btn === btn) finishPractice(); }, 12000);
+}
+async function stopRec(){
+  clearTimeout(PR.timer);
+  PR.on = false;
+  if (PR.stream) PR.stream.getTracks().forEach(t => t.stop());
+  try { await PR.ctx.close(); } catch(e){}
+  if (PR.btn){ PR.btn.textContent = PR.label; PR.btn.classList.remove("rec"); }
+}
+async function finishPractice(){
+  const out = PR.out, target = PR.target, chunks = PR.chunks, n = PR.n;
+  await stopRec();
+  if (n < 16000 * 0.6){ out.innerHTML = `<span class="muted">소리가 거의 녹음되지 않았어요. 다시 해 보세요.</span>`; return; }
+  out.innerHTML = `<span class="spin"></span><span class="muted">발음을 확인하고 있어요…</span>`;
+  try {
+    const r = await askText(`You are a kind but precise English pronunciation coach for a Korean learner.
+TARGET sentence: "${target}"
+The attached audio is the learner trying to say the target sentence.
+Return ONLY JSON: {"score": integer 0-10, "heard": "what you actually heard, in English", "good_ko": "잘한 점 한 줄 (Korean)", "fix_ko": "가장 먼저 고칠 점 1~2개, 입 모양·혀 위치·강세 등 구체적으로 (Korean)"}
+If the audio is silent or a different sentence, give a low score and say so in fix_ko.`, wavFrom(chunks, n));
+    const sc = Math.max(0, Math.min(10, Number(r.score) || 0));
+    out.innerHTML = `<span class="sc">${sc}/10</span>${sc >= 8 ? "훌륭해요! 👏" : sc >= 6 ? "좋아요, 조금만 더!" : "한 번 더 해볼까요?"}
+      ${r.heard ? `<div class="why">들린 문장: “${esc(r.heard)}”</div>` : ""}
+      ${r.good_ko ? `<div class="why">👍 ${esc(r.good_ko)}</div>` : ""}
+      ${r.fix_ko ? `<div class="why" style="color:#f5e6c4">💡 ${esc(r.fix_ko)}</div>` : ""}`;
+    bumpPractice(target, sc);
+  } catch(e){ out.innerHTML = `<span class="muted">확인하지 못했어요 (${esc(e.message)})</span>`; }
+}
+function actsHTML(i, kind){ return `<div class="acts"><button class="ab" data-say="${kind}${i}">🔊 듣기</button><button class="ab" data-prac="${kind}${i}">🎤 따라 말하기</button></div><div class="pr" id="pr-${kind}${i}"></div>`; }
+function wireActs(root, getText){
+  root.querySelectorAll("[data-say]").forEach(b => b.onclick = () => speak(getText(b.dataset.say)));
+  root.querySelectorAll("[data-prac]").forEach(b => b.onclick = () => practice(b, $("pr-" + b.dataset.prac), getText(b.dataset.prac)));
+}
+
+/* ===================== 통화 후 코칭 ===================== */
+let lastCoach = null;
+async function runCoaching(tr, secs, audioOverride){
+  const box = $("coach");
+  const mine = tr.filter(t => t.who === "me" && t.text.trim().split(/\s+/).length >= 2);
+  if (!mine.length){ box.innerHTML = `<p class="muted">분석할 내 말이 거의 없어요. 조금 더 길게 대화해 보세요.</p>`; $("memoList").textContent = ""; return; }
+  const audio = (typeof audioOverride === "string") ? audioOverride : (recSamples >= 32000 ? wavFrom(recChunks, recSamples) : "");
+  box.innerHTML = `<p class="muted"><span class="spin"></span>대화${audio ? "와 발음을" : "를"} 분석하고 있어요… (10~30초)</p>`;
+  const convo = tr.map(t => (t.who === "me" ? "USER: " : "PARTNER: ") + t.text.trim()).join("\n");
+  const ctx = S.mode === "sail" ? `SAIL/OPIc-style interview. Topic: ${topic.en}` : S.mode === "biz" ? `Role-play situation (Korean): ${topic.en}` : `Casual chat`;
+  const prompt = `You are an expert English speaking coach for a Korean professional (level: beginner-intermediate, goal: SAIL/OPIc IH).
+Below is a transcript of a spoken English phone call. USER lines come from speech recognition and may contain recognition errors: ignore obvious glitches, but correct real grammar, word choice and unnatural phrasing.
+Context: ${ctx}
+
+TRANSCRIPT:
+${convo}
+
+Return ONLY JSON in this shape (explanations in Korean; English must be natural, EASY spoken English):
+{
+ "opic": {
+   "grade": "one of NL, NM, NH, IL, IM1, IM2, IM3, IH, AL",
+   "range": "likely range, e.g. IM2~IM3",
+   "confidence": "낮음 | 보통 | 높음",
+   "reason_ko": "왜 이 등급인지 2-3문장 (실제 발화 예를 들어)",
+   "criteria": [
+     {"key":"task", "name_ko":"과제 수행", "score":1-5, "comment_ko":"질문 의도에 맞게 답했는지, 롤플레이 과제를 해냈는지"},
+     {"key":"text", "name_ko":"문장 구성(단어→문장→문단)", "score":1-5, "comment_ko":"단어 나열 / 짧은 문장 / 이어진 문장 / 문단 수준인지"},
+     {"key":"tense", "name_ko":"시제·묘사·서술", "score":1-5, "comment_ko":"과거 경험 서술, 현재 묘사, 비교를 시제에 맞게 하는지"},
+     {"key":"grammar", "name_ko":"문법 정확도", "score":1-5, "comment_ko":""},
+     {"key":"vocab", "name_ko":"어휘 다양성", "score":1-5, "comment_ko":""},
+     {"key":"fluency", "name_ko":"유창성(속도·멈춤)", "score":1-5, "comment_ko":""},
+     {"key":"pron", "name_ko":"발음·전달력", "score":1-5, "comment_ko":""}
+   ],
+   "to_next_ko": ["다음 한 단계 등급으로 올라가려면 할 일 1", "할 일 2", "할 일 3"],
+   "to_ih_ko": "IH까지 가려면 가장 중요한 한 가지 (이미 IH 이상이면 AL 기준으로)"
+ },
+ "summary_ko": "2-3 sentence overall feedback",
+ "strengths_ko": ["strength 1", "strength 2"],
+ "next_tip_ko": "다음 통화에서 집중할 한 가지",
+ "corrections": [ {"you": "user's original sentence", "better": "natural correct version", "why_ko": "what was wrong and why, short"} ],
+ "memorize": [ {"en": "high-value sentence to memorize for this kind of conversation", "ko": "Korean meaning", "tip_ko": "when to use it, one short line"} ]${S.mode === "sail" ? `,
+ "model_answer": {"question": "the examiner question the user found hardest", "answer": "a model IH-level answer, 4-6 short sentences, easy words, personal and concrete"}` : ""}
+}
+${audio ? `An AUDIO recording of only the USER's voice is attached (pauses removed). Evaluate pronunciation and fluency for a Korean speaker (r/l, f/p, v/b, th, z/j, word stress, intonation, final consonants, fillers) and add:
+ "pronunciation": {"score": 1-10, "fluency_ko": "속도·멈춤·리듬", "summary_ko": "총평", "issues": [ {"word": "word or phrase", "problem_ko": "what sounded wrong", "tip_ko": "how to fix (mouth/tongue/stress)"} ]}
+issues = up to 6, only problems you actually hear.
+` : ""}OPIc grading guide (judge ONLY the USER's speech, as if this call were an OPIc test):
+- NL/NM/NH: isolated words or memorized phrases; NH can make a few short sentences but breaks down often.
+- IL: simple short sentences on familiar topics, frequent long pauses and errors.
+- IM1: creates sentences on familiar topics but answers are short and repetitive. IM2: mostly sentence-level, some connected sentences, basic errors common. IM3: connected sentences consistently, starts to build short paragraphs, can describe and narrate somewhat.
+- IH: paragraph-level answers most of the time, narrates past experiences and describes/compares with fairly correct tenses, handles role-play problems, but sometimes breaks down.
+- AL: consistent paragraph-level speech in all time frames, handles complications smoothly, errors rarely affect meaning.
+If the user spoke very little, grade conservatively and set confidence to 낮음.
+Rules: corrections = up to 8 most useful, skip trivial ones and already-natural sentences. memorize = 3 to 6 items.`;
+  try {
+    let r;
+    try { r = await askText(prompt, audio || null); }
+    catch(e){ if (!audio) throw e; r = await askText(prompt.replace(/An AUDIO recording[\s\S]*?actually hear\.\n/, "")); }
+    lastCoach = r;
+    renderCoach(r);
+    saveHist(r, secs);
+  } catch(e){
+    box.innerHTML = `<p class="muted">코칭을 받지 못했습니다. (${esc(String(e.message || e))})</p><button class="linkbtn" id="coachRetry">다시 시도</button>`;
+    $("coachRetry").onclick = () => runCoaching(tr, secs, audio || "");
+  }
+}
+const GRADES = ["NL","NM","NH","IL","IM1","IM2","IM3","IH","AL"];
+const GRADE_DESC = {
+  NL:"단어 몇 개만 말할 수 있는 단계", NM:"외운 표현·단어 위주로 말하는 단계", NH:"짧은 문장을 가끔 만들지만 자주 막히는 단계",
+  IL:"익숙한 주제에 대해 간단한 문장으로 말하는 단계", IM1:"문장은 만들지만 답이 짧고 반복적인 단계",
+  IM2:"대부분 문장 단위로 말하고, 가끔 문장을 이어가는 단계", IM3:"문장을 자연스럽게 이어 짧은 문단을 만들기 시작하는 단계",
+  IH:"대부분 문단 단위로 경험을 서술하고 비교·묘사할 수 있는 단계", AL:"모든 시제에서 문단 단위로 막힘없이 말하는 단계"
+};
+function gradeIdx(g){ return GRADES.indexOf(String(g || "").toUpperCase().replace(/\s/g, "")); }
+function opicHTML(o){
+  if (!o || gradeIdx(o.grade) < 0) return "";
+  const gi = gradeIdx(o.grade), ih = GRADES.indexOf("IH"), g = GRADES[gi];
+  const gap = ih - gi;
+  const steps = GRADES.map((x,i) => `<div style="flex:1;text-align:center">
+      <div style="height:10px;border-radius:3px;background:${i === gi ? "var(--gold)" : i < gi ? "rgba(212,174,90,.45)" : "rgba(255,255,255,.12)"}"></div>
+      <div style="font-size:10.5px;margin-top:4px;color:${i === gi ? "var(--gold)" : x === "IH" ? "#f5e6c4" : "var(--sub)"};font-weight:${i === gi ? 700 : 400}">${x === "IH" ? "IH★" : x}</div></div>`).join("");
+  const crit = (o.criteria || []).filter(c => c && c.name_ko).map(c => {
+    const s = Math.max(0, Math.min(5, Number(c.score) || 0));
+    return `<div style="margin-top:10px"><div style="display:flex;justify-content:space-between;font-size:13.5px"><span>${esc(c.name_ko)}</span><span style="color:var(--gold)">${"●".repeat(s)}${"○".repeat(5 - s)}</span></div>
+      ${c.comment_ko ? `<div class="why" style="margin-top:3px">${esc(c.comment_ko)}</div>` : ""}</div>`;
+  }).join("");
+  return `<div class="card" style="border-color:var(--gold)">
+    <div style="display:flex;align-items:center;gap:12px">
+      <div style="font-size:34px;font-weight:800;color:var(--gold);line-height:1">${g}</div>
+      <div style="flex:1"><div style="font-size:13px;color:var(--sub)">이번 통화가 OPIc 시험이었다면</div>
+        <div style="font-size:14.5px;margin-top:2px">${esc(GRADE_DESC[g] || "")}</div></div>
+    </div>
+    <div style="display:flex;gap:3px;margin-top:14px">${steps}</div>
+    <div class="why" style="margin-top:10px">예상 범위 <b style="color:var(--text)">${esc(o.range || g)}</b> · 판단 신뢰도 <b style="color:var(--text)">${esc(o.confidence || "-")}</b>${gap > 0 ? ` · 목표 IH까지 <b style="color:#f5e6c4">${gap}단계</b>` : gap === 0 ? ` · <b style="color:#a9f0cd">목표 IH 달성 수준!</b>` : ` · <b style="color:#a9f0cd">목표 IH 초과</b>`}</div>
+    ${o.reason_ko ? `<div class="why" style="color:var(--text);margin-top:8px">${esc(o.reason_ko)}</div>` : ""}
+  </div>
+  ${crit ? `<div class="card"><div style="font-size:13.5px;color:var(--gold);font-weight:600">세부 평가 (5점 만점)</div>${crit}</div>` : ""}
+  ${(o.to_next_ko || []).length || o.to_ih_ko ? `<div class="card"><div style="font-size:13.5px;color:var(--gold);font-weight:600">${gi < GRADES.length - 1 ? `다음 등급(${GRADES[gi + 1]})으로 가려면` : "더 올라가려면"}</div>
+    ${(o.to_next_ko || []).map(x => `<div class="why" style="color:var(--text)">• ${esc(x)}</div>`).join("")}
+    ${o.to_ih_ko ? `<div class="why" style="color:#f5e6c4;margin-top:8px">🎯 ${gap > 0 ? "IH까지 핵심" : "다음 목표 핵심"}: ${esc(o.to_ih_ko)}</div>` : ""}</div>` : ""}
+  <div class="hint" style="margin:-2px 0 6px">※ AI가 대화 내용과 녹음으로 추정한 등급이며, 실제 시험 결과와 다를 수 있어요. 대화가 짧으면 정확도가 떨어집니다.</div>`;
+}
+function renderCoach(r){
+  const cs = (r.corrections || []).filter(x => x && x.better);
+  const p = r.pronunciation && typeof r.pronunciation === "object" ? r.pronunciation : null;
+  const pis = p ? (p.issues || []).filter(x => x && x.word) : [];
+  const ma = r.model_answer && r.model_answer.answer ? r.model_answer : null;
+  let h = `<div class="h3" style="margin-top:0">OPIc 예상 등급</div>` + opicHTML(r.opic) +
+    `<div class="h3">총평</div><p style="margin:0 0 10px;line-height:1.6">${esc(r.summary_ko || "")}</p>`;
+  if ((r.strengths_ko || []).length) h += `<p class="muted" style="margin:0 0 6px">👍 ${r.strengths_ko.map(esc).join(" · ")}</p>`;
+  if (r.next_tip_ko) h += `<p class="muted" style="margin:0 0 6px;color:#f5e6c4">🎯 다음엔: ${esc(r.next_tip_ko)}</p>`;
+  if (p){
+    const sc = Math.max(0, Math.min(10, Number(p.score) || 0));
+    h += `<div class="h3">발음 평가</div><div class="card"><div style="display:flex;align-items:center;gap:10px;margin-bottom:8px"><span class="sc">${sc}/10</span><div class="bar" style="flex:1"><i style="width:${sc*10}%"></i></div></div>
+      <div class="why" style="margin-top:0;color:var(--text)">${esc(p.summary_ko || "")}</div>${p.fluency_ko ? `<div class="why">⏱ ${esc(p.fluency_ko)}</div>` : ""}</div>`;
+    h += pis.map((x,i) => `<div class="card"><div class="better" style="margin-top:0">${esc(x.word)}</div>
+      <div class="why">${esc(x.problem_ko || "")}</div>${x.tip_ko ? `<div class="why" style="color:#f5e6c4">💡 ${esc(x.tip_ko)}</div>` : ""}${actsHTML(i, "p")}</div>`).join("");
+  }
+  h += `<div class="h3">표현 교정</div>` + (cs.length ? cs.map((x,i) => `<div class="card"><div class="you">${esc(x.you || "")}</div>
+      <div class="better">${esc(x.better)}</div><div class="why">${esc(x.why_ko || "")}</div>${actsHTML(i, "c")}</div>`).join("")
+      : `<p class="muted">고칠 문장이 거의 없었어요. 잘하셨습니다!</p>`);
+  if (ma) h += `<div class="h3">모범 답변 (IH 수준)</div><div class="card"><div class="why" style="margin-top:0">Q. ${esc(ma.question || "")}</div>
+      <div class="better" style="font-weight:500;font-size:15px">${esc(ma.answer)}</div>${actsHTML(0, "m")}</div>`;
+  $("coach").innerHTML = h;
+  wireActs($("coach"), k => k[0] === "p" ? pis[+k.slice(1)].word : k[0] === "c" ? cs[+k.slice(1)].better : ma.answer);
+
+  // 꼭 외울 표현 → 암기장 자동 저장
+  const mem = (r.memorize || []).filter(x => x && x.en);
+  const nb = loadNB(); let added = 0;
+  mem.forEach(x => { if (!nb.some(y => y.en.toLowerCase() === x.en.toLowerCase())){ nb.unshift(newCard(x.en, x.ko, x.tip_ko)); added++; } });
+  cs.slice(0, 3).forEach(x => { if (!nb.some(y => y.en.toLowerCase() === x.better.toLowerCase())){ nb.unshift(newCard(x.better, "", x.why_ko, x.you)); added++; } });
+  saveNB(nb);
+  $("memoList").className = "";
+  $("memoList").innerHTML = mem.length ? `<p class="muted" style="margin:0 0 6px">외울 표현과 주요 교정 문장 ${added}개를 암기장에 넣었어요. 필요 없는 건 빼세요.</p>` + mem.map((x,i) =>
+    `<div class="memo"><div class="en">${esc(x.en)}</div><div class="ko">${esc(x.ko || "")}${x.tip_ko ? " · " + esc(x.tip_ko) : ""}</div>
+     <div class="acts"><button class="ab" data-say="k${i}">🔊 듣기</button><button class="ab" data-prac="k${i}">🎤 따라 말하기</button><button class="ab" data-tg="${i}">✓ 저장됨</button></div><div class="pr" id="pr-k${i}"></div></div>`).join("") : "";
+  wireActs($("memoList"), k => mem[+k.slice(1)].en);
+  $("memoList").querySelectorAll("[data-tg]").forEach(b => b.onclick = () => {
+    const x = mem[+b.dataset.tg]; let nb = loadNB(); const has = nb.some(y => y.en === x.en);
+    if (has){ nb = nb.filter(y => y.en !== x.en); b.textContent = "＋ 다시 넣기"; }
+    else { nb.unshift(newCard(x.en, x.ko, x.tip_ko)); b.textContent = "✓ 저장됨"; }
+    saveNB(nb);
+  });
+}
+
+/* ===================== 코칭 기록 ===================== */
+function loadHist(){ try { return JSON.parse(localStorage.getItem("aicall_hist") || "[]"); } catch(e){ return []; } }
+function saveHist(r, secs){
+  const h = loadHist();
+  h.unshift({at:Date.now(), char:S.char, mode:S.mode, topic:topic ? topic.ko : "", secs,
+    level:(r.opic && gradeIdx(r.opic.grade) >= 0 ? GRADES[gradeIdx(r.opic.grade)] : (r.level || "")), pron:r.pronunciation && r.pronunciation.score != null ? Number(r.pronunciation.score) : null,
+    summary:r.summary_ko || "", tip:r.next_tip_ko || "", corr:(r.corrections || []).filter(x => x && x.better).slice(0, 8).map(x => ({you:x.you, better:x.better}))});
+  try { localStorage.setItem("aicall_hist", JSON.stringify(h.slice(0, 60))); } catch(e){}
+}
+function openHist(){
+  const h = loadHist();
+  show("hist");
+  $("hMeta").textContent = h.length ? `통화 ${h.length}회 · 총 ${Math.round(h.reduce((a,x) => a + (x.secs || 0), 0) / 60)}분 연습` : "아직 기록이 없어요. 통화를 마치면 자동으로 쌓입니다.";
+  const gs = h.filter(x => gradeIdx(x.level) >= 0).slice(0, 12).reverse();
+  const gradeTrend = gs.length >= 2 ? `<div class="sec"><h2>OPIc 예상 등급 추이 (최근 ${gs.length}회)</h2><div class="trend">${gs.map(x => `<i style="height:${(gradeIdx(x.level)+1)/9*100}%" title="${x.level}"></i>`).join("")}</div>
+     <div class="hint">왼쪽이 예전, 오른쪽이 최근 · 최근 ${gs[gs.length-1].level} (목표 IH)</div></div>` : "";
+  const ps = h.filter(x => x.pron != null).slice(0, 12).reverse();
+  $("hTrend").innerHTML = gradeTrend + (ps.length >= 2 ? `<div class="sec"><h2>발음 점수 추이 (최근 ${ps.length}회)</h2><div class="trend">${ps.map(x => `<i style="height:${Math.max(6, x.pron*10)}%" title="${x.pron}"></i>`).join("")}</div>
+     <div class="hint">왼쪽이 예전, 오른쪽이 최근 · 최근 ${ps[ps.length-1].pron}/10</div></div>` : "");
+  $("hList").innerHTML = h.map((x,i) => {
+    const d = new Date(x.at), c = CHARS[x.char] || {name:"?"};
+    return `<div class="sec hi" data-hi="${i}"><div class="t"><b>${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,"0")}:${String(d.getMinutes()).padStart(2,"0")} · ${MODES[x.mode] ? MODES[x.mode].label : ""}</b>
+      <span>${x.level ? `<span class="sc">${esc(x.level)}</span>` : ""}${x.pron != null ? `<span class="sc" style="background:#9fb0cc">발음 ${x.pron}</span>` : ""}</span></div>
+      <div class="d">${esc(c.name)}${x.topic ? " · " + esc(x.topic) : ""} · ${Math.floor((x.secs||0)/60)}분 ${(x.secs||0)%60}초</div>
+      <div class="x"><p class="muted" style="margin:0 0 8px">${esc(x.summary)}</p>${x.tip ? `<p class="muted" style="color:#f5e6c4;margin:0 0 8px">🎯 ${esc(x.tip)}</p>` : ""}
+      ${(x.corr || []).map(y => `<div class="card"><div class="you">${esc(y.you || "")}</div><div class="better">${esc(y.better)}</div></div>`).join("")}</div></div>`;
+  }).join("");
+  $("hList").querySelectorAll("[data-hi]").forEach(el => el.onclick = () => el.classList.toggle("open"));
+}
+
+/* ===================== 암기장 (간격 반복 복습) ===================== */
+const GAPS = [0, 1, 3, 7, 14];   // 단계별 다음 복습까지 날짜
+const DAY = 86400000;
+function newCard(en, ko, tip, wrong){ return {en, ko:ko || "", tip:tip || "", wrong:wrong || "", box:0, due:0, at:Date.now(), mode:S.mode, tries:0, best:null}; }
+function loadNB(){
+  let nb; try { nb = JSON.parse(localStorage.getItem("aicall_nb") || "[]"); } catch(e){ nb = []; }
+  nb.forEach(x => { if (x.box == null){ x.box = x.done ? 5 : 0; x.due = 0; } });
+  return nb;
+}
+function saveNB(nb){ try { localStorage.setItem("aicall_nb", JSON.stringify(nb)); } catch(e){} }
+function isDue(x){ return x.box < 5 && (x.due || 0) <= Date.now(); }
+function bumpPractice(target, sc){
+  const nb = loadNB(), y = nb.find(z => z.en === target);
+  if (y){ y.tries = (y.tries || 0) + 1; y.best = Math.max(y.best || 0, sc); saveNB(nb); }
+}
+let stFilter = "due", stIdx = 0, stShow = false;
+function openStudy(){ stIdx = 0; stShow = false; show("study"); renderStudy(); }
+function stList(){
+  const nb = loadNB();
+  if (stFilter === "due") return nb.filter(isDue).sort((a,b) => (a.box - b.box) || (a.due - b.due));
+  if (stFilter === "done") return nb.filter(x => x.box >= 5);
+  return nb;
+}
+function renderStudy(){
+  const nb = loadNB(), list = stList();
+  $("stMeta").textContent = `전체 ${nb.length}개 · 오늘 복습 ${nb.filter(isDue).length}개 · 외움 ${nb.filter(x => x.box >= 5).length}개`;
+  document.querySelectorAll("#stFilter button").forEach(b => b.classList.toggle("sel", b.dataset.f === stFilter));
+  if (!list.length){
+    $("stBody").innerHTML = `<div class="fc"><div class="muted">${!nb.length ? "아직 저장된 표현이 없어요.<br>통화가 끝나면 외울 표현이 자동으로 쌓입니다." : stFilter === "due" ? "오늘 복습할 표현을 모두 끝냈어요! 🎉<br>내일 다시 확인하세요." : "이 목록은 비어 있어요."}</div></div>`;
+    return;
+  }
+  if (stIdx >= list.length) stIdx = 0;
+  const x = list[stIdx];
+  const stage = x.box >= 5 ? "외움" : `${x.box + 1}단계`;
+  $("stBody").innerHTML = `<div class="fc" id="fcCard">
+     <div class="hx">${stIdx+1} / ${list.length} · ${stage}${x.best != null ? ` · 최고 발음 ${x.best}/10` : ""}</div>
+     <div class="q">${esc(x.ko || (x.wrong ? "✗ " + x.wrong : "(뜻 없음)"))}</div>
+     ${stShow ? `<div class="a">${esc(x.en)}</div>${x.tip ? `<div class="hx">${esc(x.tip)}</div>` : ""}` : `<div class="hx">${x.ko ? "영어로 말해 본 뒤" : "올바르게 고쳐 말해 본 뒤"} 눌러서 정답 확인</div>`}
+   </div>
+   <div class="acts" style="justify-content:center"><button class="ab" data-say="s0">🔊 듣기</button><button class="ab" data-prac="s0">🎤 말해보고 채점</button></div><div class="pr" id="pr-s0"></div>
+   ${stShow && x.box < 5 ? `<div class="rate"><button class="btn2 no" id="stNo">😓 몰랐어요<br><small style="font-weight:400">오늘 다시</small></button><button class="btn2 yes" id="stYes">😊 알았어요<br><small style="font-weight:400">${x.box + 1 >= 5 ? "외움 처리" : GAPS[Math.min(x.box + 1, 4)] + "일 뒤 복습"}</small></button></div>` : ""}
+   <div class="two" style="margin-top:10px"><button class="btn2" id="stPrev">← 이전</button><button class="btn2" id="stNext">다음 →</button></div>
+   <button class="linkbtn" id="stDel" style="color:#e7a3a3">이 표현 삭제</button>`;
+  wireActs($("stBody"), () => x.en);
+  $("fcCard").onclick = () => { stShow = !stShow; renderStudy(); if (stShow) speak(x.en); };
+  const rate = ok => {
+    const nb = loadNB(), y = nb.find(z => z.en === x.en);
+    if (y){ if (ok){ y.box = Math.min(5, y.box + 1); y.due = y.box >= 5 ? 0 : Date.now() + GAPS[Math.min(y.box, 4)] * DAY - 3600000; } else { y.box = 0; y.due = Date.now() + 10 * 60000; } saveNB(nb); }
+    stShow = false; if (stFilter !== "due") stIdx++; renderStudy();
+  };
+  if ($("stNo")) $("stNo").onclick = () => rate(false);
+  if ($("stYes")) $("stYes").onclick = () => rate(true);
+  $("stPrev").onclick = () => { stIdx = (stIdx - 1 + list.length) % list.length; stShow = false; renderStudy(); };
+  $("stNext").onclick = () => { stIdx = (stIdx + 1) % list.length; stShow = false; renderStudy(); };
+  $("stDel").onclick = () => { if (!confirm("이 표현을 암기장에서 삭제할까요?")) return; saveNB(loadNB().filter(y => y.en !== x.en)); stShow = false; renderStudy(); };
+}
+document.addEventListener("click", e => { const f = e.target.closest("#stFilter [data-f]"); if (f){ stFilter = f.dataset.f; stIdx = 0; stShow = false; renderStudy(); } });
+
+/* ===================== 홈 화면 설치 ===================== */
+let installEvt = null;
+if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(() => {});
+window.addEventListener("beforeinstallprompt", e => { e.preventDefault(); if (APP) return; installEvt = e; $("installBtn").style.display = "block"; });
+$("installBtn").onclick = async () => { if (!installEvt) return; installEvt.prompt(); try { await installEvt.userChoice; } catch(e){} installEvt = null; $("installBtn").style.display = "none"; };
+
+renderSetup();
+</script>
+</body>
+</html>
