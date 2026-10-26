@@ -164,7 +164,17 @@ function showSettings(){
   $("main").replaceChildren(
     h("section",{class:"panel"},h("h2",null,"목소리 고르기"),h("p",{class:"muted small"},"▶로 미리 들어 보고 마음에 드는 목소리를 누르세요. 오디오북에는 Sulafat·Vindemiatrix·Gacrux(여), Charon·Schedar·Sadaltager(남)가 잘 어울립니다."),vgrid),
     h("section",{class:"panel"},h("h2",null,"읽는 분위기"),h("div",{class:"chips"},...STYLES.map(([l],i)=>h("button",{class:"chip"+(CF.style===i?" on":""),onclick:()=>{CF.style=i;saveCF();clearAhead();showSettings()}},l))),h("p",{class:"muted small"},STYLES[CF.style][1])),
-    h("section",{class:"panel"},h("h2",null,"음성 모델"),h("div",{class:"chips"},...MODELS.map(([id,l])=>h("button",{class:"chip"+(CF.model===id?" on":""),onclick:()=>{CF.model=id;saveCF();clearAhead();showSettings()}},l))),h("p",{class:"muted small"},"무료 한도에 자주 걸리면 ‘빠르고 한도 넉넉’으로 바꾸세요.")),
+    h("section",{class:"panel"},h("h2",null,"음성 모델"),h("div",{class:"chips"},...MODELS.map(([id,l])=>h("button",{class:"chip"+(CF.model===id?" on":""),onclick:()=>{CF.model=id;saveCF();clearAhead();showSettings()}},l))),h("p",{class:"muted small"},"기본 모델의 하루 무료 한도가 끝나면 자동으로 가벼운 모델로 넘어가 이어 읽습니다.")),
+    h("section",{class:"panel"},h("h2",null,"끊김 없이 듣기 (결제 연결)"),
+      h("p",{class:"small"},"Gemini 앱 구독(Google AI Pro 등)과 API 키는 별개라서, 구독 중이어도 이 키는 ‘무료 등급’으로 쓰입니다. 무료 등급은 하루 사용량이 적어 금방 막힙니다."),
+      h("p",{class:"small"},"키가 속한 프로젝트에 결제만 연결하면 같은 키가 그대로 유료 등급이 되어 한도 걱정 없이 들을 수 있습니다."),
+      h("ol",{class:"small",style:"padding-left:20px;margin:6px 0"},
+        h("li",null,"아래 버튼으로 Google AI Studio의 ‘API 키’ 화면을 엽니다."),
+        h("li",null,"지금 쓰는 키가 있는 프로젝트 줄에서 ‘결제 설정(Set up billing)’을 누릅니다."),
+        h("li",null,"카드를 등록해 결제 계정을 만들면 끝입니다. 몇 분 뒤 그 줄이 ‘유료 등급(Tier 1)’으로 바뀝니다."),
+        h("li",null,"Google Cloud 결제 화면에서 ‘예산 및 알림’으로 월 5천 원 같은 상한 알림을 걸어 두면 안심입니다.")),
+      h("p",{class:"muted small"},"비용: 기본 모델로 1시간 낭독에 약 0.8달러(약 1,100원), 가벼운 모델은 약 0.5달러. 한 번 만든 음성은 기기에 저장되어 다시 들을 때는 돈이 들지 않습니다. 2027년 1월부터 요금이 2배로 오를 예정입니다."),
+      h("a",{class:"btn sm",href:"https://aistudio.google.com/apikey",target:"_blank",rel:"noopener",style:"text-decoration:none;display:inline-block"},"API 키 화면 열기")),
     keyPanel(false),
     h("div",{class:"row",style:"margin-top:16px"},h("button",{class:"btn ghost",onclick:()=>ST.prevView==="book"&&ST.book?(renderBook(),scrollToCur(false)):showLib()},"돌아가기")));
 }
@@ -172,7 +182,7 @@ function showSettings(){
 /* ===== 책 화면 ===== */
 async function openBook(id){
   const b=await dget("books",id);if(!b){showLib();return}
-  ST.book=b;ST.flat=[];b.sections.forEach((s,si)=>s.paras.forEach((p,pi)=>ST.flat.push({si,pi,t:p.t,h:!!p.h,sec:s.title})));
+  ST.book=b;ST.flat=[];b.sections.forEach((s,si)=>s.paras.forEach((p,pi)=>ST.flat.push({si,pi,t:p.t,h:!!p.h,sec:s.title})));buildChunks();ST.playChunk=null;au.removeAttribute("src");
   ST.cur=Math.max(0,ST.flat.findIndex(x=>x.si===(b.pos||{}).s&&x.pi===(b.pos||{}).p));ST.resumeT=(b.pos&&b.pos.t)||0;
   b.last=Date.now();dput("books",b.id,b);
   renderBook();$("player").hidden=false;updPlayer();
@@ -186,9 +196,21 @@ function renderBook(){
   $("main").replaceChildren(h("div",{class:"toc"},h("div",{class:"muted small"},b.author||""),toc),...secs,h("p",{class:"muted small",style:"margin-top:30px"},"문단을 누르면 그곳부터 읽습니다."));
   markCur();
 }
-function markCur(){document.querySelectorAll(".para").forEach(e=>{const i=+e.dataset.i;e.classList.toggle("now",i===ST.cur);e.classList.toggle("done",i<ST.cur);e.classList.toggle("wait",ST.busy.has(i)&&i!==ST.cur)})}
+function markCur(){document.querySelectorAll(".para").forEach(e=>{const i=+e.dataset.i;e.classList.toggle("now",i===ST.cur);e.classList.toggle("done",i<ST.cur);e.classList.toggle("wait",!!ST.chunkOf&&ST.busy.has(ST.chunkOf[i])&&i!==ST.cur)})}
 function scrollToCur(smooth){const e=document.querySelector(`.para[data-i="${ST.cur}"]`);if(!e)return;const r=e.getBoundingClientRect();const top=70,bot=window.innerHeight-$("player").offsetHeight-20;if(r.top<top||r.bottom>bot)window.scrollTo({top:window.scrollY+r.top-140,behavior:smooth?"smooth":"auto"})}
-function savePos(){const b=ST.book;if(!b)return;const x=ST.flat[ST.cur];if(!x)return;const t=ST.resumeT||((ST.loadedFor===ST.cur&&au.src&&!au.ended)?Math.max(0,au.currentTime-2):0);b.pos={s:x.si,p:x.pi,t};b.last=Date.now();dput("books",b.id,b)}
+function savePos(){const b=ST.book;if(!b)return;const x=ST.flat[ST.cur];if(!x)return;
+  const loaded=ST.playChunk!=null&&ST.playChunk===ST.chunkOf[ST.cur]&&au.src&&!au.ended&&au.currentTime>0;
+  const t=ST.resumeT||(loaded?Math.max(0,au.currentTime-2):0);b.pos={s:x.si,p:x.pi,t};b.last=Date.now();dput("books",b.id,b)}
+/* 문단 여러 개를 한 번에 만들어 요청 수를 줄임(무료 한도 절약) */
+const CHUNK_MAX=1400;
+function buildChunks(){
+  ST.chunks=[];ST.chunkOf=[];let cur=null;
+  ST.flat.forEach((x,i)=>{const t=speakableText(x.t);const len=Math.max(1,t.length);
+    if(!cur||cur.si!==x.si||cur.len+len>CHUNK_MAX){cur={si:x.si,from:i,to:i,parts:[],lens:[],len:0};ST.chunks.push(cur)}
+    cur.to=i;cur.parts.push(t);cur.lens.push(len);cur.len+=len;ST.chunkOf[i]=ST.chunks.length-1});
+}
+function fracOf(i){const c=ST.chunks[ST.chunkOf[i]];let before=0;for(let k=c.from;k<i;k++)before+=c.lens[k-c.from];return before/c.len}
+function paraAt(c,frac){const ch=ST.chunks[c];let acc=0;for(let k=0;k<ch.lens.length;k++){acc+=ch.lens[k];if(frac*ch.len<acc)return ch.from+k}return ch.to}
 
 /* ===== Gemini 음성 만들기 ===== */
 function speakableText(t){return String(t).replace(/\(([^()]*[㐀-鿿][^()]*)\)/g,"").replace(/[「」『』《》〈〉“”"]/g,"").replace(/\s*[—–]\s*/g,", ").replace(/\s*·\s*/g,", ").replace(/\s*→\s*/g,", 그다음 ").replace(/(\d)\s*~\s*(\d)/g,"$1에서 $2").replace(/\s{2,}/g," ").trim()}
@@ -199,12 +221,19 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 async function tts(text,voice,styleIdx,model){
   if(!CF.key)throw Object.assign(new Error("키 없음"),{code:"nokey"});
   const style=STYLES[styleIdx][1];
-  const bodyNew={contents:[{role:"user",parts:[{text,speech_metadata:{style}}]}],generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{voice}}}};
-  const bodyOld={contents:[{role:"user",parts:[{text:`${style}\n\n${text}`}]}],generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voice}}}}};
   for(let attempt=0;attempt<4;attempt++){
+    const bodyNew={contents:[{role:"user",parts:[{text,speech_metadata:{style}}]}],generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{voice}}}};
+    const bodyOld={contents:[{role:"user",parts:[{text:`${style}\n\n${text}`}]}],generationConfig:{responseModalities:["AUDIO"],speechConfig:{voiceConfig:{prebuiltVoiceConfig:{voiceName:voice}}}}};
     const body=CF.schema==="old"?bodyOld:bodyNew;
     const r=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`,{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":CF.key},body:JSON.stringify(body)});
-    if(r.status===429){const j=await r.json().catch(()=>({}));const d=((j.error&&j.error.details)||[]).find(x=>x.retryDelay);const sec=d?parseInt(d.retryDelay):20+attempt*20;toastStat(`무료 사용 한도에 잠시 걸렸습니다. ${sec}초 뒤 이어서 만듭니다…`);await sleep(sec*1000);continue}
+    if(r.status===429){
+      const j=await r.json().catch(()=>({}));const raw=JSON.stringify(j);
+      const d=((j.error&&j.error.details)||[]).find(x=>x.retryDelay);const sec=d?parseInt(d.retryDelay):30;
+      const daily=/PerDay/i.test(raw)||sec>120;
+      if(daily&&model!==MODELS[1][0]){ /* 기본 모델 하루 한도 → 가벼운 모델(별도 한도)로 자동 전환 */
+        model=MODELS[1][0];CF.model=model;saveCF();renderModelNote();toastStat("기본 모델의 오늘 무료 한도를 다 써서, 같은 목소리의 가벼운 모델로 이어 읽습니다.");continue}
+      if(daily)throw Object.assign(new Error("오늘 무료 한도를 모두 썼습니다. 한국시간 오후 4~5시에 다시 채워집니다. 바로 이어 들으려면 ‘목소리·설정 › 끊김 없이 듣기(결제 연결)’를 보세요."),{code:"quota"});
+      toastStat(`요청이 몰려 ${sec}초 쉬었다가 이어서 만듭니다…`);await sleep(sec*1000);continue}
     if(r.status===400&&CF.schema!=="old"){const j=await r.json().catch(()=>({}));const msg=(j.error&&j.error.message)||"";if(/speech_metadata|voice|Unknown name|Invalid JSON/i.test(msg)){CF.schema="old";saveCF();continue}throw Object.assign(new Error(msg||"요청 오류"),{code:"bad"})}
     if(r.status===404&&model!==MODELS[1][0]){model=MODELS[1][0];continue}
     if(r.status===401||r.status===403){throw Object.assign(new Error("API 키를 확인해 주세요"),{code:"key"})}
@@ -212,70 +241,88 @@ async function tts(text,voice,styleIdx,model){
     const j=await r.json();const part=((((j.candidates||[])[0]||{}).content||{}).parts||[]).find(p=>p.inlineData||p.inline_data);
     if(!part)throw Object.assign(new Error("음성이 오지 않았습니다"),{code:"empty"});
     const d=part.inlineData||part.inline_data;const bin=atob(d.data);const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
-    toastStat("");
     if(u[0]===0x52&&u[1]===0x49&&u[2]===0x46&&u[3]===0x46)return new Blob([u],{type:"audio/wav"});
     const rm=/rate=(\d+)/.exec(d.mimeType||d.mime_type||"");return wavFromPcm(u,rm?+rm[1]:24000);
   }
-  throw Object.assign(new Error("무료 한도를 다 썼습니다. 잠시 후 다시 시도하거나 설정에서 ‘빠르고 한도 넉넉’ 모델로 바꿔 주세요."),{code:"quota"});
+  throw Object.assign(new Error("요청이 계속 몰립니다. 잠시 후 다시 ▶를 눌러 주세요."),{code:"quota"});
 }
-async function audioFor(i){
-  const x=ST.flat[i];if(!x)return null;
-  const text=speakableText(x.t);if(!text)return null;
+function renderModelNote(){}
+async function audioForChunk(c){
+  const ch=ST.chunks[c];if(!ch)return null;
+  const text=ch.parts.filter(Boolean).join("\n\n");if(!text.trim())return null;
   const key=await sha([CF.model,CF.voice,CF.style,text].join("|"));
   const hit=await dget("audio",key);if(hit)return hit;
-  if(ST.busy.has(i))return ST.busy.get(i);
+  if(ST.busy.has(c))return ST.busy.get(c);
   const p=(async()=>{const blob=await tts(text,CF.voice,CF.style,CF.model);await dput("audio",key,blob);return blob})();
-  ST.busy.set(i,p);markCur();
-  try{return await p}finally{ST.busy.delete(i);markCur()}
+  ST.busy.set(c,p);markCur();
+  try{return await p}finally{ST.busy.delete(c);markCur()}
 }
-function prefetch(){for(const d of [1,2]){const i=ST.cur+d;if(i<ST.flat.length&&!ST.busy.has(i))audioFor(i).catch(()=>{})}}
-function clearAhead(){ST.busy.clear()}
+function prefetch(){const c=ST.chunkOf[ST.cur]+1;if(c<ST.chunks.length&&!ST.busy.has(c))audioForChunk(c).catch(()=>{})}
+function clearAhead(){ST.busy.clear();ST.playChunk=null}
 
 /* ===== 재생 ===== */
 const au=$("au");
+function waitMeta(){return au.readyState>=1?Promise.resolve():new Promise(r=>{au.addEventListener("loadedmetadata",r,{once:true});setTimeout(r,2000)})}
 async function playCur(){
   ST.playing=true;updPlayer();markCur();scrollToCur(true);savePos();
-  const myCur=ST.cur;
+  const myCur=ST.cur,c=ST.chunkOf[myCur];
   try{
-    toastStat(ST.busy.has(myCur)?"":"목소리를 만드는 중…");
-    const blob=await audioFor(myCur);
-    if(!ST.playing||ST.cur!==myCur)return;
+    if(ST.playChunk!==c||!au.src){
+      toastStat(ST.busy.has(c)?"목소리를 만드는 중…":"목소리를 만드는 중… (몇 문단씩 묶어 만들어 처음 한 번은 10~20초 걸립니다)");
+      const blob=await audioForChunk(c);
+      if(!ST.playing||ST.cur!==myCur)return;
+      if(!blob){ST.cur=ST.chunks[c].to;next();return}
+      if(ST.url)URL.revokeObjectURL(ST.url);ST.url=URL.createObjectURL(blob);
+      au.src=ST.url;ST.playChunk=c;await waitMeta();
+    }
     toastStat("");
-    if(!blob){next();return}
-    if(ST.url)URL.revokeObjectURL(ST.url);ST.url=URL.createObjectURL(blob);
-    au.src=ST.url;au.playbackRate=CF.rate;au.preservesPitch=true;
-    if(ST.resumeT){const t=ST.resumeT;ST.resumeT=0;await new Promise(r=>{au.addEventListener("loadedmetadata",r,{once:true});setTimeout(r,1500)});if(au.duration&&t<au.duration-1)au.currentTime=t}
+    au.playbackRate=CF.rate;au.preservesPitch=true;
+    const t=ST.resumeT;ST.resumeT=0;
+    if(au.duration){au.currentTime=t&&t<au.duration-1?t:au.duration*fracOf(myCur)}
     await au.play();prefetch();mediaMeta();
   }catch(e){ST.playing=false;updPlayer();toastStat(e.code==="nokey"||e.code==="key"?"Gemini API 키를 넣어 주세요 (목소리·설정).":e.message);if(e.code==="nokey"||e.code==="key")showSettings()}
 }
-au.addEventListener("ended",()=>{if(!ST.playing)return;const x=ST.flat[ST.cur];setTimeout(next,x&&x.h?500:250)});
-au.addEventListener("timeupdate",()=>{if(ST.playing&&Date.now()-(ST.lastSave||0)>4000){ST.lastSave=Date.now();savePos()}if(au.duration)$("ptr").style.width=(au.currentTime/au.duration*100)+"%"});
-function next(){ST.resumeT=0;if(ST.cur>=ST.flat.length-1){stop();toastStat("끝까지 들었습니다.");return}ST.cur++;savePos();ST.playing?playCur():(markCur(),updPlayer(),scrollToCur(true))}
-function prev(){ST.resumeT=0;ST.cur=Math.max(0,ST.cur-1);savePos();ST.playing?playCur():(markCur(),updPlayer(),scrollToCur(true))}
-function jump(i){ST.resumeT=0;ST.cur=i;savePos();au.pause();playCur()}
+au.addEventListener("ended",()=>{if(!ST.playing||ST.playChunk==null)return;const ch=ST.chunks[ST.playChunk];
+  if(ch.to>=ST.flat.length-1){stop();ST.cur=ch.to;toastStat("끝까지 들었습니다.");return}
+  ST.cur=ch.to+1;savePos();setTimeout(()=>{if(ST.playing)playCur()},400)});
+au.addEventListener("timeupdate",()=>{
+  if(au.duration)$("ptr").style.width=(au.currentTime/au.duration*100)+"%";
+  if(!ST.playing||ST.playChunk==null||!au.duration||au.paused)return;
+  const i=paraAt(ST.playChunk,au.currentTime/au.duration);
+  if(i!==ST.cur){ST.cur=i;markCur();updPlayer();scrollToCur(true);mediaMeta()}
+  if(Date.now()-(ST.lastSave||0)>4000){ST.lastSave=Date.now();savePos()}});
+function goPara(i){
+  ST.resumeT=0;ST.cur=Math.max(0,Math.min(ST.flat.length-1,i));savePos();
+  if(ST.playChunk===ST.chunkOf[ST.cur]&&au.duration){au.currentTime=au.duration*fracOf(ST.cur);markCur();updPlayer();scrollToCur(true);if(ST.playing&&au.paused)au.play();return}
+  au.pause();ST.playChunk=null;
+  ST.playing?playCur():(markCur(),updPlayer(),scrollToCur(true));
+}
+function next(){if(ST.cur>=ST.flat.length-1){stop();toastStat("끝까지 들었습니다.");return}goPara(ST.cur+1)}
+function prev(){goPara(ST.cur-1)}
+function jump(i){ST.playing=true;goPara(i);if(!(ST.playChunk===ST.chunkOf[i]&&au.duration))return}
 function stop(){ST.playing=false;au.pause();updPlayer()}
-function toggle(){if(ST.playing){ST.playing=false;au.pause();savePos();updPlayer()}else if(au.src&&au.currentTime>0&&!au.ended&&ST.loadedFor===ST.cur){ST.playing=true;au.play();updPlayer()}else playCur()}
-au.addEventListener("play",()=>{ST.loadedFor=ST.cur});
+function toggle(){if(ST.playing){ST.playing=false;au.pause();savePos();updPlayer()}
+  else if(au.src&&ST.playChunk===ST.chunkOf[ST.cur]&&!au.ended&&!ST.resumeT){ST.playing=true;au.play();updPlayer()}else playCur()}
 function updPlayer(){
   if(!ST.book)return;const x=ST.flat[ST.cur]||{};
   $("pnow").textContent=x.sec||"";$("ppos").textContent=`${ST.cur+1} / ${ST.flat.length}`;
   $("play").textContent=ST.playing?"❚❚":"▶";$("play").setAttribute("aria-label",ST.playing?"일시정지":"재생");
   $("rate").value=String(CF.rate);
 }
-$("play").onclick=toggle;$("next").onclick=()=>{au.pause();next()};$("prev").onclick=()=>{au.pause();prev()};
-$("back15").onclick=()=>{if(au.currentTime>3)au.currentTime=Math.max(0,au.currentTime-15);else prev()};
+$("play").onclick=toggle;$("next").onclick=next;$("prev").onclick=prev;
+$("back15").onclick=()=>{if(au.src&&ST.playChunk!=null&&au.currentTime>3){au.currentTime=Math.max(0,au.currentTime-15)}else prev()};
 $("rate").onchange=e=>{CF.rate=+e.target.value;saveCF();au.playbackRate=CF.rate};
 function mediaMeta(){if(!("mediaSession" in navigator)||!ST.book)return;const x=ST.flat[ST.cur];
   navigator.mediaSession.metadata=new MediaMetadata({title:x.sec,artist:ST.book.title,album:"생각서재 오디오북"});
   navigator.mediaSession.setActionHandler("play",toggle);navigator.mediaSession.setActionHandler("pause",toggle);
-  navigator.mediaSession.setActionHandler("nexttrack",()=>{au.pause();next()});navigator.mediaSession.setActionHandler("previoustrack",()=>{au.pause();prev()})}
+  navigator.mediaSession.setActionHandler("nexttrack",next);navigator.mediaSession.setActionHandler("previoustrack",prev)}
 
 /* 미리 듣기 */
 async function preview(v){
   toastStat(`${v} 목소리를 만드는 중…`);$("player").hidden=!ST.book;
   try{const key=await sha(["pv",CF.model,v,CF.style].join("|"));let blob=await dget("audio",key);
     if(!blob){blob=await tts("사람을 움직이는 힘은 말솜씨가 아니라, 상대를 먼저 듣는 데서 나옵니다. 오늘은 그 이야기를 천천히 나눠 보겠습니다.",v,CF.style,CF.model);await dput("audio",key,blob)}
-    stop();const u=URL.createObjectURL(blob);au.src=u;au.playbackRate=CF.rate;await au.play();toastStat(`${v} 미리 듣기`);
+    stop();ST.playChunk=null;const u=URL.createObjectURL(blob);au.src=u;au.playbackRate=CF.rate;await au.play();toastStat(`${v} 미리 듣기`);
   }catch(e){toastStat(e.message)}
 }
 
