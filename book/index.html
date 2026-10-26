@@ -49,6 +49,11 @@ header.top h1{font-family:var(--f-display);font-size:20px;margin:0;flex:1;min-wi
 .chips{display:flex;gap:6px;flex-wrap:wrap}
 .chip{border:1px solid var(--line);background:transparent;border-radius:999px;padding:5px 11px;font-size:13px;color:var(--muted)}
 .chip.on{background:var(--cloth);border-color:var(--cloth);color:var(--card)}
+.engs{display:grid;gap:8px}
+.eng{text-align:left;border:1px solid var(--line);background:var(--paper);border-radius:10px;padding:10px 12px;display:grid;gap:2px}
+.eng.on{border-color:var(--cloth);background:var(--cloth-soft);box-shadow:inset 0 0 0 1px var(--cloth)}
+.eng b{font-size:15px}.eng span{font-size:12.5px;color:var(--muted)}.eng .need{color:var(--mark);font-weight:400}.eng .use{color:var(--cloth);font-family:var(--f-mono);font-size:12px}
+.steps{padding-left:20px;margin:6px 0}.steps li{margin-top:6px}.steps a{color:var(--cloth);font-weight:600}
 /* 본문 */
 .toc{margin-top:14px}
 .sec{margin-top:26px}
@@ -108,7 +113,7 @@ const STYLES=[
 const MODELS=[["gemini-3.8-flash-tts","가장 자연스러움"],["gemini-3.8-flash-lite-tts","빠르고 한도 넉넉"]];
 function lsGet(k){try{return localStorage.getItem(k)}catch(_){return null}}
 function lsSet(k,v){try{localStorage.setItem(k,v)}catch(_){}}
-const CF=Object.assign({key:"",voice:"Sulafat",style:0,model:MODELS[0][0],rate:1,night:false,schema:"new"},JSON.parse(lsGet("bookvoice")||"{}"));
+const CF=Object.assign({key:"",voice:"Sulafat",style:0,model:MODELS[0][0],rate:1,night:false,schema:"new",engine:"gemini",chirpKey:"",chirpVoice:"Sulafat",chirpUse:{m:"",n:0},localVoice:"F1",localSteps:5,localSrc:"int8",autoNext:true},JSON.parse(lsGet("bookvoice")||"{}"));
 if(!CF.key){try{const a=JSON.parse(lsGet("aicall")||"{}");if(a.key)CF.key=a.key}catch(_){}}
 const saveCF=()=>lsSet("bookvoice",JSON.stringify(CF));
 document.documentElement.classList.toggle("night",!!CF.night);
@@ -145,7 +150,7 @@ async function showLib(){
   ST.view="lib";stop();window.scrollTo(0,0);$("player").hidden=true;$("ttl").textContent="생각서재 오디오북";
   const books=(await dall("books")).sort((a,z)=>(z.last||z.added||0)-(a.last||a.added||0));
   const m=$("main");m.replaceChildren(
-    !CF.key?keyPanel(true):null,
+    CF.engine==="gemini"&&!CF.key&&!CF.chirpKey?keyPanel(true):null,
     h("section",{class:"panel"},h("h2",null,"내 오디오북"),
       books.length?h("div",{class:"lib"},...books.map(b=>h("button",{onclick:()=>openBook(b.id)},h("div",{class:"t"},b.title),h("div",{class:"muted small"},[b.author,`${b.sections.length}개 장`,b.pos&&(b.pos.s||b.pos.p||b.pos.t)?`이어 듣기: ${(b.sections[b.pos.s]||{}).title||""}`:"처음부터"].filter(Boolean).join(" · ")))))
       :h("p",{class:"muted"},"아직 책이 없습니다. 생각서재의 '책 전체보기'에서 '듣기 › AI 성우로 듣기'를 누르면 책이 이곳으로 넘어옵니다.")),
@@ -159,12 +164,22 @@ function keyPanel(first){
 }
 function showSettings(){
   window.scrollTo(0,0);if(ST.view!=="set")ST.prevView=ST.view;ST.view="set";$("ttl").textContent="목소리·설정";
-  const vgrid=h("div",{class:"voices"},...VOICES.map(([n,d,g])=>h("div",{class:"vc"+(CF.voice===n?" on":""),role:"button",tabindex:"0",onclick:e=>{if(e.target.closest(".pv"))return;CF.voice=n;saveCF();clearAhead();showSettings()}},
-    h("b",null,n),h("span",null,`${g}성 · ${d}`),h("button",{class:"pv","aria-label":`${n} 들어 보기`,onclick:()=>preview(n)},"▶"))));
-  $("main").replaceChildren(
-    h("section",{class:"panel"},h("h2",null,"목소리 고르기"),h("p",{class:"muted small"},"▶로 미리 들어 보고 마음에 드는 목소리를 누르세요. 오디오북에는 Sulafat·Vindemiatrix·Gacrux(여), Charon·Schedar·Sadaltager(남)가 잘 어울립니다."),vgrid),
-    h("section",{class:"panel"},h("h2",null,"읽는 분위기"),h("div",{class:"chips"},...STYLES.map(([l],i)=>h("button",{class:"chip"+(CF.style===i?" on":""),onclick:()=>{CF.style=i;saveCF();clearAhead();showSettings()}},l))),h("p",{class:"muted small"},STYLES[CF.style][1])),
-    h("section",{class:"panel"},h("h2",null,"음성 모델"),h("div",{class:"chips"},...MODELS.map(([id,l])=>h("button",{class:"chip"+(CF.model===id?" on":""),onclick:()=>{CF.model=id;saveCF();clearAhead();showSettings()}},l))),h("p",{class:"muted small"},"기본 모델의 하루 무료 한도가 끝나면 자동으로 가벼운 모델로 넘어가 이어 읽습니다.")),
+  const E=CF.engine,re=()=>showSettings();
+  const engPanel=h("section",{class:"panel"},h("h2",null,"읽어 주는 엔진"),
+    h("div",{class:"engs"},...Object.entries(ENGINES).map(([k,v])=>h("button",{class:"eng"+(E===k?" on":""),onclick:()=>{setEngine(k);re()}},
+      h("b",null,v.label,engineReady(k)?null:h("span",{class:"need"}," · 설정 필요")),h("span",null,v.sub),
+      k==="chirp"&&CF.chirpKey?h("span",{class:"use"},`이번 달 ${chirpUsed().toLocaleString()} / ${CHIRP_FREE.toLocaleString()}자 사용 (이 기기 기준)`):null))),
+    h("label",{class:"row small",style:"gap:6px"},h("input",{type:"checkbox",style:"width:auto",checked:CF.autoNext?true:null,onchange:e=>{CF.autoNext=e.target.checked;saveCF()}}),
+      "무료 한도가 끝나면 다음 무료 엔진으로 자동으로 이어 읽기 (Gemini → 구글 HD → 기기 안 AI)"));
+  const back=h("div",{class:"row",style:"margin-top:16px"},h("button",{class:"btn ghost",onclick:()=>ST.prevView==="book"&&ST.book?(renderBook(),scrollToCur(false)):showLib()},"돌아가기"));
+  let body=[];
+  if(E==="gemini"){
+    const vgrid=h("div",{class:"voices"},...VOICES.map(([n,d,g])=>h("div",{class:"vc"+(CF.voice===n?" on":""),role:"button",tabindex:"0",onclick:e=>{if(e.target.closest(".pv"))return;CF.voice=n;saveCF();clearAhead();re()}},
+      h("b",null,n),h("span",null,`${g}성 · ${d}`),h("button",{class:"pv","aria-label":`${n} 들어 보기`,onclick:()=>preview(n)},"▶"))));
+    body=[
+      h("section",{class:"panel"},h("h2",null,"목소리 고르기"),h("p",{class:"muted small"},"▶로 미리 들어 보고 마음에 드는 목소리를 누르세요. 오디오북에는 Sulafat·Vindemiatrix·Gacrux(여), Charon·Schedar·Sadaltager(남)가 잘 어울립니다."),vgrid),
+      h("section",{class:"panel"},h("h2",null,"읽는 분위기"),h("div",{class:"chips"},...STYLES.map(([l],i)=>h("button",{class:"chip"+(CF.style===i?" on":""),onclick:()=>{CF.style=i;saveCF();clearAhead();re()}},l))),h("p",{class:"muted small"},STYLES[CF.style][1])),
+      h("section",{class:"panel"},h("h2",null,"음성 모델"),h("div",{class:"chips"},...MODELS.map(([id,l])=>h("button",{class:"chip"+(CF.model===id?" on":""),onclick:()=>{CF.model=id;saveCF();clearAhead();re()}},l))),h("p",{class:"muted small"},"기본 모델의 하루 무료 한도가 끝나면 자동으로 가벼운 모델로 넘어가 이어 읽습니다.")),
     h("section",{class:"panel"},h("h2",null,"끊김 없이 듣기 (결제 연결)"),
       h("p",{class:"small"},"Gemini 앱 구독(Google AI Pro 등)과 API 키는 별개라서, 구독 중이어도 이 키는 ‘무료 등급’으로 쓰입니다. 무료 등급은 하루 사용량이 적어 금방 막힙니다."),
       h("p",{class:"small"},"키가 속한 프로젝트에 결제만 연결하면 같은 키가 그대로 유료 등급이 되어 한도 걱정 없이 들을 수 있습니다."),
@@ -175,8 +190,44 @@ function showSettings(){
         h("li",null,"Google Cloud 결제 화면에서 ‘예산 및 알림’으로 월 5천 원 같은 상한 알림을 걸어 두면 안심입니다.")),
       h("p",{class:"muted small"},"비용: 기본 모델로 1시간 낭독에 약 0.8달러(약 1,100원), 가벼운 모델은 약 0.5달러. 한 번 만든 음성은 기기에 저장되어 다시 들을 때는 돈이 들지 않습니다. 2027년 1월부터 요금이 2배로 오를 예정입니다."),
       h("a",{class:"btn sm",href:"https://aistudio.google.com/apikey",target:"_blank",rel:"noopener",style:"text-decoration:none;display:inline-block"},"API 키 화면 열기")),
-    keyPanel(false),
-    h("div",{class:"row",style:"margin-top:16px"},h("button",{class:"btn ghost",onclick:()=>ST.prevView==="book"&&ST.book?(renderBook(),scrollToCur(false)):showLib()},"돌아가기")));
+      keyPanel(false)];
+  }else if(E==="chirp"){
+    const inp=h("input",{type:"password",placeholder:"AIza로 시작하는 새 프로젝트의 API 키",value:CF.chirpKey||"",autocomplete:"off"});
+    const vgrid=h("div",{class:"voices"},...VOICES.map(([n,d,g])=>h("div",{class:"vc"+(CF.chirpVoice===n?" on":""),role:"button",tabindex:"0",onclick:e=>{if(e.target.closest(".pv"))return;CF.chirpVoice=n;saveCF();clearAhead();re()}},
+      h("b",null,n),h("span",null,`${g}성 · ${d}`),h("button",{class:"pv","aria-label":`${n} 들어 보기`,onclick:()=>preview(n)},"▶"))));
+    const L=(t,u)=>h("a",{href:u,target:"_blank",rel:"noopener"},t);
+    body=[
+      h("section",{class:"panel"},h("h2",null,CF.chirpKey?"구글 HD 음성 키":"처음 한 번만: 구글 HD 음성 준비 (10분)"),
+        h("p",{class:"small"},"매달 100만 자까지 무료인 Google Cloud 음성입니다. 카드 등록은 필요하지만 무료 사용량 안에서는 0원이고, 이 앱은 95만 자에서 스스로 멈춥니다."),
+        h("div",{class:"warn"},"AI 영어통화 앱의 키 프로젝트에 결제를 연결하면 그 앱의 Gemini 사용도 유료가 됩니다. 꼭 ‘새 프로젝트’를 만들어 주세요."),
+        h("ol",{class:"small steps"},
+          h("li",null,L("새 프로젝트 만들기","https://console.cloud.google.com/projectcreate")," → 이름은 ‘책듣기’ 정도로 입력하고 만들기."),
+          h("li",null,L("결제 연결","https://console.cloud.google.com/billing/linkedaccount")," → 위쪽에서 ‘책듣기’ 프로젝트를 고른 뒤 결제 계정을 연결(처음이면 카드 등록)."),
+          h("li",null,L("Cloud Text-to-Speech API 사용","https://console.cloud.google.com/apis/library/texttospeech.googleapis.com")," → ‘사용(Enable)’ 누르기."),
+          h("li",null,L("API 키 만들기","https://console.cloud.google.com/apis/credentials")," → ‘사용자 인증 정보 만들기 › API 키’. 만든 키의 ‘키 제한’에서 ① 애플리케이션 제한: 웹사이트 → dweom0720-alt.github.io/* ② API 제한: Cloud Text-to-Speech API 만 선택 후 저장."),
+          h("li",null,"키를 복사해 아래에 붙여 넣고 저장."),
+          h("li",null,L("예산 알림(권장)","https://console.cloud.google.com/billing/budgets")," → 1,000원 예산을 만들어 두면 혹시 넘을 때 메일이 옵니다.")),
+        inp,h("div",{class:"row"},h("button",{class:"btn",onclick:()=>{CF.chirpKey=inp.value.trim();saveCF();clearAhead();toastStat("");re()}},"저장"),
+          CF.chirpKey?h("button",{class:"btn ghost sm",onclick:()=>preview(CF.chirpVoice)},"시험 듣기"):null)),
+      h("section",{class:"panel"},h("h2",null,"목소리 고르기"),h("p",{class:"muted small"},"Gemini 성우와 같은 이름의 목소리들입니다. 분위기 지시는 안 되지만 또렷하고 자연스럽습니다."),vgrid)];
+  }else{
+    const cachedNote=h("span",{class:"muted small"});
+    localModelCached(CF.localSrc).then(ok=>{cachedNote.textContent=ok?"내려받음 ✓ (인터넷 없이도 됩니다)":"아직 내려받지 않음"});
+    const prog=h("div",{class:"small",style:"color:var(--mark)"});
+    body=[
+      h("section",{class:"panel"},h("h2",null,"기기 안 AI 준비"),
+        h("p",{class:"small"},"Supertone이 공개한 무료 음성 AI(Supertonic 3)를 이 휴대폰 안에서 직접 돌립니다. 한도도 비용도 없습니다. 처음 한 번 모델을 내려받으니 와이파이에서 해 주세요."),
+        h("div",{class:"chips"},...Object.entries(LOCAL_SRC).map(([k,v])=>h("button",{class:"chip"+(CF.localSrc===k?" on":""),onclick:()=>{CF.localSrc=k;saveCF();clearAhead();re()}},`${v.label} (${v.size})`))),
+        h("div",{class:"row"},h("button",{class:"btn sm",onclick:async e=>{e.target.disabled=true;try{await tonicLoad(f=>prog.textContent=`내려받는 중… ${Math.round(f*100)}%`);prog.textContent=`준비 완료 (${TONIC.ep==="webgpu"?"그래픽칩 가속":"일반 처리"})`;cachedNote.textContent="내려받음 ✓"}catch(err){prog.textContent=err.message}e.target.disabled=false}},"지금 내려받기"),cachedNote),
+        prog,
+        h("p",{class:"muted small"},"휴대폰 성능에 따라 문단 하나 만드는 데 몇 초~수십 초 걸립니다. 듣는 동안 다음 문단을 미리 만들어 둡니다. 너무 느리면 ‘빠르게’를 고르세요. 자연스러움은 Gemini·구글 HD보다 한 단계 아래입니다.")),
+      h("section",{class:"panel"},h("h2",null,"목소리 고르기"),
+        h("div",{class:"voices"},...LOCAL_VOICES.map(([n,l])=>h("div",{class:"vc"+(CF.localVoice===n?" on":""),role:"button",tabindex:"0",onclick:e=>{if(e.target.closest(".pv"))return;CF.localVoice=n;saveCF();clearAhead();re()}},
+          h("b",null,l),h("span",null,n),h("button",{class:"pv","aria-label":`${l} 들어 보기`,onclick:()=>preview(n)},"▶"))))),
+      h("section",{class:"panel"},h("h2",null,"만드는 품질"),h("div",{class:"chips"},...LOCAL_STEPS.map(([n,l])=>h("button",{class:"chip"+(CF.localSteps===n?" on":""),onclick:()=>{CF.localSteps=n;saveCF();clearAhead();re()}},l))),
+        h("p",{class:"muted small"},"단계가 높을수록 깨끗하지만 오래 걸립니다."))];
+  }
+  $("main").replaceChildren(engPanel,...body,back);
 }
 
 /* ===== 책 화면 ===== */
@@ -206,7 +257,8 @@ const CHUNK_MAX=1400;
 function buildChunks(){
   ST.chunks=[];ST.chunkOf=[];let cur=null;
   ST.flat.forEach((x,i)=>{const t=speakableText(x.t);const len=Math.max(1,t.length);
-    if(!cur||cur.si!==x.si||cur.len+len>CHUNK_MAX){cur={si:x.si,from:i,to:i,parts:[],lens:[],len:0};ST.chunks.push(cur)}
+    const lim=CF.engine==="local"?0:CHUNK_MAX;const bytes=CF.engine==="chirp"&&cur?new TextEncoder().encode(cur.parts.join("\n\n")+t).length>4600:false;
+    if(!cur||cur.si!==x.si||cur.len+len>lim||bytes){cur={si:x.si,from:i,to:i,parts:[],lens:[],len:0};ST.chunks.push(cur)}
     cur.to=i;cur.parts.push(t);cur.lens.push(len);cur.len+=len;ST.chunkOf[i]=ST.chunks.length-1});
 }
 function fracOf(i){const c=ST.chunks[ST.chunkOf[i]];let before=0;for(let k=c.from;k<i;k++)before+=c.lens[k-c.from];return before/c.len}
@@ -232,6 +284,7 @@ async function tts(text,voice,styleIdx,model){
       const daily=/PerDay/i.test(raw)||sec>120;
       if(daily&&model!==MODELS[1][0]){ /* 기본 모델 하루 한도 → 가벼운 모델(별도 한도)로 자동 전환 */
         model=MODELS[1][0];CF.model=model;saveCF();renderModelNote();toastStat("기본 모델의 오늘 무료 한도를 다 써서, 같은 목소리의 가벼운 모델로 이어 읽습니다.");continue}
+      if(daily&&CF.autoNext&&CF.chirpKey&&chirpUsed()<CHIRP_STOP)throw Object.assign(new Error("switch"),{code:"switch",to:"chirp",why:"오늘 Gemini 무료 한도를 다 써서 구글 HD 음성(같은 목소리 계열)으로 이어 읽습니다."});
       if(daily)throw Object.assign(new Error("오늘 무료 한도를 모두 썼습니다. 한국시간 오후 4~5시에 다시 채워집니다. 바로 이어 들으려면 ‘목소리·설정 › 끊김 없이 듣기(결제 연결)’를 보세요."),{code:"quota"});
       toastStat(`요청이 몰려 ${sec}초 쉬었다가 이어서 만듭니다…`);await sleep(sec*1000);continue}
     if(r.status===400&&CF.schema!=="old"){const j=await r.json().catch(()=>({}));const msg=(j.error&&j.error.message)||"";if(/speech_metadata|voice|Unknown name|Invalid JSON/i.test(msg)){CF.schema="old";saveCF();continue}throw Object.assign(new Error(msg||"요청 오류"),{code:"bad"})}
@@ -247,17 +300,147 @@ async function tts(text,voice,styleIdx,model){
   throw Object.assign(new Error("요청이 계속 몰립니다. 잠시 후 다시 ▶를 눌러 주세요."),{code:"quota"});
 }
 function renderModelNote(){}
+
+/* ===== 읽어 주는 엔진 3가지 ===== */
+const ENGINES={
+  gemini:{label:"Gemini 성우",sub:"가장 사람 같고 분위기(라디오·잠자리 등)까지 지시 · 하루 무료 한도가 적음"},
+  chirp:{label:"구글 HD 음성",sub:"Gemini와 같은 목소리 계열 · 매달 100만 자(약 30~40시간) 무료"},
+  local:{label:"기기 안 AI",sub:"완전 무료·한도 없음·인터넷 없이도 · 처음 한 번 모델 내려받기"}};
+const engineReady=e=>e==="gemini"?!!CF.key:e==="chirp"?!!CF.chirpKey:true;
+function setEngine(e,why){CF.engine=e;saveCF();clearAhead();if(ST.book)buildChunks();try{au.pause()}catch(_){}if(why)toastStat(why);else{ST.playing=false;updPlayer()}}
+
+/* --- 구글 HD 음성 (Cloud Text-to-Speech, Chirp 3 HD) --- */
+const CHIRP_FREE=1000000,CHIRP_STOP=950000;
+const monthKey=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")};
+function chirpUsed(){if(!CF.chirpUse||CF.chirpUse.m!==monthKey())CF.chirpUse={m:monthKey(),n:0};return CF.chirpUse.n}
+async function chirpTTS(text,voice){
+  if(!CF.chirpKey)throw Object.assign(new Error("구글 HD 음성 키를 넣어 주세요 (목소리·설정)."),{code:"nochirp"});
+  if(chirpUsed()+text.length>CHIRP_STOP&&CF.autoNext)throw Object.assign(new Error("switch"),{code:"switch",to:"local",why:"이번 달 구글 HD 음성 무료 사용량을 거의 다 써서 기기 안 AI로 이어 읽습니다."});
+  if(chirpUsed()+text.length>CHIRP_STOP)throw Object.assign(new Error("이번 달 구글 HD 음성 무료 사용량(100만 자)을 거의 다 썼습니다."),{code:"chirpquota"});
+  for(let attempt=0;attempt<3;attempt++){
+    const r=await fetch("https://texttospeech.googleapis.com/v1/text:synthesize",{method:"POST",headers:{"Content-Type":"application/json","x-goog-api-key":CF.chirpKey},
+      body:JSON.stringify({input:{text},voice:{languageCode:"ko-KR",name:`ko-KR-Chirp3-HD-${voice}`},audioConfig:{audioEncoding:"MP3"}})});
+    if(r.status===429){toastStat("요청이 몰려 잠시 쉬었다가 이어서 만듭니다…");await sleep(15000*(attempt+1));continue}
+    if(!r.ok){const j=await r.json().catch(()=>({}));const msg=(j.error&&j.error.message)||("오류 "+r.status);
+      let hint="";if(/not been used|disabled|SERVICE_DISABLED/i.test(msg))hint="Cloud Text-to-Speech API가 ‘사용’ 상태가 아닙니다. 설정 안내 3번을 확인해 주세요.";
+      else if(/billing/i.test(msg))hint="이 프로젝트에 결제 계정이 연결되지 않았습니다. 설정 안내 2번을 확인해 주세요. (무료 사용량 안에서는 0원)";
+      else if(/referer|referrer|API key not valid|API_KEY/i.test(msg))hint="키가 맞지 않거나 웹사이트 제한이 다르게 걸려 있습니다. 설정 안내 4번을 확인해 주세요.";
+      throw Object.assign(new Error(hint||msg),{code:r.status===400?"bad":"chirpkey"})}
+    const j=await r.json();const bin=atob(j.audioContent||"");const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+    chirpUsed();CF.chirpUse.n+=text.length;saveCF();
+    return new Blob([u],{type:"audio/mpeg"});
+  }
+  throw Object.assign(new Error("요청이 계속 몰립니다. 잠시 후 다시 ▶를 눌러 주세요."),{code:"busy"});
+}
+
+/* --- 기기 안 AI (Supertonic 3, 브라우저 안에서 ONNX로 직접 생성) --- */
+const LOCAL_SRC={
+  int8:{label:"가벼운 버전",size:"약 100MB",base:"https://huggingface.co/q3146dq4/Supertonic-3-ONNX-INT8/resolve/main/"},
+  full:{label:"원본",size:"약 400MB",base:"https://huggingface.co/supertone-oss-archive/supertonic-3/resolve/aafc6e32416a594460b32413efc49d7fe4ce6d46/"}};
+const LOCAL_VOICES=[["F1","여성 1"],["F2","여성 2"],["F3","여성 3"],["F4","여성 4"],["F5","여성 5"],["M1","남성 1"],["M2","남성 2"],["M3","남성 3"],["M4","남성 4"],["M5","남성 5"]];
+const LOCAL_STEPS=[[5,"빠르게"],[8,"보통"],[12,"고품질"]];
+const ORT_URL="https://cdn.jsdelivr.net/npm/onnxruntime-web@1.20.1/dist/";
+const TONIC={src:null,loading:null,sess:null,cfg:null,idx:null,styles:{},ep:""};
+function loadScript(u){return new Promise((ok,no)=>{if(window.ort)return ok();const e=document.createElement("script");e.src=u;e.onload=ok;e.onerror=()=>no(new Error("음성 엔진 프로그램을 불러오지 못했습니다. 인터넷 연결을 확인해 주세요."));document.head.append(e)})}
+async function fetchCached(url,onProg){
+  let cache=null;try{cache=await caches.open("supertonic-v1")}catch(_){}
+  if(cache){const hit=await cache.match(url);if(hit){onProg&&onProg(1,1);return new Uint8Array(await hit.arrayBuffer())}}
+  const res=await fetch(url);if(!res.ok)throw new Error("모델 파일을 받지 못했습니다 ("+res.status+")");
+  const total=+res.headers.get("content-length")||0;const rd=res.body.getReader();const parts=[];let got=0;
+  for(;;){const {done,value}=await rd.read();if(done)break;parts.push(value);got+=value.length;onProg&&onProg(got,total)}
+  const blob=new Blob(parts);if(cache){try{await cache.put(url,new Response(blob))}catch(_){}}
+  return new Uint8Array(await blob.arrayBuffer());
+}
+async function localModelCached(src){try{const c=await caches.open("supertonic-v1");return !!(await c.match(LOCAL_SRC[src].base+"onnx/vector_estimator.onnx"))}catch(_){return false}}
+async function tonicLoad(onProg){
+  const src=CF.localSrc;if(TONIC.sess&&TONIC.src===src)return;
+  if(TONIC.loading&&TONIC.src===src)return TONIC.loading;
+  TONIC.src=src;TONIC.sess=null;TONIC.styles={};
+  TONIC.loading=(async()=>{
+    await loadScript(ORT_URL+"ort.webgpu.min.js");
+    ort.env.wasm.wasmPaths=ORT_URL;ort.env.wasm.numThreads=self.crossOriginIsolated?Math.min(4,navigator.hardwareConcurrency||1):1;
+    const base=LOCAL_SRC[src].base;
+    TONIC.cfg=await (await fetch(base+"onnx/tts.json")).json();
+    TONIC.idx=await (await fetch(base+"onnx/unicode_indexer.json")).json();
+    const names=["duration_predictor","text_encoder","vector_estimator","vocoder"],w=[4,35,245,97];const wsum=w.reduce((a,b)=>a+b);let done=0;
+    const eps=(src==="full"&&navigator.gpu)?["webgpu","wasm"]:["wasm"];TONIC.ep=eps[0];
+    const sess=[];
+    for(let k=0;k<4;k++){
+      const bytes=await fetchCached(base+"onnx/"+names[k]+".onnx",(g,t)=>onProg&&onProg((done+(t?g/t:0)*w[k])/wsum));
+      done+=w[k];onProg&&onProg(done/wsum,"준비 중");
+      try{sess.push(await ort.InferenceSession.create(bytes,{executionProviders:eps,graphOptimizationLevel:"all"}))}
+      catch(e){if(eps[0]!=="wasm"){TONIC.ep="wasm";sess.push(await ort.InferenceSession.create(bytes,{executionProviders:["wasm"],graphOptimizationLevel:"all"}))}else throw e}
+    }
+    TONIC.sess=sess;
+  })();
+  try{await TONIC.loading}catch(e){TONIC.src=null;throw e}finally{TONIC.loading=null}
+}
+async function tonicStyle(name){
+  if(TONIC.styles[name])return TONIC.styles[name];
+  const j=await (await fetch(LOCAL_SRC[TONIC.src].base+"voice_styles/"+name+".json")).json();
+  const t=(o)=>new ort.Tensor("float32",Float32Array.from(o.data.flat(Infinity)),o.dims);
+  return TONIC.styles[name]={ttl:t(j.style_ttl),dp:t(j.style_dp)};
+}
+function tonicPre(text){
+  text=text.normalize("NFKD").replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}]+/gu,"");
+  const rp={"–":"-","‑":"-","—":"-","_":" ","“":'"',"”":'"',"‘":"'","’":"'","´":"'","`":"'","[":" ","]":" ","|":" ","/":" ","#":" ","→":" ","←":" "};
+  for(const [k,v] of Object.entries(rp))text=text.split(k).join(v);
+  text=text.replace(/[♥☆♡©\\]/g,"").replace(/ ([,.!?;:'])/g,"$1").replace(/"{2,}/g,'"').replace(/'{2,}/g,"'").replace(/\s+/g," ").trim();
+  if(!/[.!?;:,'"')\]}…。」』】〉》›»]$/.test(text))text+=".";
+  return `<ko>${text}</ko>`;
+}
+function tonicSplit(text,max){
+  const out=[];for(const para of text.trim().split(/\n\s*\n+/)){let cur="";
+    for(const sen of para.trim().split(/(?<=[.!?])\s+/)){if(!sen)continue;if(cur.length+sen.length+1<=max)cur+=(cur?" ":"")+sen;else{if(cur)out.push(cur);cur=sen}}
+    if(cur)out.push(cur)}
+  return out;
+}
+function gauss(){const u=Math.max(1e-4,Math.random()),v=Math.random();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+async function tonicInfer(text,st,steps,speed){
+  const [dpS,teS,veS,vocS]=TONIC.sess,cfg=TONIC.cfg,idx=TONIC.idx;
+  const t=tonicPre(text),L=t.length,ids=new BigInt64Array(L);
+  for(let j=0;j<L;j++){const cp=t.codePointAt(j);ids[j]=BigInt(cp<idx.length?idx[cp]:-1)}
+  const tIds=new ort.Tensor("int64",ids,[1,L]),tMask=new ort.Tensor("float32",new Float32Array(L).fill(1),[1,1,L]);
+  const dur=(await dpS.run({text_ids:tIds,style_dp:st.dp,text_mask:tMask})).duration.data[0]/speed;
+  const emb=(await teS.run({text_ids:tIds,style_ttl:st.ttl,text_mask:tMask})).text_emb;
+  const sr=cfg.ae.sample_rate,chunk=cfg.ae.base_chunk_size*cfg.ttl.chunk_compress_factor,D=cfg.ttl.latent_dim*cfg.ttl.chunk_compress_factor;
+  const wavLen=Math.floor(dur*sr),T=Math.max(1,Math.floor((wavLen+chunk-1)/chunk));
+  let x=new Float32Array(D*T);for(let i=0;i<x.length;i++)x[i]=gauss();
+  const lm=new ort.Tensor("float32",new Float32Array(T).fill(1),[1,1,T]),tot=new ort.Tensor("float32",new Float32Array([steps]),[1]);
+  for(let k=0;k<steps;k++){
+    const o=await veS.run({noisy_latent:new ort.Tensor("float32",x,[1,D,T]),text_emb:emb,style_ttl:st.ttl,latent_mask:lm,text_mask:tMask,current_step:new ort.Tensor("float32",new Float32Array([k]),[1]),total_step:tot});
+    x=Float32Array.from(o.denoised_latent.data);
+  }
+  const wav=(await vocS.run({latent:new ort.Tensor("float32",x,[1,D,T])})).wav_tts.data;
+  return {pcm:wav.subarray(0,Math.min(wavLen,wav.length)),sr};
+}
+async function localTTS(text,voice,steps){
+  const pr=f=>toastStat(`기기 안 AI 모델 내려받는 중… ${Math.round(f*100)}% (처음 한 번만)`);
+  try{await tonicLoad(pr)}catch(e){if(CF.localSrc!=="int8")throw e;CF.localSrc="full";saveCF();toastStat("가벼운 버전을 받을 수 없어 원본으로 받습니다…");await tonicLoad(pr)}
+  const st=await tonicStyle(voice);const parts=[];let sr=44100,n=0;
+  for(const piece of tonicSplit(text,120)){const r=await tonicInfer(piece,st,steps,1.05);sr=r.sr;parts.push(r.pcm);n+=r.pcm.length}
+  const gap=Math.floor(0.3*sr),all=new Float32Array(n+gap*Math.max(0,parts.length-1));let o=0;
+  parts.forEach((p,i)=>{all.set(p,o);o+=p.length+(i<parts.length-1?gap:0)});
+  const pcm=new Uint8Array(all.length*2),dv=new DataView(pcm.buffer);
+  for(let i=0;i<all.length;i++)dv.setInt16(i*2,Math.round(Math.max(-1,Math.min(1,all[i]))*32767),true);
+  return wavFromPcm(pcm,sr);
+}
+
+/* 엔진별로 한 번에 만드는 분량과 실제 생성 */
+function chunkLimit(){return CF.engine==="local"?1:1400}
+function synthKey(text){return CF.engine==="gemini"?[CF.model,CF.voice,CF.style,text]:CF.engine==="chirp"?["chirp",CF.chirpVoice,text]:["local",CF.localSrc,CF.localVoice,CF.localSteps,text]}
+function synth(text){return CF.engine==="gemini"?tts(text,CF.voice,CF.style,CF.model):CF.engine==="chirp"?chirpTTS(text,CF.chirpVoice):localTTS(text,CF.localVoice,CF.localSteps)}
 async function audioForChunk(c){
   const ch=ST.chunks[c];if(!ch)return null;
   const text=ch.parts.filter(Boolean).join("\n\n");if(!text.trim())return null;
-  const key=await sha([CF.model,CF.voice,CF.style,text].join("|"));
+  const key=await sha(synthKey(text).join("|"));
   const hit=await dget("audio",key);if(hit)return hit;
   if(ST.busy.has(c))return ST.busy.get(c);
-  const p=(async()=>{const blob=await tts(text,CF.voice,CF.style,CF.model);await dput("audio",key,blob);return blob})();
+  const p=(async()=>{const blob=await synth(text);await dput("audio",key,blob);return blob})();
   ST.busy.set(c,p);markCur();
   try{return await p}finally{ST.busy.delete(c);markCur()}
 }
-function prefetch(){const c=ST.chunkOf[ST.cur]+1;if(c<ST.chunks.length&&!ST.busy.has(c))audioForChunk(c).catch(()=>{})}
+function prefetch(){const n=CF.engine==="local"?2:1;(async()=>{for(let d=1;d<=n;d++){const c=ST.chunkOf[ST.cur]+d;if(c<ST.chunks.length&&!ST.busy.has(c))await audioForChunk(c).catch(()=>{})}})()}
 function clearAhead(){ST.busy.clear();ST.playChunk=null}
 
 /* ===== 재생 ===== */
@@ -275,12 +458,16 @@ async function playCur(){
       if(ST.url)URL.revokeObjectURL(ST.url);ST.url=URL.createObjectURL(blob);
       au.src=ST.url;ST.playChunk=c;await waitMeta();
     }
-    toastStat("");
+    toastStat(ST.note||"");ST.note=null;
     au.playbackRate=CF.rate;au.preservesPitch=true;
     const t=ST.resumeT;ST.resumeT=0;
     if(au.duration){au.currentTime=t&&t<au.duration-1?t:au.duration*fracOf(myCur)}
     await au.play();prefetch();mediaMeta();
-  }catch(e){ST.playing=false;updPlayer();toastStat(e.code==="nokey"||e.code==="key"?"Gemini API 키를 넣어 주세요 (목소리·설정).":e.message);if(e.code==="nokey"||e.code==="key")showSettings()}
+  }catch(e){
+    if(e.code==="switch"){setEngine(e.to,e.why);ST.resumeT=0;ST.note=e.why;if(ST.playing)playCur();return}
+    ST.playing=false;updPlayer();
+    const needKey=e.code==="nokey"||e.code==="key"||e.code==="nochirp";
+    toastStat(e.code==="nokey"||e.code==="key"?"Gemini API 키를 넣어 주세요 (목소리·설정).":e.message);if(needKey)showSettings()}
 }
 au.addEventListener("ended",()=>{if(!ST.playing||ST.playChunk==null)return;const ch=ST.chunks[ST.playChunk];
   if(ch.to>=ST.flat.length-1){stop();ST.cur=ch.to;toastStat("끝까지 들었습니다.");return}
@@ -318,12 +505,13 @@ function mediaMeta(){if(!("mediaSession" in navigator)||!ST.book)return;const x=
   navigator.mediaSession.setActionHandler("nexttrack",next);navigator.mediaSession.setActionHandler("previoustrack",prev)}
 
 /* 미리 듣기 */
+const PV_TEXT="사람을 움직이는 힘은 말솜씨가 아니라, 상대를 먼저 듣는 데서 나옵니다. 오늘은 그 이야기를 천천히 나눠 보겠습니다.";
 async function preview(v){
-  toastStat(`${v} 목소리를 만드는 중…`);$("player").hidden=!ST.book;
-  try{const key=await sha(["pv",CF.model,v,CF.style].join("|"));let blob=await dget("audio",key);
-    if(!blob){blob=await tts("사람을 움직이는 힘은 말솜씨가 아니라, 상대를 먼저 듣는 데서 나옵니다. 오늘은 그 이야기를 천천히 나눠 보겠습니다.",v,CF.style,CF.model);await dput("audio",key,blob)}
+  const E=CF.engine;toastStat(E==="local"?"기기 안 AI로 만드는 중…":`${v} 목소리를 만드는 중…`);$("player").hidden=!ST.book;
+  try{const key=await sha(["pv",E,E==="gemini"?CF.model+CF.style:E==="local"?CF.localSrc+CF.localSteps:"",v].join("|"));let blob=await dget("audio",key);
+    if(!blob){blob=E==="gemini"?await tts(PV_TEXT,v,CF.style,CF.model):E==="chirp"?await chirpTTS(PV_TEXT,v):await localTTS(PV_TEXT,v,CF.localSteps);await dput("audio",key,blob)}
     stop();ST.playChunk=null;const u=URL.createObjectURL(blob);au.src=u;au.playbackRate=CF.rate;await au.play();toastStat(`${v} 미리 듣기`);
-  }catch(e){toastStat(e.message)}
+  }catch(e){toastStat(e.code==="switch"?"무료 한도가 끝나 미리 듣기를 할 수 없습니다.":e.message)}
 }
 
 $("libBtn").onclick=showLib;$("setBtn").onclick=showSettings;
