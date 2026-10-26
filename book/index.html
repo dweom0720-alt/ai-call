@@ -128,7 +128,9 @@ async function importFromHash(){
   const m=location.hash.match(/[#&]b=([^&]+)/);if(!m)return null;
   try{const txt=await inflate(b64uToBytes(m[1]));const bk=JSON.parse(txt);if(!bk.id||!Array.isArray(bk.sections))throw 0;
     const old=await dget("books",bk.id);const sp=location.hash.match(/[#&]s=(\d+)/),pp=location.hash.match(/[#&]p=(\d+)/);
-    bk.pos=(sp?{s:+sp[1],p:pp?+pp[1]:0}:(old&&old.pos))||{s:0,p:0};bk.added=Date.now();
+    const hp=sp?{s:+sp[1],p:pp?+pp[1]:0}:null,op=old&&old.pos;
+    /* 들었던 곳과 생각서재에서 읽던 곳 중 더 뒤쪽부터 이어 듣기 */
+    bk.pos=(op&&(!hp||op.s>hp.s||(op.s===hp.s&&op.p>=hp.p)))?op:(hp||{s:0,p:0});bk.added=Date.now();
     await dput("books",bk.id,bk);history.replaceState(null,"",location.pathname);return bk.id;
   }catch(e){toastStat("책을 불러오지 못했습니다. 생각서재에서 다시 'AI 성우로 듣기'를 눌러 주세요.");return null}
 }
@@ -145,7 +147,7 @@ async function showLib(){
   const m=$("main");m.replaceChildren(
     !CF.key?keyPanel(true):null,
     h("section",{class:"panel"},h("h2",null,"내 오디오북"),
-      books.length?h("div",{class:"lib"},...books.map(b=>h("button",{onclick:()=>openBook(b.id)},h("div",{class:"t"},b.title),h("div",{class:"muted small"},[b.author,`${b.sections.length}개 장`,b.pos&&b.pos.s?`이어 듣기: ${(b.sections[b.pos.s]||{}).title||""}`:"처음부터"].filter(Boolean).join(" · ")))))
+      books.length?h("div",{class:"lib"},...books.map(b=>h("button",{onclick:()=>openBook(b.id)},h("div",{class:"t"},b.title),h("div",{class:"muted small"},[b.author,`${b.sections.length}개 장`,b.pos&&(b.pos.s||b.pos.p||b.pos.t)?`이어 듣기: ${(b.sections[b.pos.s]||{}).title||""}`:"처음부터"].filter(Boolean).join(" · ")))))
       :h("p",{class:"muted"},"아직 책이 없습니다. 생각서재의 '책 전체보기'에서 '듣기 › AI 성우로 듣기'를 누르면 책이 이곳으로 넘어옵니다.")),
     books.length?h("p",{class:"muted small"},"만든 음성은 이 기기에 저장되어, 다시 들을 때는 무료 한도를 쓰지 않습니다."):null);
 }
@@ -171,7 +173,7 @@ function showSettings(){
 async function openBook(id){
   const b=await dget("books",id);if(!b){showLib();return}
   ST.book=b;ST.flat=[];b.sections.forEach((s,si)=>s.paras.forEach((p,pi)=>ST.flat.push({si,pi,t:p.t,h:!!p.h,sec:s.title})));
-  ST.cur=Math.max(0,ST.flat.findIndex(x=>x.si===(b.pos||{}).s&&x.pi===(b.pos||{}).p));
+  ST.cur=Math.max(0,ST.flat.findIndex(x=>x.si===(b.pos||{}).s&&x.pi===(b.pos||{}).p));ST.resumeT=(b.pos&&b.pos.t)||0;
   b.last=Date.now();dput("books",b.id,b);
   renderBook();$("player").hidden=false;updPlayer();
   requestAnimationFrame(()=>scrollToCur(false));
@@ -186,7 +188,7 @@ function renderBook(){
 }
 function markCur(){document.querySelectorAll(".para").forEach(e=>{const i=+e.dataset.i;e.classList.toggle("now",i===ST.cur);e.classList.toggle("done",i<ST.cur);e.classList.toggle("wait",ST.busy.has(i)&&i!==ST.cur)})}
 function scrollToCur(smooth){const e=document.querySelector(`.para[data-i="${ST.cur}"]`);if(!e)return;const r=e.getBoundingClientRect();const top=70,bot=window.innerHeight-$("player").offsetHeight-20;if(r.top<top||r.bottom>bot)window.scrollTo({top:window.scrollY+r.top-140,behavior:smooth?"smooth":"auto"})}
-function savePos(){const b=ST.book;if(!b)return;const x=ST.flat[ST.cur];b.pos={s:x.si,p:x.pi};dput("books",b.id,b)}
+function savePos(){const b=ST.book;if(!b)return;const x=ST.flat[ST.cur];if(!x)return;const t=ST.resumeT||((ST.loadedFor===ST.cur&&au.src&&!au.ended)?Math.max(0,au.currentTime-2):0);b.pos={s:x.si,p:x.pi,t};b.last=Date.now();dput("books",b.id,b)}
 
 /* ===== Gemini 음성 만들기 ===== */
 function speakableText(t){return String(t).replace(/\(([^()]*[㐀-鿿][^()]*)\)/g,"").replace(/[「」『』《》〈〉“”"]/g,"").replace(/\s*[—–]\s*/g,", ").replace(/\s*·\s*/g,", ").replace(/\s*→\s*/g,", 그다음 ").replace(/(\d)\s*~\s*(\d)/g,"$1에서 $2").replace(/\s{2,}/g," ").trim()}
@@ -242,16 +244,17 @@ async function playCur(){
     if(!blob){next();return}
     if(ST.url)URL.revokeObjectURL(ST.url);ST.url=URL.createObjectURL(blob);
     au.src=ST.url;au.playbackRate=CF.rate;au.preservesPitch=true;
+    if(ST.resumeT){const t=ST.resumeT;ST.resumeT=0;await new Promise(r=>{au.addEventListener("loadedmetadata",r,{once:true});setTimeout(r,1500)});if(au.duration&&t<au.duration-1)au.currentTime=t}
     await au.play();prefetch();mediaMeta();
   }catch(e){ST.playing=false;updPlayer();toastStat(e.code==="nokey"||e.code==="key"?"Gemini API 키를 넣어 주세요 (목소리·설정).":e.message);if(e.code==="nokey"||e.code==="key")showSettings()}
 }
 au.addEventListener("ended",()=>{if(!ST.playing)return;const x=ST.flat[ST.cur];setTimeout(next,x&&x.h?500:250)});
-au.addEventListener("timeupdate",()=>{if(au.duration)$("ptr").style.width=(au.currentTime/au.duration*100)+"%"});
-function next(){if(ST.cur>=ST.flat.length-1){stop();toastStat("끝까지 들었습니다.");return}ST.cur++;savePos();ST.playing?playCur():(markCur(),updPlayer(),scrollToCur(true))}
-function prev(){ST.cur=Math.max(0,ST.cur-1);savePos();ST.playing?playCur():(markCur(),updPlayer(),scrollToCur(true))}
-function jump(i){ST.cur=i;savePos();au.pause();playCur()}
+au.addEventListener("timeupdate",()=>{if(ST.playing&&Date.now()-(ST.lastSave||0)>4000){ST.lastSave=Date.now();savePos()}if(au.duration)$("ptr").style.width=(au.currentTime/au.duration*100)+"%"});
+function next(){ST.resumeT=0;if(ST.cur>=ST.flat.length-1){stop();toastStat("끝까지 들었습니다.");return}ST.cur++;savePos();ST.playing?playCur():(markCur(),updPlayer(),scrollToCur(true))}
+function prev(){ST.resumeT=0;ST.cur=Math.max(0,ST.cur-1);savePos();ST.playing?playCur():(markCur(),updPlayer(),scrollToCur(true))}
+function jump(i){ST.resumeT=0;ST.cur=i;savePos();au.pause();playCur()}
 function stop(){ST.playing=false;au.pause();updPlayer()}
-function toggle(){if(ST.playing){ST.playing=false;au.pause();updPlayer()}else if(au.src&&au.currentTime>0&&!au.ended&&ST.loadedFor===ST.cur){ST.playing=true;au.play();updPlayer()}else playCur()}
+function toggle(){if(ST.playing){ST.playing=false;au.pause();savePos();updPlayer()}else if(au.src&&au.currentTime>0&&!au.ended&&ST.loadedFor===ST.cur){ST.playing=true;au.play();updPlayer()}else playCur()}
 au.addEventListener("play",()=>{ST.loadedFor=ST.cur});
 function updPlayer(){
   if(!ST.book)return;const x=ST.flat[ST.cur]||{};
@@ -279,7 +282,7 @@ async function preview(v){
 $("libBtn").onclick=showLib;$("setBtn").onclick=showSettings;
 $("nightBtn").onclick=()=>{CF.night=!CF.night;saveCF();document.documentElement.classList.toggle("night",CF.night);$("nightBtn").classList.toggle("on",CF.night)};
 $("nightBtn").classList.toggle("on",!!CF.night);
-document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")savePos()});
+document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="hidden")savePos()});window.addEventListener("pagehide",()=>{savePos()});
 
 window.addEventListener("hashchange",async()=>{const id=await importFromHash();if(id)openBook(id)});
 (async()=>{
