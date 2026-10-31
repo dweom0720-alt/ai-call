@@ -322,8 +322,11 @@ async function chirpTTS(text,voice){
       body:JSON.stringify({input:{text},voice:{languageCode:"ko-KR",name:`ko-KR-Chirp3-HD-${voice}`},audioConfig:{audioEncoding:"MP3"}})});
     if(r.status===429){toastStat("요청이 몰려 잠시 쉬었다가 이어서 만듭니다…");await sleep(15000*(attempt+1));continue}
     if(!r.ok){const j=await r.json().catch(()=>({}));const msg=(j.error&&j.error.message)||("오류 "+r.status);
-      let hint="";if(/not been used|disabled|SERVICE_DISABLED/i.test(msg))hint="Cloud Text-to-Speech API가 ‘사용’ 상태가 아닙니다. 설정 안내 3번을 확인해 주세요.";
-      else if(/billing/i.test(msg))hint="이 프로젝트에 결제 계정이 연결되지 않았습니다. 설정 안내 2번을 확인해 주세요. (무료 사용량 안에서는 0원)";
+      const raw=JSON.stringify(j),pn=(raw.match(/projects?\/?(?:\s|%20)?(\d{6,})/)||raw.match(/project (\d{6,})/)||[])[1];
+      let hint="";if(/billing/i.test(raw))hint="이 키의 프로젝트에 결제 계정이 연결되지 않았습니다. Google Cloud › 결제에서 이 프로젝트를 결제 계정에 연결해 주세요. (무료 사용량 안에서는 0원)";
+      else if(/has not been used|SERVICE_DISABLED|it is disabled/i.test(raw))hint="키가 만들어진 프로젝트"+(pn?`(번호 ${pn})`:"")+"에서 Cloud Text-to-Speech API가 꺼져 있습니다. 그 프로젝트를 골라 ‘사용’을 눌러 주세요.";
+      else if(/blocked|API_KEY_SERVICE_BLOCKED/i.test(raw))hint="키의 ‘API 제한사항’에 Cloud Text-to-Speech API가 체크되어 있지 않습니다.";
+      if(hint)hint+=" [Google 원문: "+msg.slice(0,160)+"]";
       else if(/referer|referrer|API key not valid|API_KEY/i.test(msg))hint="키가 맞지 않거나 웹사이트 제한이 다르게 걸려 있습니다. 설정 안내 4번을 확인해 주세요.";
       throw Object.assign(new Error(hint||msg),{code:r.status===400?"bad":"chirpkey"})}
     const j=await r.json();const bin=atob(j.audioContent||"");const u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
