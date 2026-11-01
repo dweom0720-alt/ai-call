@@ -197,7 +197,7 @@ function showSettings(){
       h("b",null,n),h("span",null,`${g}성 · ${d}`),h("button",{class:"pv","aria-label":`${n} 들어 보기`,onclick:()=>preview(n)},"▶"))));
     const L=(t,u)=>h("a",{href:u,target:"_blank",rel:"noopener"},t);
     body=[
-      h("section",{class:"panel"},h("h2",null,CF.chirpKey?"구글 HD 음성 키":"처음 한 번만: 구글 HD 음성 준비 (10분)"),
+      h("section",{class:"panel"},h("h2",null,CF.chirpKey?"구글 HD 음성 키":"처음 한 번만: 구글 HD 음성 준비 (10분)"),CF.chirpKey?h("p",{class:"small"},"지금 저장된 키 끝 네 자리: ",h("b",null,"…"+CF.chirpKey.slice(-4)),CF.key?" · Gemini 키 끝 네 자리: …"+CF.key.slice(-4):""):null,
         h("p",{class:"small"},"매달 100만 자까지 무료인 Google Cloud 음성입니다. 카드 등록은 필요하지만 무료 사용량 안에서는 0원이고, 이 앱은 95만 자에서 스스로 멈춥니다."),
         h("div",{class:"warn"},"AI 영어통화 앱의 키 프로젝트에 결제를 연결하면 그 앱의 Gemini 사용도 유료가 됩니다. 꼭 ‘새 프로젝트’를 만들어 주세요."),
         h("ol",{class:"small steps"},
@@ -207,7 +207,7 @@ function showSettings(){
           h("li",null,L("API 키 만들기","https://console.cloud.google.com/apis/credentials")," → ‘사용자 인증 정보 만들기 › API 키’. 만든 키의 ‘키 제한’에서 ① 애플리케이션 제한: 웹사이트 → dweom0720-alt.github.io/* ② API 제한: Cloud Text-to-Speech API 만 선택 후 저장."),
           h("li",null,"키를 복사해 아래에 붙여 넣고 저장."),
           h("li",null,L("예산 알림(권장)","https://console.cloud.google.com/billing/budgets")," → 1,000원 예산을 만들어 두면 혹시 넘을 때 메일이 옵니다.")),
-        inp,h("div",{class:"row"},h("button",{class:"btn",onclick:()=>{CF.chirpKey=inp.value.trim();saveCF();clearAhead();toastStat("");re()}},"저장"),
+        inp,h("div",{class:"row"},h("button",{class:"btn",onclick:()=>{const v=inp.value.trim();if(CF.key&&v===CF.key){toastStat("이 키는 Gemini 키와 같습니다. 책듣기 프로젝트에서 새로 만든 키를 넣어 주세요.");return}CF.chirpKey=v;saveCF();clearAhead();toastStat("저장했습니다. 끝 네 자리: …"+v.slice(-4));re()}},"저장"),
           CF.chirpKey?h("button",{class:"btn ghost sm",onclick:()=>preview(CF.chirpVoice)},"시험 듣기"):null)),
       h("section",{class:"panel"},h("h2",null,"목소리 고르기"),h("p",{class:"muted small"},"Gemini 성우와 같은 이름의 목소리들입니다. 분위기 지시는 안 되지만 또렷하고 자연스럽습니다."),vgrid)];
   }else{
@@ -315,6 +315,7 @@ const monthKey=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMo
 function chirpUsed(){if(!CF.chirpUse||CF.chirpUse.m!==monthKey())CF.chirpUse={m:monthKey(),n:0};return CF.chirpUse.n}
 async function chirpTTS(text,voice){
   if(!CF.chirpKey)throw Object.assign(new Error("구글 HD 음성 키를 넣어 주세요 (목소리·설정)."),{code:"nochirp"});
+  if(CF.key&&CF.chirpKey===CF.key)throw Object.assign(new Error("구글 HD 음성 칸에 Gemini 키(AI 영어통화 앱 키)가 들어가 있습니다. 책듣기 프로젝트에서 만든 키로 바꿔 주세요."),{code:"nochirp"});
   if(chirpUsed()+text.length>CHIRP_STOP&&CF.autoNext)throw Object.assign(new Error("switch"),{code:"switch",to:"local",why:"이번 달 구글 HD 음성 무료 사용량을 거의 다 써서 기기 안 AI로 이어 읽습니다."});
   if(chirpUsed()+text.length>CHIRP_STOP)throw Object.assign(new Error("이번 달 구글 HD 음성 무료 사용량(100만 자)을 거의 다 썼습니다."),{code:"chirpquota"});
   for(let attempt=0;attempt<3;attempt++){
