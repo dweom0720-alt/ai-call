@@ -1,0 +1,35 @@
+{
+ "books": [
+  {
+   "id": "bguiguzi1",
+   "title": "귀곡자",
+   "author": "귀곡자"
+  },
+  {
+   "id": "bmuz2wfuo",
+   "title": "사람을 얻는 지혜",
+   "author": "발타자르 그라시안"
+  },
+  {
+   "id": "bmvmagatr",
+   "title": "자유론",
+   "author": "존 스튜어트 밀"
+  },
+  {
+   "id": "bmvoi3a6f",
+   "title": "싯다르타",
+   "author": "헤르만 헤세"
+  },
+  {
+   "id": "bmvoqssfj",
+   "title": "전국책",
+   "author": "유향 엮음"
+  },
+  {
+   "id": "bmvyfxkl5",
+   "title": "한비자",
+   "author": "한비"
+  }
+ ],
+ "at": "2026-11-02"
+}

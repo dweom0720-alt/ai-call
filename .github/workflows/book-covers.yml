@@ -1,0 +1,21 @@
+name: 생각서재 책 표지 가져오기
+on:
+  push:
+    paths:
+      - "covers/request.json"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  covers:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: pip install pillow
+      - run: python covers/fetch_covers.py
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add covers/out
+          git commit -m "표지 저장" || echo "no change"
+          git push
