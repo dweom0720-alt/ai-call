@@ -1,0 +1,22 @@
+name: 생각서재 책 목록 만들기
+on:
+  push:
+    paths:
+      - "covers/catalog_req.txt"
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  catalog:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python covers/build_catalog.py "$(cat covers/catalog_req.txt)"
+      - run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898283+github-actions[bot]@users.noreply.github.com"
+          git add covers/catalog.json covers/probe.html 2>/dev/null || true
+          git add -A covers
+          git commit -m "책 목록 저장" || echo "no change"
+          git pull --rebase -q || true
+          git push
