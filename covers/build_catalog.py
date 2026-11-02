@@ -7,7 +7,7 @@ def get(u):
             with urllib.request.urlopen(urllib.request.Request(u,headers=UA),timeout=30) as r: return r.read().decode("utf-8","ignore")
         except Exception as e: time.sleep(2)
     return ""
-ITEM=re.compile(r'<a href="[^"]*wproduct\.aspx\?ItemId=(\d+)[^"]*" class="bo3"><b>(.*?)</b></a>(.*?)</li>\s*<li>(.*?)</li>',re.S)
+ITEM=re.compile(r'<a href="[^"]*wproduct\.aspx\?ItemId=(\d+)" class="bo3">(?:<b>)?(.*?)(?:</b>)?</a>(.*?)</li>\s*<li>(.*?)</li>',re.S)
 def parse(h):
     out=[]
     for m in ITEM.finditer(h):
@@ -29,6 +29,12 @@ for page in range(1,21): urls.append(f"https://www.aladin.co.kr/shop/common/wbes
 for year in range(2026,1999,-1):
     for page in range(1,21 if mode=="full" else 2):
         urls.append(f"https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=YearlyBest&BranchType=1&CID=0&Year={year}&page={page}&cnt=1000&SortOrder=1")
+CATS=[170,656,336,55889,987,74,798,1,2105,351]
+for cid in CATS:
+    for page in range(1,11): urls.append(f"https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=SteadySeller&BranchType=1&CID={cid}&page={page}&cnt=1000&SortOrder=1")
+    for year in range(2026,1999,-1):
+        for page in range(1,5 if mode=="full" else 1):
+            urls.append(f"https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=YearlyBest&BranchType=1&CID={cid}&Year={year}&page={page}&cnt=1000&SortOrder=1")
 if mode=="probe": urls=urls[:1]+[u for u in urls if "Year=2012" in u][:1]
 for n,u in enumerate(urls):
     h=get(u);items=parse(h)
@@ -36,6 +42,6 @@ for n,u in enumerate(urls):
         open("covers/probe.html","w").write(h[:400000]);print(u,len(h),len(items),items[:5])
     add(items)
     if n%20==0: print(n,len(urls),len(order),flush=True)
-    time.sleep(0.4)
+    time.sleep(0.25)
 json.dump(order,open("covers/catalog.json","w",encoding="utf-8"),ensure_ascii=False,separators=(",",":"))
 print("total",len(order))
