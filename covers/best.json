@@ -1,0 +1,1549 @@
+[
+{
+"id": "al_all",
+"store": "종합",
+"order": 1,
+"period": "이번 주",
+"asOf": "2026-11-03",
+"source": "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=0",
+"sourceName": "알라딘 주간 베스트셀러",
+"items": [
+{
+"rank": 1,
+"title": "가호",
+"author": "무라카미 하루키",
+"publisher": "문학동네",
+"note": ""
+},
+{
+"rank": 2,
+"title": "독재자(들)",
+"author": "황현필",
+"publisher": "역바연",
+"note": "당신 마음속의"
+},
+{
+"rank": 3,
+"title": "싯다르타",
+"author": "헤르만 헤세",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 58"
+},
+{
+"rank": 4,
+"title": "빨강의 자서전",
+"author": "앤 카슨",
+"publisher": "한겨레출판",
+"note": "시로 쓴 소설"
+},
+{
+"rank": 5,
+"title": "일일 반출록",
+"author": "성해나",
+"publisher": "무제",
+"note": "ㅣ 듣는 소설 2  Choice"
+},
+{
+"rank": 6,
+"title": "퍼플필",
+"author": "진쏠미",
+"publisher": "클랩북스",
+"note": "깨어나, 원하는 삶을 창조하라"
+},
+{
+"rank": 7,
+"title": "로미오와 줄리엣",
+"author": "윌리엄 셰익스피어",
+"publisher": "위즈덤하우스",
+"note": "ㅣ 위픽 클래식"
+},
+{
+"rank": 8,
+"title": "이상한 나라의 앨리스 (1쇄)",
+"author": "루이스 캐럴",
+"publisher": "위즈덤하우스",
+"note": "ㅣ 위픽 클래식"
+},
+{
+"rank": 9,
+"title": "팬텀 버스터즈 8",
+"author": "네오쇼코",
+"publisher": "㈜소미미디어",
+"note": "S코믹스"
+},
+{
+"rank": 10,
+"title": "자연의 것들은 그저 자란다",
+"author": "이윤 리",
+"publisher": "다산책방",
+"note": ""
+},
+{
+"rank": 11,
+"title": "세네카, 오늘을 빼앗기고 있는 당신에게 (20만 부 기념 리커버 한정판 에디션)",
+"author": "루키우스 안나이우스 세네카",
+"publisher": "논픽션",
+"note": ""
+},
+{
+"rank": 12,
+"title": "토니오 크뢰거 (1쇄)",
+"author": "토마스 만",
+"publisher": "위즈덤하우스",
+"note": "ㅣ 위픽 클래식"
+},
+{
+"rank": 13,
+"title": "일은 당신에게 위험하다",
+"author": "김현주",
+"publisher": "마름모",
+"note": "여성의 몸이 먼저 알아챈 것들"
+},
+{
+"rank": 14,
+"title": "책이라면 팔 만큼 2",
+"author": "코지마 아오",
+"publisher": "미우(대원씨아이)",
+"note": "초회 한정 띠지 + 일러스트 카드 동봉"
+},
+{
+"rank": 15,
+"title": "트렌드 코리아 2027",
+"author": "김난도",
+"publisher": "미래의창",
+"note": "2027 대한민국 소비트렌드 전망  Choice"
+},
+{
+"rank": 16,
+"title": "서늘한 대화",
+"author": "정재승",
+"publisher": "어크로스",
+"note": "인공지능이 인간의 자리에 들어온 뒤, 우리에게 남겨진 질문들"
+},
+{
+"rank": 17,
+"title": "태풍의 이름을 잊은 것처럼",
+"author": "정세랑",
+"publisher": "문학동네",
+"note": "Choice"
+},
+{
+"rank": 18,
+"title": "가자로부터 멀리 떨어져",
+"author": "배세진",
+"publisher": "편않",
+"note": "집단학살 3년, 한국 필자 8인의 목소리"
+},
+{
+"rank": 19,
+"title": "파이브 스타 스토리 The Five Star Stories 19",
+"author": "나가노 마모루",
+"publisher": "서울미디어코믹스(서울문화사)",
+"note": ""
+},
+{
+"rank": 20,
+"title": "모순",
+"author": "양귀자",
+"publisher": "쓰다",
+"note": "개정판  Choice"
+},
+{
+"rank": 21,
+"title": "한국사 이상현상 연구원",
+"author": "최인서",
+"publisher": "다이브",
+"note": "Choice"
+},
+{
+"rank": 22,
+"title": "브람스를 좋아하세요...",
+"author": "프랑수아즈 사강",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 179"
+},
+{
+"rank": 23,
+"title": "원피스 115",
+"author": "오다 에이치로",
+"publisher": "대원씨아이(만화)",
+"note": "세상에서 제일 강한 것,  띠지 + 초판한정 일러스트 카드 1종"
+},
+{
+"rank": 24,
+"title": "데미안",
+"author": "헤르만 헤세",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 44  Choice"
+},
+{
+"rank": 25,
+"title": "친애하는 은둔자에게",
+"author": "조준호",
+"publisher": "날(도서출판)",
+"note": "의사 가운을 벗은 자살 경험자 청년의 은둔 생활"
+},
+{
+"rank": 26,
+"title": "옥스브리지의 철학 수업",
+"author": "고요엘",
+"publisher": "상상스퀘어",
+"note": "정답이 없는 문제 앞에서 무너지지 않는 법"
+},
+{
+"rank": 27,
+"title": "빵충 사육 준수 사항",
+"author": "김혜영",
+"publisher": "안전가옥",
+"note": "ㅣ 안전가옥 오리지널 48  Choice"
+},
+{
+"rank": 28,
+"title": "웹소설 오늘부터 씁니다",
+"author": "정무늬",
+"publisher": "길벗",
+"note": "오늘 써서 내일 파는 실전 작법! 발상부터 완결까지 한 권으로 끝!"
+},
+{
+"rank": 29,
+"title": "돈으로 자유를 사라",
+"author": "댄 록",
+"publisher": "서삼독",
+"note": "3년 안에 ‘사표 던질 자본’을 만드는 7가지 황금열쇠  Choice"
+},
+{
+"rank": 30,
+"title": "두려움 없는 삶에 대하여 (국내 최초 단권 완역본)",
+"author": "에픽테토스",
+"publisher": "현대지성",
+"note": "에픽테토스 스토아 철학 전집 ㅣ 현대지성 클래식 80"
+}
+]
+},
+{
+"id": "al_biz",
+"store": "경제경영",
+"order": 2,
+"period": "이번 주",
+"asOf": "2026-11-03",
+"source": "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=170",
+"sourceName": "알라딘 주간 베스트셀러",
+"items": [
+{
+"rank": 1,
+"title": "트렌드 코리아 2027",
+"author": "김난도",
+"publisher": "미래의창",
+"note": "2027 대한민국 소비트렌드 전망  Choice"
+},
+{
+"rank": 2,
+"title": "서늘한 대화",
+"author": "정재승",
+"publisher": "어크로스",
+"note": "인공지능이 인간의 자리에 들어온 뒤, 우리에게 남겨진 질문들"
+},
+{
+"rank": 3,
+"title": "돈으로 자유를 사라",
+"author": "댄 록",
+"publisher": "서삼독",
+"note": "3년 안에 ‘사표 던질 자본’을 만드는 7가지 황금열쇠  Choice"
+},
+{
+"rank": 4,
+"title": "투자 고수들의 매매일지, 적자생존 2027",
+"author": "박세익",
+"publisher": "21세기북스",
+"note": ""
+},
+{
+"rank": 5,
+"title": "자본주의 시스템 해킹 매뉴얼",
+"author": "전쓰트",
+"publisher": "좋은땅",
+"note": "오직 내 자손들을 위해 남긴 가문의 비전서"
+},
+{
+"rank": 6,
+"title": "돈, 뜨겁게 사랑하고 차갑게 다루어라",
+"author": "앙드레 코스톨라니",
+"publisher": "미래의창",
+"note": "ㅣ 코스톨라니 투자총서 1"
+},
+{
+"rank": 7,
+"title": "시대예보: 수고인류의 시간",
+"author": "송길영",
+"publisher": "교보문고(단행본)",
+"note": "ㅣ 시대예보   Choice"
+},
+{
+"rank": 8,
+"title": "재야의 고수들",
+"author": "이대호",
+"publisher": "에프엔미디어",
+"note": "주식 투자로 인생을 바꾼 14인의 분투기"
+},
+{
+"rank": 9,
+"title": "나의 첫 번째 부동산 교과서",
+"author": "송희구",
+"publisher": "서삼독",
+"note": "Choice"
+},
+{
+"rank": 10,
+"title": "나는 코드를 모르는 AI 팀장입니다",
+"author": "정수진",
+"publisher": "웅진지식하우스",
+"note": "세상에서 가장 똑똑한 기계를 만드는 곳에서 찾은 인간의 미래 가치"
+},
+{
+"rank": 11,
+"title": "가짜 돈 진짜 부",
+"author": "박종훈",
+"publisher": "글로퍼스",
+"note": "화폐의 배신을 넘어 진짜 자산을 만드는 생존 전략"
+},
+{
+"rank": 12,
+"title": "돈의 심리학 (50만 부 기념 뉴 에디션)",
+"author": "모건 하우절",
+"publisher": "인플루엔셜(주)",
+"note": "당신은 왜 부자가 되지 못했는가 (보너스 스토리 수록)"
+},
+{
+"rank": 13,
+"title": "투자 말고 트레이딩",
+"author": "오션 드라이브",
+"publisher": "에디터",
+"note": "프랍 트레이더 고수의 매매 비법"
+},
+{
+"rank": 14,
+"title": "재무덕후 이재용의 숫자로 기업 읽기",
+"author": "이재용",
+"publisher": "인플루엔셜(주)",
+"note": "투자할 기업의 진짜 실력은 숫자 너머에 있다"
+},
+{
+"rank": 15,
+"title": "머니 트렌드 2027",
+"author": "정태익",
+"publisher": "북모먼트",
+"note": "격변의 위기를 기회로 바꾸는 55가지 돈의 흐름"
+},
+{
+"rank": 16,
+"title": "투자에 대한 생각",
+"author": "하워드 막스",
+"publisher": "비즈니스맵",
+"note": "월스트리트가 가장 신뢰한 하워드 막스의 20가지 투자 철학"
+},
+{
+"rank": 17,
+"title": "세계미래보고서 2027-2037",
+"author": "박영숙",
+"publisher": "교보문고(단행본)",
+"note": "21세기 총 균 쇠"
+},
+{
+"rank": 18,
+"title": "독하게 돈 공부",
+"author": "박소연",
+"publisher": "메이븐",
+"note": "10년 뒤 미래를 바꾸는 유일한 방법"
+},
+{
+"rank": 19,
+"title": "실전 시황 트레이딩",
+"author": "이진호(디앤서)",
+"publisher": "스티어",
+"note": "어떤 주식 장세에도 매매할 수 있는 5가지 무기"
+},
+{
+"rank": 20,
+"title": "금리·환율 무작정 따라하기",
+"author": "조원경",
+"publisher": "길벗",
+"note": "경제의 두 축을 알아야 돈 버는 진짜 투자가 시작된다 ㅣ 무작정 따라하기 경제경영/재테크"
+},
+{
+"rank": 21,
+"title": "클로드 코드 제대로 시작하기",
+"author": "주홍철",
+"publisher": "길벗",
+"note": "최신 클로드 코드 완벽 반영! 바이브 코딩부터 숏폼 자동화, AI 비서, SDD, 하네스 엔지니어링까지, 에이전틱 코딩, AI 에이전트, MCP"
+},
+{
+"rank": 22,
+"title": "생각에 관한 생각",
+"author": "대니얼 카너먼",
+"publisher": "김영사",
+"note": "우리의 행동을 지배하는 생각의 반란!  Choice"
+},
+{
+"rank": 23,
+"title": "AI, 신의 탄생 인간의 종말",
+"author": "엘리에저 유드코스키",
+"publisher": "상상스퀘어",
+"note": "초지능의 탄생, 그 이후 벌어질 일들"
+},
+{
+"rank": 24,
+"title": "돈의 속성 (400쇄 리커버 에디션)",
+"author": "김승호",
+"publisher": "스노우폭스북스",
+"note": ""
+},
+{
+"rank": 25,
+"title": "부의 곡선",
+"author": "안유화",
+"publisher": "경이로움",
+"note": "인생의 손익분기점을 넘어야 돈이 나를 위해 일한다  Choice"
+},
+{
+"rank": 26,
+"title": "추세추종 매수매도 바이블",
+"author": "올투",
+"publisher": "한빛비즈",
+"note": "시장을 빠르게 간파하며 주도주를 선점하는 법"
+},
+{
+"rank": 27,
+"title": "부의 갈림길",
+"author": "오건영",
+"publisher": "포레스트북스",
+"note": "대전환의 시작, 다시 쓰는 투자 포트폴리오  Choice"
+},
+{
+"rank": 28,
+"title": "찰리 멍거 바이블 완결판",
+"author": "김재현",
+"publisher": "에프엔미디어",
+"note": "대가들의 스승, 멍거가 남긴 투자와 삶의 지혜"
+},
+{
+"rank": 29,
+"title": "차트의 미학",
+"author": "장투대장",
+"publisher": "시월",
+"note": ""
+},
+{
+"rank": 30,
+"title": "공시 6년 실패, 중소기업 김 대리는 어떻게 6년 만에 22억을 벌었나",
+"author": "김동면(겨울잠)",
+"publisher": "모티브",
+"note": ""
+}
+]
+},
+{
+"id": "al_human",
+"store": "인문",
+"order": 3,
+"period": "이번 주",
+"asOf": "2026-11-03",
+"source": "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=656",
+"sourceName": "알라딘 주간 베스트셀러",
+"items": [
+{
+"rank": 1,
+"title": "세네카, 오늘을 빼앗기고 있는 당신에게 (20만 부 기념 리커버 한정판 에디션)",
+"author": "루키우스 안나이우스 세네카",
+"publisher": "논픽션",
+"note": ""
+},
+{
+"rank": 2,
+"title": "일은 당신에게 위험하다",
+"author": "김현주",
+"publisher": "마름모",
+"note": "여성의 몸이 먼저 알아챈 것들"
+},
+{
+"rank": 3,
+"title": "서늘한 대화",
+"author": "정재승",
+"publisher": "어크로스",
+"note": "인공지능이 인간의 자리에 들어온 뒤, 우리에게 남겨진 질문들"
+},
+{
+"rank": 4,
+"title": "가자로부터 멀리 떨어져",
+"author": "배세진",
+"publisher": "편않",
+"note": "집단학살 3년, 한국 필자 8인의 목소리"
+},
+{
+"rank": 5,
+"title": "친애하는 은둔자에게",
+"author": "조준호",
+"publisher": "날(도서출판)",
+"note": "의사 가운을 벗은 자살 경험자 청년의 은둔 생활"
+},
+{
+"rank": 6,
+"title": "옥스브리지의 철학 수업",
+"author": "고요엘",
+"publisher": "상상스퀘어",
+"note": "정답이 없는 문제 앞에서 무너지지 않는 법"
+},
+{
+"rank": 7,
+"title": "웹소설 오늘부터 씁니다",
+"author": "정무늬",
+"publisher": "길벗",
+"note": "오늘 써서 내일 파는 실전 작법! 발상부터 완결까지 한 권으로 끝!"
+},
+{
+"rank": 8,
+"title": "두려움 없는 삶에 대하여 (국내 최초 단권 완역본)",
+"author": "에픽테토스",
+"publisher": "현대지성",
+"note": "에픽테토스 스토아 철학 전집 ㅣ 현대지성 클래식 80"
+},
+{
+"rank": 9,
+"title": "쇼펜하우어 인생수업 : 한 번뿐인 삶 이렇게 살아라 (30만 부 기념 개정증보판)",
+"author": "아르투어 쇼펜하우어",
+"publisher": "하이스트",
+"note": "ㅣ 인생수업"
+},
+{
+"rank": 10,
+"title": "박완서의 낱말들",
+"author": "박완서",
+"publisher": "웅진지식하우스",
+"note": "아름다운 낱말 하나를 얻는 순간 세계는 곱절로 선명해진다"
+},
+{
+"rank": 11,
+"title": "문해내공",
+"author": "신종호",
+"publisher": "상상스퀘어",
+"note": "AI 시대, 생존을 넘어 품격을 만드는 국어력의 힘"
+},
+{
+"rank": 12,
+"title": "캐릭터 심리 사전 (알라딘 리커버 특별판)",
+"author": "린다 N. 에델스타인",
+"publisher": "부키",
+"note": "선인부터 악인, 평범부터 극단까지 심리학자가 총망라한 400개 인간 성격 지도"
+},
+{
+"rank": 13,
+"title": "오래 곁에 두어 좋은 말",
+"author": "나민애",
+"publisher": "북다",
+"note": "100년의 문학 작품에서 길어 올린 마음들"
+},
+{
+"rank": 14,
+"title": "혼자 살기 워크숍",
+"author": "반유화",
+"publisher": "은행나무",
+"note": "정신과의사와 함께 만들어가는 단단한 혼자의 삶"
+},
+{
+"rank": 15,
+"title": "주의를 기울이는 법",
+"author": "롭 워커",
+"publisher": "마주",
+"note": "Choice"
+},
+{
+"rank": 16,
+"title": "니체의 초월자",
+"author": "프리드리히 니체",
+"publisher": "히읏",
+"note": ""
+},
+{
+"rank": 17,
+"title": "내 인생이 왜 당신 마음에 들어야 합니까",
+"author": "김경일",
+"publisher": "퍼스트펭귄",
+"note": "남들 마음속에 살다 내 인생을 놓친 사람들에게"
+},
+{
+"rank": 18,
+"title": "인생을 위한 최소한의 생각",
+"author": "신영준",
+"publisher": "상상스퀘어",
+"note": ""
+},
+{
+"rank": 19,
+"title": "잘난 여자들을 위한 ADHD",
+"author": "트레이시 오츠카",
+"publisher": "심심",
+"note": "남다른 뇌가 만드는 가능성의 세계"
+},
+{
+"rank": 20,
+"title": "지능의 기원",
+"author": "맥스 베넷",
+"publisher": "더퀘스트",
+"note": "우리의 뇌 그리고 AI를 만든 다섯 번의 혁신"
+},
+{
+"rank": 21,
+"title": "위버멘쉬",
+"author": "프리드리히 니체",
+"publisher": "RISE(떠오름)",
+"note": "누구의 시선도 아닌, 내 의지대로 살겠다는 선언"
+},
+{
+"rank": 22,
+"title": "관찰 연습",
+"author": "니콜라 노바",
+"publisher": "책사람집",
+"note": "보이지 않던 것들이 보이는 순간"
+},
+{
+"rank": 23,
+"title": "빅터 프랭클의 죽음의 수용소에서",
+"author": "빅터 프랭클",
+"publisher": "청아출판사",
+"note": "한국어판 발매 20주년 기념판"
+},
+{
+"rank": 24,
+"title": "칵테일을 마시는 철학자들",
+"author": "세라 베이크웰",
+"publisher": "다산초당",
+"note": "삶의 자유를 포기하지 않았던 실존주의자들의 살아 있는 철학 이야기  Choice"
+},
+{
+"rank": 25,
+"title": "명상록 (그리스어 원전 완역본)",
+"author": "마르쿠스 아우렐리우스",
+"publisher": "현대지성",
+"note": "철학자 황제가 전쟁터에서 자신에게 쓴 일기 ㅣ 현대지성 클래식 18"
+},
+{
+"rank": 26,
+"title": "사피엔스",
+"author": "유발 하라리",
+"publisher": "김영사",
+"note": "유인원에서 사이보그까지, 인간 역사의 대담하고 위대한 질문 ㅣ 인류 3부작 시리즈"
+},
+{
+"rank": 27,
+"title": "일 마키아벨리",
+"author": "니콜로 마키아벨리",
+"publisher": "RISE(떠오름)",
+"note": ""
+},
+{
+"rank": 28,
+"title": "독서의 기술 (서점인이 뽑은 올해의 책 수상 특별 부록 : 독서 근력 노트 2)",
+"author": "고명환",
+"publisher": "라곰",
+"note": "책은 어떻게 삶의 무기가 되는가, 서점인이 뽑은 올해의 책"
+},
+{
+"rank": 29,
+"title": "어제의 세계",
+"author": "슈테판 츠바이크",
+"publisher": "다산초당",
+"note": "Choice"
+},
+{
+"rank": 30,
+"title": "우리는 모두 내 안의 누군가와 싸우고 있다",
+"author": "김정규",
+"publisher": "토네이도",
+"note": ""
+}
+]
+},
+{
+"id": "al_self",
+"store": "자기계발",
+"order": 4,
+"period": "이번 주",
+"asOf": "2026-11-03",
+"source": "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=336",
+"sourceName": "알라딘 주간 베스트셀러",
+"items": [
+{
+"rank": 1,
+"title": "퍼플필",
+"author": "진쏠미",
+"publisher": "클랩북스",
+"note": "깨어나, 원하는 삶을 창조하라"
+},
+{
+"rank": 2,
+"title": "돈으로 자유를 사라",
+"author": "댄 록",
+"publisher": "서삼독",
+"note": "3년 안에 ‘사표 던질 자본’을 만드는 7가지 황금열쇠  Choice"
+},
+{
+"rank": 3,
+"title": "부자의 5가지 철학",
+"author": "사힐 블룸",
+"publisher": "상상스퀘어",
+"note": ""
+},
+{
+"rank": 4,
+"title": "자본주의 시스템 해킹 매뉴얼",
+"author": "전쓰트",
+"publisher": "좋은땅",
+"note": "오직 내 자손들을 위해 남긴 가문의 비전서"
+},
+{
+"rank": 5,
+"title": "방을 치웠을 뿐인데 운이 트이기 시작했다",
+"author": "마스다 미츠히로",
+"publisher": "서스테인",
+"note": "400만 명의 인생을 바꾼 기적의 청소력"
+},
+{
+"rank": 6,
+"title": "오직 행동만이 삶을 바꾼다",
+"author": "개리 비숍",
+"publisher": "알에이치코리아(RHK)",
+"note": "내 안의 굴레를 깨부수고 판을 갈아엎는 ‘자기창조’의 철학  Choice"
+},
+{
+"rank": 7,
+"title": "브레인 악셀",
+"author": "이진우",
+"publisher": "바른뇌연구소",
+"note": "삶의 주도권을 되찾고 잠재력을 끌어올리는 뺄셈의 과학"
+},
+{
+"rank": 8,
+"title": "주의를 기울이는 법",
+"author": "롭 워커",
+"publisher": "마주",
+"note": "Choice"
+},
+{
+"rank": 9,
+"title": "관점의 기술",
+"author": "타나카 타츠야",
+"publisher": "알에이치코리아(RHK)",
+"note": "새로운 것은 이미 우리 눈앞에 있다"
+},
+{
+"rank": 10,
+"title": "내 인생이 왜 당신 마음에 들어야 합니까",
+"author": "김경일",
+"publisher": "퍼스트펭귄",
+"note": "남들 마음속에 살다 내 인생을 놓친 사람들에게"
+},
+{
+"rank": 11,
+"title": "아주 작은 습관의 힘 (50만 부 기념 스페셜 에디션)",
+"author": "제임스 클리어",
+"publisher": "비즈니스북스",
+"note": "최고의 변화는 어떻게 만들어지는가"
+},
+{
+"rank": 12,
+"title": "나는 코드를 모르는 AI 팀장입니다",
+"author": "정수진",
+"publisher": "웅진지식하우스",
+"note": "세상에서 가장 똑똑한 기계를 만드는 곳에서 찾은 인간의 미래 가치"
+},
+{
+"rank": 13,
+"title": "플루언트 포에버",
+"author": "게이브리얼 와이너",
+"publisher": "페이지2(page2)",
+"note": "어떤 언어든 빠르게 배우고 절대로 까먹지 않는 법"
+},
+{
+"rank": 14,
+"title": "독서의 기술 (서점인이 뽑은 올해의 책 수상 특별 부록 : 독서 근력 노트 2)",
+"author": "고명환",
+"publisher": "라곰",
+"note": "책은 어떻게 삶의 무기가 되는가, 서점인이 뽑은 올해의 책"
+},
+{
+"rank": 15,
+"title": "운이 좋은 사람은 이렇게 합니다",
+"author": "박성준",
+"publisher": "페이지2(page2)",
+"note": "박성준 역술가가 수만 건의 상담을 통해 밝힌 대운의 법칙  Choice"
+},
+{
+"rank": 16,
+"title": "마음은 그게 아닌데 말이 문제입니다",
+"author": "리징",
+"publisher": "알토북스",
+"note": "좋은 마음을 제대로 전하는 91가지 말하기 기술"
+},
+{
+"rank": 17,
+"title": "매일 쓰는 문장이 나를 만든다",
+"author": "한석준",
+"publisher": "인플루엔셜(주)",
+"note": "소통의 고수 한석준 아나운서가 뽑은 인생 문장"
+},
+{
+"rank": 18,
+"title": "그라시안의 사람을 읽는 눈",
+"author": "발타사르 그라시안",
+"publisher": "히읏",
+"note": ""
+},
+{
+"rank": 19,
+"title": "데일 카네기 인간관계론 (50만부 돌파 초판 무삭제 완역본)",
+"author": "데일 카네기",
+"publisher": "현대지성",
+"note": "ㅣ 데일 카네기 원전 완역본 시리즈"
+},
+{
+"rank": 20,
+"title": "야생 학습",
+"author": "김창준",
+"publisher": "인사이트",
+"note": "불확실성의 시대, 학습은 왜 더 중요해졌는가"
+},
+{
+"rank": 21,
+"title": "내면 근력",
+"author": "짐 머피",
+"publisher": "윌북",
+"note": ""
+},
+{
+"rank": 22,
+"title": "인생의 짧음에 대하여 (라틴어 원전 완역본)",
+"author": "루키우스 안나이우스 세네카",
+"publisher": "현대지성",
+"note": "시간과 운명, 인생의 본질에 관한 세네카의 가르침 ㅣ 현대지성 클래식 68"
+},
+{
+"rank": 23,
+"title": "손자병법",
+"author": "손무",
+"publisher": "현대지성",
+"note": "이겨놓고 싸우는 인생의 지혜 ㅣ 현대지성 클래식 69"
+},
+{
+"rank": 24,
+"title": "에이전트 워크플로우",
+"author": "로사장(김다솔)",
+"publisher": "필름(Feelm)",
+"note": "같은 AI로 다른 성과를 내는 단 하나의 변수"
+},
+{
+"rank": 25,
+"title": "다크 지능",
+"author": "박진우",
+"publisher": "더페이지",
+"note": "결정적 순간, 판을 뒤집는 한 수"
+},
+{
+"rank": 26,
+"title": "세이노의 가르침 (화이트 에디션)",
+"author": "세이노(SayNo)",
+"publisher": "데이원",
+"note": "피보다 진하게 살아라"
+},
+{
+"rank": 27,
+"title": "100일 습관 노트",
+"author": "김종원",
+"publisher": "청림Life",
+"note": "이뤄 내는 힘을 내 삶에 들이는 법"
+},
+{
+"rank": 28,
+"title": "시추에이티드",
+"author": "앤절라 더크워스",
+"publisher": "비즈니스북스",
+"note": "의지, 노력, 끈기를 성공으로 연결하는 사람과 장소의 힘"
+},
+{
+"rank": 29,
+"title": "일 잘하는 사람은 AI를 이렇게 쓴다",
+"author": "정보근",
+"publisher": "지니의서재",
+"note": "1,000회 AI 교육 현장에서 검증한 업무 효율화 공식과 실전 워크북"
+},
+{
+"rank": 30,
+"title": "나는 왜 네 말이 힘들까",
+"author": "박재연",
+"publisher": "한빛라이프",
+"note": "꼬인 관계를 풀어주는 연결의 대화 수업, 개정증보판"
+}
+]
+},
+{
+"id": "al_essay",
+"store": "에세이",
+"order": 5,
+"period": "이번 주",
+"asOf": "2026-11-03",
+"source": "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=55889",
+"sourceName": "알라딘 주간 베스트셀러",
+"items": [
+{
+"rank": 1,
+"title": "자연의 것들은 그저 자란다",
+"author": "이윤 리",
+"publisher": "다산책방",
+"note": ""
+},
+{
+"rank": 2,
+"title": "친애하는 은둔자에게",
+"author": "조준호",
+"publisher": "날(도서출판)",
+"note": "의사 가운을 벗은 자살 경험자 청년의 은둔 생활"
+},
+{
+"rank": 3,
+"title": "마음의 어휘력",
+"author": "조아란",
+"publisher": "페이지2(page2)",
+"note": "언어의 한계를 넘어 마음의 세계를 넓히는 일주일 단어 수업"
+},
+{
+"rank": 4,
+"title": "박완서의 낱말들",
+"author": "박완서",
+"publisher": "웅진지식하우스",
+"note": "아름다운 낱말 하나를 얻는 순간 세계는 곱절로 선명해진다"
+},
+{
+"rank": 5,
+"title": "그랬다고 적었다",
+"author": "김애란",
+"publisher": "문학동네",
+"note": ""
+},
+{
+"rank": 6,
+"title": "에로스, 달콤씁쓸한",
+"author": "앤 카슨",
+"publisher": "난다",
+"note": "ㅣ 모호"
+},
+{
+"rank": 7,
+"title": "악수도 없이 헤어졌다",
+"author": "피천득",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 469"
+},
+{
+"rank": 8,
+"title": "주의를 기울이는 법",
+"author": "롭 워커",
+"publisher": "마주",
+"note": "Choice"
+},
+{
+"rank": 9,
+"title": "나의 명랑한 생존기",
+"author": "유은실",
+"publisher": "비룡소",
+"note": ""
+},
+{
+"rank": 10,
+"title": "나는 코드를 모르는 AI 팀장입니다",
+"author": "정수진",
+"publisher": "웅진지식하우스",
+"note": "세상에서 가장 똑똑한 기계를 만드는 곳에서 찾은 인간의 미래 가치"
+},
+{
+"rank": 11,
+"title": "기본에 대하여",
+"author": "후덕죽",
+"publisher": "문학동네",
+"note": "60년간 지켜온 후덕죽의 일과 삶에 대한 철학"
+},
+{
+"rank": 12,
+"title": "언젠가 이발관",
+"author": "이석원",
+"publisher": "흐름출판",
+"note": "이석원 노래 산문"
+},
+{
+"rank": 13,
+"title": "이 지랄맞음이 쌓여 축제가 되겠지",
+"author": "조승리",
+"publisher": "달",
+"note": ""
+},
+{
+"rank": 14,
+"title": "명상록 (그리스어 원전 완역본)",
+"author": "마르쿠스 아우렐리우스",
+"publisher": "현대지성",
+"note": "철학자 황제가 전쟁터에서 자신에게 쓴 일기 ㅣ 현대지성 클래식 18"
+},
+{
+"rank": 15,
+"title": "어제의 세계",
+"author": "슈테판 츠바이크",
+"publisher": "다산초당",
+"note": "Choice"
+},
+{
+"rank": 16,
+"title": "시지프 신화",
+"author": "알베르 카뮈",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 343"
+},
+{
+"rank": 17,
+"title": "기분이 태도가 되지 말자 (30만 부 기념 최신 개정판)",
+"author": "김수현(훈글)",
+"publisher": "하이스트",
+"note": "기분을 관리할 줄 알아야 인생이 관리 된다"
+},
+{
+"rank": 18,
+"title": "김치 : 웃으라는 말 대신에 우리는",
+"author": "황선우",
+"publisher": "세미콜론",
+"note": "ㅣ 띵 시리즈 30"
+},
+{
+"rank": 19,
+"title": "애매함을 사랑하기",
+"author": "이창현(코유)",
+"publisher": "고유",
+"note": ""
+},
+{
+"rank": 20,
+"title": "숨결이 바람 될 때",
+"author": "폴 칼라니티",
+"publisher": "흐름출판",
+"note": "서른여섯 젊은 의사의 마지막 순간"
+},
+{
+"rank": 21,
+"title": "유한한 삶을 사랑하는 법",
+"author": "정시우",
+"publisher": "터틀넥프레스",
+"note": "김상욱, 박준, 서은국, 선우정아, 신형철, 장명숙, 조현철, 최재천, 백경에게 묻다"
+},
+{
+"rank": 22,
+"title": "북촌의 작은 정원들",
+"author": "최윤선",
+"publisher": "진선북스(진선출판사)",
+"note": "무너진 나를 다시 세우는 골목 정원 이야기"
+},
+{
+"rank": 23,
+"title": "녹스",
+"author": "앤 카슨",
+"publisher": "봄날의책",
+"note": "192쪽짜리 아코디언북"
+},
+{
+"rank": 24,
+"title": "물고기는 존재하지 않는다",
+"author": "룰루 밀러",
+"publisher": "곰출판",
+"note": "상실, 사랑 그리고 숨어 있는 삶의 질서에 관한 이야기  Choice"
+},
+{
+"rank": 25,
+"title": "서울 밖 감정",
+"author": "성해나",
+"publisher": "한겨레출판",
+"note": ""
+},
+{
+"rank": 26,
+"title": "살아 있는 동안에",
+"author": "정혜윤",
+"publisher": "녹스",
+"note": "놀라면서 길 찾기"
+},
+{
+"rank": 27,
+"title": "알아봄",
+"author": "존 버거",
+"publisher": "열화당",
+"note": "존 버거의 산문"
+},
+{
+"rank": 28,
+"title": "아무튼, 집밥",
+"author": "변연경",
+"publisher": "위고",
+"note": "“이렇게 집밥의 세계는 넓어진다” ㅣ 아무튼 시리즈 85"
+},
+{
+"rank": 29,
+"title": "불안",
+"author": "알랭 드 보통",
+"publisher": "은행나무",
+"note": "개정판"
+},
+{
+"rank": 30,
+"title": "행복할 거야 이래도 되나 싶을 정도로",
+"author": "일홍",
+"publisher": "부크럼",
+"note": ""
+}
+]
+},
+{
+"id": "al_novel",
+"store": "소설",
+"order": 6,
+"period": "이번 주",
+"asOf": "2026-11-03",
+"source": "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=1",
+"sourceName": "알라딘 주간 베스트셀러",
+"items": [
+{
+"rank": 1,
+"title": "가호",
+"author": "무라카미 하루키",
+"publisher": "문학동네",
+"note": ""
+},
+{
+"rank": 2,
+"title": "싯다르타",
+"author": "헤르만 헤세",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 58"
+},
+{
+"rank": 3,
+"title": "빨강의 자서전",
+"author": "앤 카슨",
+"publisher": "한겨레출판",
+"note": "시로 쓴 소설"
+},
+{
+"rank": 4,
+"title": "일일 반출록",
+"author": "성해나",
+"publisher": "무제",
+"note": "ㅣ 듣는 소설 2  Choice"
+},
+{
+"rank": 5,
+"title": "로미오와 줄리엣",
+"author": "윌리엄 셰익스피어",
+"publisher": "위즈덤하우스",
+"note": "ㅣ 위픽 클래식"
+},
+{
+"rank": 6,
+"title": "이상한 나라의 앨리스 (1쇄)",
+"author": "루이스 캐럴",
+"publisher": "위즈덤하우스",
+"note": "ㅣ 위픽 클래식"
+},
+{
+"rank": 7,
+"title": "토니오 크뢰거 (1쇄)",
+"author": "토마스 만",
+"publisher": "위즈덤하우스",
+"note": "ㅣ 위픽 클래식"
+},
+{
+"rank": 8,
+"title": "태풍의 이름을 잊은 것처럼",
+"author": "정세랑",
+"publisher": "문학동네",
+"note": "Choice"
+},
+{
+"rank": 9,
+"title": "모순",
+"author": "양귀자",
+"publisher": "쓰다",
+"note": "개정판  Choice"
+},
+{
+"rank": 10,
+"title": "한국사 이상현상 연구원",
+"author": "최인서",
+"publisher": "다이브",
+"note": "Choice"
+},
+{
+"rank": 11,
+"title": "브람스를 좋아하세요...",
+"author": "프랑수아즈 사강",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 179"
+},
+{
+"rank": 12,
+"title": "데미안",
+"author": "헤르만 헤세",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 44  Choice"
+},
+{
+"rank": 13,
+"title": "빵충 사육 준수 사항",
+"author": "김혜영",
+"publisher": "안전가옥",
+"note": "ㅣ 안전가옥 오리지널 48  Choice"
+},
+{
+"rank": 14,
+"title": "웹소설 오늘부터 씁니다",
+"author": "정무늬",
+"publisher": "길벗",
+"note": "오늘 써서 내일 파는 실전 작법! 발상부터 완결까지 한 권으로 끝!"
+},
+{
+"rank": 15,
+"title": "이방인",
+"author": "알베르 카뮈",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 266"
+},
+{
+"rank": 16,
+"title": "뒷면",
+"author": "이승우",
+"publisher": "열린책들",
+"note": "ㅣ 결정서가 1  Choice"
+},
+{
+"rank": 17,
+"title": "눈 내리는 삼일포",
+"author": "김연수",
+"publisher": "문학동네",
+"note": "Choice"
+},
+{
+"rank": 18,
+"title": "수족관",
+"author": "유래혁",
+"publisher": "포스터샵",
+"note": ""
+},
+{
+"rank": 19,
+"title": "남편의 아름다움",
+"author": "앤 카슨",
+"publisher": "한겨레출판",
+"note": "스물아홉 번의 탱고로 쓴 허구의 에세이"
+},
+{
+"rank": 20,
+"title": "테오",
+"author": "앨런 레비",
+"publisher": "오팬하우스",
+"note": ""
+},
+{
+"rank": 21,
+"title": "아메리칸 학원 1",
+"author": "이민진",
+"publisher": "현대문학",
+"note": ""
+},
+{
+"rank": 22,
+"title": "캐릭터 심리 사전 (알라딘 리커버 특별판)",
+"author": "린다 N. 에델스타인",
+"publisher": "부키",
+"note": "선인부터 악인, 평범부터 극단까지 심리학자가 총망라한 400개 인간 성격 지도"
+},
+{
+"rank": 23,
+"title": "알케마이즈드 세트 - 전3권",
+"author": "센린유",
+"publisher": "반타",
+"note": ""
+},
+{
+"rank": 24,
+"title": "아메리칸 학원 2",
+"author": "이민진",
+"publisher": "현대문학",
+"note": ""
+},
+{
+"rank": 25,
+"title": "인간 실격",
+"author": "다자이 오사무",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 103"
+},
+{
+"rank": 26,
+"title": "눈물을 마시는 새 세트 - 전4권 (양장)",
+"author": "이영도",
+"publisher": "황금가지",
+"note": "Choice"
+},
+{
+"rank": 27,
+"title": "달과 6펜스",
+"author": "서머싯 몸",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 38"
+},
+{
+"rank": 28,
+"title": "변신 이야기",
+"author": "박서련",
+"publisher": "은행나무",
+"note": "2026 김유정문학상 수상작품집  Choice"
+},
+{
+"rank": 29,
+"title": "동물농장",
+"author": "조지 오웰",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 5"
+},
+{
+"rank": 30,
+"title": "오만과 편견",
+"author": "제인 오스틴",
+"publisher": "민음사",
+"note": "ㅣ 민음사 세계문학전집 88"
+}
+]
+},
+{
+"id": "al_sci",
+"store": "과학",
+"order": 7,
+"period": "이번 주",
+"asOf": "2026-11-03",
+"source": "https://www.aladin.co.kr/shop/common/wbest.aspx?BestType=Bestseller&BranchType=1&CID=987",
+"sourceName": "알라딘 주간 베스트셀러",
+"items": [
+{
+"rank": 1,
+"title": "서늘한 대화",
+"author": "정재승",
+"publisher": "어크로스",
+"note": "인공지능이 인간의 자리에 들어온 뒤, 우리에게 남겨진 질문들"
+},
+{
+"rank": 2,
+"title": "원소 원정대",
+"author": "아게도리도리",
+"publisher": "윌북주니어",
+"note": "118개 캐릭터로 마스터하는 주기율표 공략집"
+},
+{
+"rank": 3,
+"title": "코스모스 (100만 부 기념판)",
+"author": "칼 세이건",
+"publisher": "사이언스북스",
+"note": ""
+},
+{
+"rank": 4,
+"title": "지능의 기원",
+"author": "맥스 베넷",
+"publisher": "더퀘스트",
+"note": "우리의 뇌 그리고 AI를 만든 다섯 번의 혁신"
+},
+{
+"rank": 5,
+"title": "코스모스",
+"author": "칼 세이건",
+"publisher": "사이언스북스",
+"note": "특별판"
+},
+{
+"rank": 6,
+"title": "이기적 유전자 (50주년 기념판)",
+"author": "리처드 도킨스",
+"publisher": "을유문화사",
+"note": ""
+},
+{
+"rank": 7,
+"title": "살아 있다는 것은 무엇인가",
+"author": "박문호",
+"publisher": "오아시스",
+"note": "세포와 미토콘드리아, 암과 노화로 이어지는 40억 년 생명의 대서사"
+},
+{
+"rank": 8,
+"title": "멍키럽",
+"author": "로버트 M. 새폴스키",
+"publisher": "문학동네",
+"note": "인간이라는 동물을 이해하기 위한 18가지 질문"
+},
+{
+"rank": 9,
+"title": "세상이 그대를 속일지라도",
+"author": "김상욱",
+"publisher": "동아시아",
+"note": "변화의 시대, 변하지 않는 것에 대하여"
+},
+{
+"rank": 10,
+"title": "우리는 서로를 통해 존재한다",
+"author": "카를로 로벨리",
+"publisher": "쌤앤파커스",
+"note": "만물의 평등에 관하여  Choice"
+},
+{
+"rank": 11,
+"title": "AI, 신의 탄생 인간의 종말",
+"author": "엘리에저 유드코스키",
+"publisher": "상상스퀘어",
+"note": "초지능의 탄생, 그 이후 벌어질 일들"
+},
+{
+"rank": 12,
+"title": "미적분, 세상을 읽는 최소한의 수학",
+"author": "구라모토 다카후미",
+"publisher": "미디어숲",
+"note": "돈의 흐름부터 AI와 미래 예측까지 미적분은 어떻게 세상을 움직이는가"
+},
+{
+"rank": 13,
+"title": "북촌의 작은 정원들",
+"author": "최윤선",
+"publisher": "진선북스(진선출판사)",
+"note": "무너진 나를 다시 세우는 골목 정원 이야기"
+},
+{
+"rank": 14,
+"title": "모든 것의 기원",
+"author": "데이비드 버코비치",
+"publisher": "책세상",
+"note": "예일대 최고의 과학 강의"
+},
+{
+"rank": 15,
+"title": "물고기는 존재하지 않는다",
+"author": "룰루 밀러",
+"publisher": "곰출판",
+"note": "상실, 사랑 그리고 숨어 있는 삶의 질서에 관한 이야기  Choice"
+},
+{
+"rank": 16,
+"title": "E=mc²",
+"author": "데이비드 보더니스",
+"publisher": "웅진지식하우스",
+"note": "세상에서 가장 유명한 방정식의 일생  Choice"
+},
+{
+"rank": 17,
+"title": "인간을 위한 공간",
+"author": "다비데 루촌",
+"publisher": "포레스트북스",
+"note": "인간의 감정과 행동을 조율하는 공간의 원칙"
+},
+{
+"rank": 18,
+"title": "인체 수리 매뉴얼",
+"author": "메리 로치",
+"publisher": "어크로스",
+"note": "완벽하지 않은 몸을 고쳐 쓰려는 과학의 분투기"
+},
+{
+"rank": 19,
+"title": "뇌는 어떻게 나를 조종하는가",
+"author": "크리스 나이바우어",
+"publisher": "클랩북스",
+"note": "과몰입하는 좌뇌, 침묵하는 우뇌"
+},
+{
+"rank": 20,
+"title": "벡터",
+"author": "로빈 애리언호드",
+"publisher": "은행나무",
+"note": "우주에서 인공지능까지, 현대 과학을 움직이는 가장 강력한 아이디어"
+},
+{
+"rank": 21,
+"title": "숲문해력 : 숲에서 세상을 읽다",
+"author": "남효창",
+"publisher": "책이라는신화",
+"note": "인간은 어떻게 숲을 잃어버렸는가"
+},
+{
+"rank": 22,
+"title": "숫자를 내 편으로 만드는 법",
+"author": "노아 지안시라쿠사",
+"publisher": "청림출판",
+"note": "설계된 세상을 읽어내는 7가지 수학 도구"
+},
+{
+"rank": 23,
+"title": "예술을 처방합니다",
+"author": "데이지 팬코트",
+"publisher": "디플롯",
+"note": "삶을 다시 일으키는 미적 경험 너머의 힘"
+},
+{
+"rank": 24,
+"title": "이상한 과학책 : 세상의 원리 편",
+"author": "김진우(은잡지)",
+"publisher": "빅피시",
+"note": "몸속부터 우주까지 탐험하는 엉뚱한 과학 여행 ㅣ 이상한 과학책"
+},
+{
+"rank": 25,
+"title": "완벽한 원시인",
+"author": "자청",
+"publisher": "필로틱",
+"note": "10만 년을 되돌려 되찾는 뇌 설계도"
+},
+{
+"rank": 26,
+"title": "뇌는 자연을 원한다",
+"author": "마크 버먼",
+"publisher": "다산북스",
+"note": "환경신경과학 석학이 밝혀낸 지친 뇌를 가장 빨리 회복하는 방법"
+},
+{
+"rank": 27,
+"title": "읽기의 과학",
+"author": "스켑틱 협회 편집부",
+"publisher": "바다출판사",
+"note": "ㅣ 스켑틱 SKEPTIC 47  정가제 FREE"
+},
+{
+"rank": 28,
+"title": "엔트로피",
+"author": "제러미 리프킨",
+"publisher": "세종연구원",
+"note": "열역학 제2법칙으로 읽는 현대 문명"
+},
+{
+"rank": 29,
+"title": "듀얼 브레인",
+"author": "이선 몰릭",
+"publisher": "상상스퀘어",
+"note": "AI 시대의 실용적 생존 가이드  Choice"
+},
+{
+"rank": 30,
+"title": "놓아 버림",
+"author": "데이비드 호킨스",
+"publisher": "판미동",
+"note": "내 안의 위대함을 되찾는 항복의 기술 ㅣ 데이비드 호킨스 시리즈   Choice"
+}
+]
+}
+]
