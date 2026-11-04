@@ -75,6 +75,7 @@ header.top h1{font-family:var(--f-display);font-size:20px;margin:0;flex:1;min-wi
 .stat{font-size:12.5px;color:var(--mark);margin-top:4px;min-height:1em}
 .track{height:3px;background:var(--line);border-radius:2px;overflow:hidden;margin-top:6px}
 .track i{display:block;height:100%;background:var(--cloth);width:0}
+.toread{display:inline-flex;align-items:center;gap:4px;padding:8px 12px;border-radius:999px;border:1px solid currentColor;font-size:14px;text-decoration:none;color:inherit;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -94,6 +95,7 @@ header.top h1{font-family:var(--f-display);font-size:20px;margin:0;flex:1;min-wi
     <button id="back15" aria-label="15초 뒤로">↺</button>
     <button id="play" class="play" aria-label="재생">▶</button>
     <button id="next" aria-label="다음 문단">⏭</button>
+    <a id="toread" class="toread" href="#" target="_blank" rel="noopener" hidden title="여기까지 들은 곳을 생각서재에 기록하고 이어서 읽습니다">📖 읽기</a>
     <select id="rate" aria-label="속도"><option value="0.9">0.9배</option><option value="1" selected>1배</option><option value="1.15">1.15배</option><option value="1.3">1.3배</option><option value="1.5">1.5배</option></select>
   </div>
   <div class="stat" id="stat"></div>
@@ -135,6 +137,7 @@ async function importFromHash(){
     const old=await dget("books",bk.id);const sp=location.hash.match(/[#&]s=(\d+)/),pp=location.hash.match(/[#&]p=(\d+)/);
     const hp=sp?{s:+sp[1],p:pp?+pp[1]:0}:null,op=old&&old.pos;
     /* 들었던 곳과 생각서재에서 읽던 곳 중 더 뒤쪽부터 이어 듣기 */
+    const rm=location.hash.match(/[#&]r=([^&]+)/);if(rm){try{bk.ret=decodeURIComponent(rm[1])}catch(_){}}else if(old&&old.ret)bk.ret=old.ret;
     bk.pos=(op&&(!hp||op.s>hp.s||(op.s===hp.s&&op.p>=hp.p)))?op:(hp||{s:0,p:0});bk.added=Date.now();
     await dput("books",bk.id,bk);history.replaceState(null,"",location.pathname);return bk.id;
   }catch(e){toastStat("책을 불러오지 못했습니다. 생각서재에서 다시 'AI 성우로 듣기'를 눌러 주세요.");return null}
@@ -506,7 +509,10 @@ function updPlayer(){
   $("pnow").textContent=x.sec||"";$("ppos").textContent=`${ST.cur+1} / ${ST.flat.length}`;
   $("play").textContent=ST.playing?"❚❚":"▶";$("play").setAttribute("aria-label",ST.playing?"일시정지":"재생");
   $("rate").value=String(CF.rate);
+  const tr=$("toread"),ret=ST.book.ret;
+  if(ret&&/^https:\/\/claude\.ai\//.test(ret)&&x.si!=null){tr.hidden=false;tr.href=ret.split("#")[0]+"#pos-"+String(ST.book.id).replace(/[^A-Za-z0-9]/g,"")+"-"+x.si+"-"+x.pi}else tr.hidden=true;
 }
+$("toread").addEventListener("click",()=>{if(ST.playing)toggle();savePos()});
 $("play").onclick=toggle;$("next").onclick=next;$("prev").onclick=prev;
 $("back15").onclick=()=>{if(au.src&&ST.playChunk!=null&&au.currentTime>3){au.currentTime=Math.max(0,au.currentTime-15)}else prev()};
 $("rate").onchange=e=>{CF.rate=+e.target.value;saveCF();au.playbackRate=CF.rate};
